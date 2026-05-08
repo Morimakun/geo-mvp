@@ -39,14 +39,14 @@ st.markdown("""
 <style>
     /* メイン背景 */
     .main {
-        padding: 2rem 1rem;
+        padding: 1rem 1rem;
         background-color: #ffffff;
     }
 
     /* ヘッダー */
     .header-container {
-        margin-bottom: 2rem;
-        padding-bottom: 1.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
         border-bottom: 1px solid #e2e8f0;
     }
 
@@ -69,8 +69,8 @@ st.markdown("""
     .section-container {
         background-color: #fafbfc;
         border-radius: 6px;
-        padding: 2rem;
-        margin-bottom: 2rem;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
         box-shadow: none;
         border: 1px solid #e2e8f0;
     }
@@ -79,8 +79,8 @@ st.markdown("""
         font-size: 16px;
         font-weight: 600;
         color: #2d3748;
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.75rem;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
         border-bottom: 1px solid #e2e8f0;
     }
 
@@ -88,7 +88,7 @@ st.markdown("""
     .metric-card {
         background-color: #ffffff;
         border-radius: 6px;
-        padding: 1.5rem;
+        padding: 1rem;
         border-left: 3px solid #2d3748;
         text-align: center;
         box-shadow: none;
@@ -110,7 +110,7 @@ st.markdown("""
     .metric-number {
         font-size: 28px;
         font-weight: 700;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.25rem;
         color: #1a202c;
     }
 
@@ -127,7 +127,7 @@ st.markdown("""
         background-color: #fafbfc;
         border: 1px solid #cbd5e0;
         border-radius: 6px;
-        padding: 1.5rem;
+        padding: 1rem;
         text-align: center;
         transition: all 0.3s ease;
     }
@@ -389,16 +389,11 @@ with st.container():
             except Exception as e:
                 st.error(f"読込エラー: {str(e)}")
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    # ===== ボタン行 =====
+    st.markdown('<div style="margin-top: 1rem;"></div>', unsafe_allow_html=True)
+    col_btn1, col_btn2 = st.columns(2, gap="large")
 
-# ===== サンプルデータ & 照合実行ボタン =====
-with st.container():
-    st.markdown('<div class="section-container">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">クイックスタート</div>', unsafe_allow_html=True)
-
-    col1, col2 = st.columns(2, gap="large")
-
-    with col1:
+    with col_btn1:
         if st.button("サンプルデータで試す", use_container_width=True, key="sample_btn"):
             try:
                 script_dir = Path(__file__).parent
@@ -419,7 +414,7 @@ with st.container():
             except Exception as e:
                 st.error(f"読込エラー: {str(e)}")
 
-    with col2:
+    with col_btn2:
         if st.button("照合を実行", use_container_width=True, key="reconcile_btn", type="primary"):
             if st.session_state.salesforce_records is None:
                 st.error("⚠️ Salesforce CSVを先に読込んでください")
@@ -551,14 +546,13 @@ if st.session_state.reconciliation_results:
             subset=["ステータス"]
         )
 
-        st.dataframe(styled_df, use_container_width=True, height=400)
+        st.dataframe(styled_df, use_container_width=True, height=300)
 
         st.markdown('</div>', unsafe_allow_html=True)
 
     # ===== 詳細確認セクション =====
-    with st.container():
-        st.markdown('<div class="section-container">', unsafe_allow_html=True)
-        st.markdown('<div class="section-title">詳細確認</div>', unsafe_allow_html=True)
+    with st.expander("詳細確認", expanded=False):
+        st.markdown('<div style="padding: 0.5rem 0;"></div>', unsafe_allow_html=True)
 
         selected_idx = st.selectbox(
             "詳細を確認する項目を選択",
@@ -668,12 +662,9 @@ if st.session_state.reconciliation_results:
                     st.markdown("#### 確認理由")
                     st.markdown('<p style="color: #718096;">確認不要</p>', unsafe_allow_html=True)
 
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    # ===== ダウンロードセクション =====
+    # ===== ダウンロード =====
     with st.container():
-        st.markdown('<div class="section-container">', unsafe_allow_html=True)
-        st.markdown('<div class="section-title">結果をダウンロード</div>', unsafe_allow_html=True)
+        st.markdown('<div style="margin-top: 0.75rem; margin-bottom: 1rem;"></div>', unsafe_allow_html=True)
 
         # CSV形式で出力
         csv_rows = [
@@ -738,8 +729,6 @@ if st.session_state.reconciliation_results:
             mime="text/csv",
             use_container_width=True
         )
-
-        st.markdown('</div>', unsafe_allow_html=True)
 
 # ===== フッター =====
 st.markdown("""
