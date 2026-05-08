@@ -1,4 +1,12 @@
-"""Claude Vision API を使用した帳票項目抽出・CSV照合モジュール"""
+"""Claude Vision API を使用した帳票項目抽出・CSV照合モジュール
+
+【実装方針】
+実帳票は複雑な構造を持つため、領域分割アプローチで段階的に抽出します。
+1. ヘッダー領域（日付、店舗名、氏名）
+2. 下部識別子領域（日報データNo、タブレットNo）
+3. 合計欄領域（左下、右下の合計値）
+4. 手書きカウント欄（各セルの件数推定）
+"""
 
 import json
 import os
@@ -7,40 +15,85 @@ import base64
 import fitz  # PyMuPDF
 from PIL import Image
 from anthropic import Anthropic
+from dotenv import load_dotenv
+
+# 環境変数読込（.envファイルから）
+load_dotenv(override=True)
 
 # Claude API クライアント初期化
 client = Anthropic()
 
-EXTRACTION_PROMPT = """以下の帳票画像から、以下の8つの項目を抽出し、JSON形式で返してください。
+HEADER_EXTRACTION_PROMPT = """以下は帳票の上部ヘッダー領域です。
+以下の3項目を抽出してJSON形式で返してください。
 
-抽出対象項目：
+抽出対象：
 1. date（日付、フォーマット：YYYY-MM-DD）
-2. store（店舗名、文字列）
-3. name（氏名、文字列）
-4. data_no（日報データNo、文字列）
-5. tab_no（タブレットNo、文字列）
-6. count（正の字カウント、数値）
-7. total（合計欄の数字、数値）
-8. notes（備考、文字列、省略可）
+2. store（店舗名、テキスト）
+3. name（氏名、テキスト）
 
-回答フォーマット：
+回答例：
 {
-  "date": "YYYY-MM-DD",
-  "store": "店舗名",
-  "name": "氏名",
-  "data_no": "001",
-  "tab_no": "AB-01",
-  "count": 5,
-  "total": 12500,
-  "notes": "備考"
+  "date": "2026-04-20",
+  "store": "イオンモール神戸北",
+  "name": "山田光子"
 }
 
 注意：
-- 項目が見つからない場合は null を使用してください
-- 数値は整数で返してください
-- 日付が曖昧な場合は null を返してください
-- 正の字カウント、合計欄は「正確に読取した値」を返してください（不確実な場合も）
-- 必ずJSON形式のみを返してください（説明文は不要）"""
+- 見つからない項目は null
+- 必ずJSON形式のみ"""
+
+ID_EXTRACTION_PROMPT = """以下は帳票の下部識別子領域です。
+以下の2項目を抽出してJSON形式で返してください。
+
+抽出対象：
+1. data_no（日報データNo、英数字）
+2. tab_no（タブレットNo、英数字または記号）
+
+回答例：
+{
+  "data_no": "005",
+  "tab_no": "1い~2002201"
+}
+
+注意：
+- 見つからない項目は null
+- 必ずJSON形式のみ"""
+
+TOTAL_EXTRACTION_PROMPT = """以下は帳票の合計欄です。
+数値を抽出してJSON形式で返してください。
+
+抽出対象：
+1. total_left（左下の合計値）
+2. total_right（右下の合計値）
+
+回答例：
+{
+  "total_left": 333,
+  "total_right": 35.3
+}
+
+注意：
+- 見つからない項目は null
+- 小数点を含む場合も数値で返す
+- 必ずJSON形式のみ"""
+
+COUNT_EXTRACTION_PROMPT = """以下は帳票の手書き/チェック欄です。
+件数推定をしてJSON形式で返してください。
+
+抽出対象：
+各セルの件数推定（手書き線、チェック、数字から推定）
+
+回答例：
+{
+  "estimated_count": 5,
+  "confidence": "high",
+  "notes": "5本の手書き線が確認できる"
+}
+
+注意：
+- 推定値なので確度を confidence で示す (high/medium/low)
+- 不鮮明な場合は low を選択
+- 必ずJSON形式のみ"""
 
 
 def extract_items_from_pdf(pdf_bytes: bytes, filename: str) -> Dict:
@@ -74,7 +127,7 @@ def extract_items_from_pdf(pdf_bytes: bytes, filename: str) -> Dict:
 
         # Claude Vision で抽出
         message = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
+            model="claude-sonnet-4-6",  # Latest Claude Sonnet with Vision API support
             max_tokens=1024,
             messages=[
                 {

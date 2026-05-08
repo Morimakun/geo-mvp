@@ -43,20 +43,36 @@ def create_sample_forms():
         description="パターン2：件数ズレ（帳票=6、CSV=5 → 不一致）"
     )
 
-    # パターン3: 正の字が不鮮明（要確認）
+    # パターン3: DataNo空欄でTabNoで照合できる（代替キー照合パターン）
     create_form(
-        filename="samples/form_003_pending.pdf",
+        filename="samples/form_003_alternative_key.pdf",
         data={
             "date": "2026-05-06",
             "store": "池袋店",
             "name": "佐藤次郎",
-            "data_no": "",  # 空欄
+            "data_no": "",  # 空欄だがTabNoで照合可能
             "tab_no": "CD-03",
-            "count_text": "●●●? (3本か4本か不鮮明)",
-            "count_num": None,  # 読取失敗想定
+            "count_text": "●●● (3本)",
+            "count_num": 3,
             "total": "7500",
         },
-        description="パターン3：正の字が不鮮明、DataNo空欄 → 要確認"
+        description="パターン3：DataNo空欄でもTabNoで照合できる（代替キー照合）"
+    )
+
+    # パターン4: 本当の「要確認」パターン（DataNo+TabNo両方空欄、CSV側に一致候補がない）
+    create_form(
+        filename="samples/form_004_needs_review.pdf",
+        data={
+            "date": "2026-05-06",
+            "store": "渋谷店",
+            "name": "佐藤三郎",  # CSV側にない人名
+            "data_no": "",  # 空欄
+            "tab_no": "",  # 空欄
+            "count_text": "●●●●●? (5本か6本か不鮮明)",
+            "count_num": None,  # 読取失敗
+            "total": "",  # 空欄
+        },
+        description="パターン4：要確認 → DataNo/TabNo両方空欄、正の字不鮮明、合計欄空欄、CSV側に一致候補がない"
     )
 
 
