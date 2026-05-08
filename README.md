@@ -184,6 +184,76 @@ geo-mvp/
 - **API利用料**: Claude API の従課金が発生します（テスト時は月数百円～数千円程度）
 - **個人情報**: PDFにスタッフの個人情報が含まれている場合は、慎重に取り扱ってください
 
+## 🔐 Git セキュリティルール（重要）
+
+このプロジェクトでは、秘密情報の漏洩を防ぐため、以下のルールを **必ず守ってください**。
+
+### コミット時のルール
+
+```bash
+# ❌ 禁止: git add . （全ファイル一括追加）
+git add .
+
+# ✅ 推奨: ファイル単位で指定
+git add app.py extractor.py reconciliation.py README.md .gitignore .env.example
+```
+
+### コミット前の必須確認
+
+```bash
+# 1. Git ステータス確認
+git status
+
+# 2. ステージング内容確認
+git diff --cached --name-only
+
+# 3. .env が追跡されていないことを確認
+git ls-files .env
+# 期待: 何も表示されない
+
+# 4. 秘密情報が含まれていないことを確認
+git log --oneline -5
+git status
+```
+
+### 絶対にコミットしてはいけないもの
+
+- ❌ `.env` （実APIキー）
+- ❌ APIキー、トークン（`sk-ant-...` など）
+- ❌ 実顧客データ（実FAX帳票PDF、実Salesforce CSV）
+- ❌ 読み取り結果CSV（実データ）
+- ❌ `__pycache__/` （Python キャッシュ）
+- ❌ `*.pyc` （コンパイルファイル）
+- ❌ 一時ファイル（`*.tmp`, `*.temp` など）
+
+### .gitignore 設定（確認事項）
+
+```gitignore
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Real customer data
+real_*.pdf
+real_*.csv
+/outputs/real_*
+```
+
+### 過去のミス事例
+
+**2026-05-09**: `.env` ファイルが Git 履歴に含まれました
+- 原因: コミット前の�キュリティ確認が不足
+- 対応: git filter-repo で履歴から削除、API Key を無効化・再発行
+- 教訓: `git add .` を使わず、ファイル単位で指定すること
+
+---
+
 ## 📞 サポート
 
 このアプリケーションについて質問がある場合は、お気軽にお問い合わせください。
@@ -192,4 +262,5 @@ geo-mvp/
 
 **作成日**: 2026-05-05  
 **バージョン**: 0.1.0 (MVP)  
-**ステータス**: 試作版
+**ステータス**: 試作版  
+**最終更新**: 2026-05-09 （Git セキュリティルール追記）
