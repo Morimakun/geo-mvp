@@ -1,0 +1,79 @@
+{
+  "image_size": {
+    "width": 1266,
+    "height": 1782
+  },
+  "crops_generated": 4,
+  "crops_total": 4,
+  "crops_dir": "C:\\Users\\maris\\Desktop\\Claude 作業\\geo-mvp\\outputs\\crops",
+  "results": {
+    "header": {
+      "status": "success",
+      "output": "C:\\Users\\maris\\Desktop\\Claude 作業\\geo-mvp\\outputs\\crops\\header.png",
+      "size": "1266 x 213",
+      "pixel_coords": {
+        "left": 0,
+        "top": 0,
+        "right": 1266,
+        "bottom": 213
+      },
+      "ratio_coords": {
+        "left": 0.0,
+        "top": 0.0,
+        "right": 1.0,
+        "bottom": 0.12
+      }
+    },
+    "bottom_ids": {
+      "status": "success",
+      "output": "C:\\Users\\maris\\Desktop\\Claude 作業\\geo-mvp\\outputs\\crops\\bottom_ids.png",
+      "size": "1266 x 232",
+      "pixel_coords": {
+        "left": 0,
+        "top": 1514,
+        "right": 1266,
+        "bottom": 1746
+      },
+      "ratio_coords": {
+        "left": 0.0,
+        "top": 0.85,
+        "right": 1.0,
+        "bottom": 0.98
+      }
+    },
+    "left_totals": {
+      "status": "success",
+      "output": "C:\\Users\\maris\\Desktop\\Claude 作業\\geo-mvp\\outputs\\crops\\left_totals.png",
+      "size": "633 x 161",
+      "pixel_coords": {
+        "left": 0,
+        "top": 1389,
+        "right": 633,
+        "bottom": 1550
+      },
+      "ratio_coords": {
+        "left": 0.0,
+        "top": 0.78,
+        "right": 0.5,
+        "bottom": 0.87
+      }
+    },
+    "right_totals": {
+      "status": "success",
+      "output": "C:\\Users\\maris\\Desktop\\Claude 作業\\geo-mvp\\outputs\\crops\\right_totals.png",
+      "size": "380 x 320",
+      "pixel_coords": {
+        "left": 860,
+        "top": 980,
+        "right": 1240,
+        "bottom": 1300
+      },
+      "ratio_coords": {
+        "left": 0.68,
+        "top": 0.55,
+        "right": 0.98,
+        "bottom": 0.73
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "date": "2026-04-20",
+  "store_name": "イオンモール神戸北",
+  "staff_name": "山田花子",
+  "daily_report_no": "0054321",
+  "tablet_no": "it-200201",
+  "left_totals": [
+    "3",
+    "3",
+    "3"
+  ],
+  "right_totals": [
+    "35",
+    "3"
+  ],
+  "needs_review": false,
+  "review_reason": []
+}

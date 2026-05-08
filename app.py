@@ -1,31 +1,35 @@
 """
-FAX帳票・Salesforce突合確認画面（試作版）
+FAX帳票 × Salesforce CSV 照合確認画面（Phase 5：UI統合版）
 Streamlit アプリケーション
+
+照合ロジックは reconciliation.py に分離済み
+このアプリはCSV照合をメイン機能として提供
 """
 
-import os
-import json
-import base64
-import csv
 import io
+import csv
 from datetime import datetime
 from pathlib import Path
 import tempfile
 
 import streamlit as st
 import pandas as pd
-import fitz  # PyMuPDF
-from PIL import Image
 from dotenv import load_dotenv
 
-from extractor import extract_items_from_pdf, validate_extraction_result, match_with_csv
+from reconciliation import (
+    load_extraction_results,
+    load_salesforce_csv,
+    reconcile,
+    ExtractionResult,
+    SalesforceRecord
+)
 
 # 環境変数読込
 load_dotenv()
 
 # ページ設定
 st.set_page_config(
-    page_title="FAX帳票・Salesforce突合確認",
+    page_title="FAX帳票・Salesforce照合システム",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -46,13 +50,6 @@ st.markdown("""
         font-size: 14px;
         color: #666;
         margin-bottom: 1.5rem;
-    }
-    .info-text {
-        font-size: 12px;
-        color: #999;
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid #eee;
     }
     .status-match {
         background-color: #d4edda;
@@ -80,231 +77,360 @@ st.markdown("""
         border-left: 3px solid #cc0000;
         padding: 0.5rem;
         margin: 0.5rem 0;
+        border-radius: 4px;
+    }
+    .info-box {
+        background-color: #e7f3ff;
+        border-left: 4px solid #2196F3;
+        padding: 0.75rem;
+        margin: 0.5rem 0;
+        border-radius: 4px;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # ===== セッション状態の初期化 =====
-if "csv_data" not in st.session_state:
-    st.session_state.csv_data = None
-if "pdf_files" not in st.session_state:
-    st.session_state.pdf_files = []
+if "salesforce_csv" not in st.session_state:
+    st.session_state.salesforce_csv = None
+if "extraction_csv" not in st.session_state:
+    st.session_state.extraction_csv = None
+if "reconciliation_results" not in st.session_state:
+    st.session_state.reconciliation_results = None
+if "salesforce_records" not in st.session_state:
+    st.session_state.salesforce_records = None
 if "extraction_results" not in st.session_state:
-    st.session_state.extraction_results = []
-if "matching_results" not in st.session_state:
-    st.session_state.matching_results = []
+    st.session_state.extraction_results = None
 
 # ===== メイン画面 =====
-st.markdown('<div class="title-text">FAX帳票・Salesforce突合確認画面（試作版）</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle-text">帳票とSalesforce入力内容を自動照合確認します</div>', unsafe_allow_html=True)
+st.markdown('<div class="title-text">FAX帳票 × Salesforce 照合システム</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle-text">帳票読み取り結果とSalesforceデータを自動照合確認します</div>', unsafe_allow_html=True)
 
-# ===== 上部：入力エリア =====
-st.markdown("### 1. ファイルをアップロード")
+# ===== タブを使用してメイン機能を分ける =====
+tab1, tab2 = st.tabs(["CSV照合", "PDFから抽出"])
 
-col1, col2 = st.columns(2)
+# ===== Tab 1: CSV照合（メイン機能） =====
+with tab1:
+    st.markdown("### CSVファイルアップロード")
 
-with col1:
-    st.markdown("**Salesforce CSV**")
-    csv_file = st.file_uploader(
-        "CSVファイルを選択",
-        type=["csv"],
-        key="csv_uploader",
-        label_visibility="collapsed"
-    )
-    if csv_file is not None:
-        try:
-            st.session_state.csv_data = pd.read_csv(csv_file)
-            st.success(f"✅ CSV読込完了：{len(st.session_state.csv_data)}件")
-            with st.expander("CSVプレビュー"):
-                st.dataframe(st.session_state.csv_data, use_container_width=True)
-        except Exception as e:
-            st.error(f"CSV読込エラー: {str(e)}")
+    col1, col2 = st.columns(2)
 
-with col2:
-    st.markdown("**FAX帳票 PDF（複数可）**")
-    pdf_files = st.file_uploader(
-        "PDFファイルを選択",
-        type=["pdf"],
-        accept_multiple_files=True,
-        key="pdf_uploader",
-        label_visibility="collapsed"
-    )
-    if pdf_files:
-        st.session_state.pdf_files = pdf_files
-        st.success(f"✅ PDF選択完了：{len(pdf_files)}ファイル")
-
-# ===== 実行ボタン =====
-st.markdown("### 2. 照合を実行")
-
-if st.button("照合を実行", key="execute_btn", use_container_width=True):
-    if st.session_state.csv_data is None:
-        st.error("❌ CSVファイルを先にアップロードしてください")
-    elif not st.session_state.pdf_files:
-        st.error("❌ PDFファイルを先にアップロードしてください")
-    else:
-        with st.spinner("帳票を解析し、照合を実行しています..."):
-            st.session_state.extraction_results = []
-            st.session_state.matching_results = []
-
-            # ステップ1：各PDFから項目を抽出
-            for pdf_file in st.session_state.pdf_files:
-                pdf_bytes = pdf_file.read()
-                try:
-                    result = extract_items_from_pdf(pdf_bytes, pdf_file.name)
-                    st.session_state.extraction_results.append(result)
-                except Exception as e:
-                    st.warning(f"⚠️ {pdf_file.name} の処理に失敗: {str(e)}")
-
-            # ステップ2：CSVと照合
-            if st.session_state.extraction_results:
-                st.session_state.matching_results = match_with_csv(
-                    st.session_state.extraction_results,
-                    st.session_state.csv_data
-                )
-                st.success("✅ 照合完了")
-
-# ===== 中央：結果一覧 =====
-if st.session_state.matching_results:
-    st.markdown("### 3. 照合結果")
-
-    # 結果サマリー
-    results_df = pd.DataFrame(st.session_state.matching_results)
-
-    col1, col2, col3 = st.columns(3)
+    # 左列：Salesforce CSV
     with col1:
-        match_count = len(results_df[results_df['status'] == '一致'])
-        st.metric("一致", match_count)
+        st.markdown("**1. Salesforce CSV**")
+        st.markdown('<div class="info-box">店舗日報の基準データ（日付、店舗、スタッフ、DataNo、TabNo など）</div>', unsafe_allow_html=True)
+
+        salesforce_file = st.file_uploader(
+            "Salesforce CSVを選択",
+            type=["csv"],
+            key="salesforce_uploader",
+            label_visibility="collapsed"
+        )
+
+        if salesforce_file is not None:
+            try:
+                with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
+                    tmp.write(salesforce_file.getvalue().decode('utf-8'))
+                    tmp_path = tmp.name
+
+                st.session_state.salesforce_records = load_salesforce_csv(tmp_path)
+                st.success(f"OK: {len(st.session_state.salesforce_records)}件のSalesforceレコードを読込")
+
+                # プレビュー
+                with st.expander("CSVプレビュー"):
+                    df = pd.read_csv(salesforce_file)
+                    st.dataframe(df.head(10), use_container_width=True)
+            except Exception as e:
+                st.error(f"読込エラー: {str(e)}")
+
+    # 右列：帳票読み取り結果CSV
     with col2:
-        mismatch_count = len(results_df[results_df['status'] == '不一致'])
-        st.metric("不一致", mismatch_count)
-    with col3:
-        pending_count = len(results_df[results_df['status'] == '要確認'])
-        st.metric("要確認", pending_count)
+        st.markdown("**2. 帳票読み取り結果CSV**")
+        st.markdown('<div class="info-box">帳票から読み取ったFAX帳票の項目（日付、店舗、スタッフ、データなど）</div>', unsafe_allow_html=True)
 
-    # 詳細一覧
-    st.markdown("#### 詳細一覧")
+        extraction_file = st.file_uploader(
+            "抽出結果CSVを選択",
+            type=["csv"],
+            key="extraction_uploader",
+            label_visibility="collapsed"
+        )
 
-    # 表示用のDataFrame を作成
-    display_df = results_df[[
-        'filename', 'date', 'store', 'name', 'data_no', 'tab_no',
-        'extracted_count', 'csv_count', 'status'
-    ]].copy()
+        if extraction_file is not None:
+            try:
+                with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
+                    tmp.write(extraction_file.getvalue().decode('utf-8'))
+                    tmp_path = tmp.name
 
-    display_df.columns = [
-        'ファイル', '日付', '店舗', '氏名', 'DataNo', 'TabNo',
-        '抽出件数', 'CSV件数', 'ステータス'
-    ]
+                st.session_state.extraction_results = load_extraction_results(tmp_path)
+                st.success(f"OK: {len(st.session_state.extraction_results)}件の抽出結果を読込")
 
-    # ステータスを色分け表示
-    def status_color(status):
-        if status == '一致':
-            return '🟢 一致'
-        elif status == '不一致':
-            return '🔴 不一致'
+                # プレビュー
+                with st.expander("CSVプレビュー"):
+                    df = pd.read_csv(extraction_file)
+                    st.dataframe(df.head(10), use_container_width=True)
+            except Exception as e:
+                st.error(f"読込エラー: {str(e)}")
+
+    st.divider()
+
+    # ===== サンプルデータボタン =====
+    st.markdown("### またはサンプルデータで試す")
+
+    if st.button("サンプルデータを読込", key="sample_data_btn", use_container_width=True):
+        try:
+            script_dir = Path(__file__).parent
+            samples_dir = script_dir / "samples" / "synthetic"
+            outputs_dir = script_dir / "outputs"
+
+            st.session_state.salesforce_records = load_salesforce_csv(
+                str(samples_dir / "salesforce_sample.csv")
+            )
+            st.session_state.extraction_results = load_extraction_results(
+                str(outputs_dir / "synthetic_extraction_results.csv")
+            )
+
+            st.success(f"OK: サンプルデータを読込完了")
+            st.info(f"Salesforce: {len(st.session_state.salesforce_records)}件 | 帳票読み取り結果: {len(st.session_state.extraction_results)}件")
+        except Exception as e:
+            st.error(f"サンプルデータ読込エラー: {str(e)}")
+
+    st.divider()
+
+    # ===== 照合実行 =====
+    st.markdown("### 照合を実行")
+
+    if st.button("照合を実行", key="reconcile_btn", use_container_width=True, type="primary"):
+        if st.session_state.salesforce_records is None:
+            st.error("Salesforce CSVを先に読込んでください")
+        elif st.session_state.extraction_results is None:
+            st.error("帳票読み取り結果CSVを先に読込んでください")
         else:
-            return '🟡 要確認'
+            with st.spinner("照合処理を実行中..."):
+                try:
+                    results = []
+                    for extraction in st.session_state.extraction_results:
+                        result = reconcile(extraction, st.session_state.salesforce_records)
+                        results.append(result)
 
-    display_df['ステータス'] = display_df['ステータス'].apply(status_color)
+                    st.session_state.reconciliation_results = results
+                    st.success(f"OK: {len(results)}件の照合が完了しました")
+                except Exception as e:
+                    st.error(f"照合処理エラー: {str(e)}")
 
-    st.dataframe(display_df, use_container_width=True, height=300)
+    # ===== 照合結果表示 =====
+    if st.session_state.reconciliation_results:
+        st.divider()
+        st.markdown("### 照合結果")
 
-    # ===== 下部：詳細表示 =====
-    st.markdown("### 4. 詳細確認（差分表示）")
+        results = st.session_state.reconciliation_results
 
-    selected_idx = st.selectbox(
-        "詳細を確認するファイルを選択",
-        range(len(st.session_state.matching_results)),
-        format_func=lambda i: st.session_state.matching_results[i]['filename']
-    )
+        # 統計情報
+        status_counts = {}
+        for result in results:
+            status = result.status
+            status_counts[status] = status_counts.get(status, 0) + 1
 
-    if selected_idx is not None:
-        result = st.session_state.matching_results[selected_idx]
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("照合対象", len(results))
+        with col2:
+            st.metric("一致", status_counts.get("一致", 0))
+        with col3:
+            st.metric("不一致", status_counts.get("不一致", 0))
+        with col4:
+            st.metric("要確認", status_counts.get("要確認", 0))
 
-        col_left, col_right = st.columns([1, 1])
+        # 補足指標
+        with st.expander("詳細指標"):
+            csv_auto_match = sum(1 for r in results if r.matching_key != "見つかりませんでした" and "複数候補" not in r.matching_key)
+            csv_candidate_found = sum(1 for r in results if r.matched_record is not None or r.matching_key.startswith("複合キー"))
 
-        with col_left:
-            st.markdown("#### 帳票プレビュー")
-            if 'pdf_preview' in result:
-                st.image(result['pdf_preview'], use_container_width=True)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("CSV行自動特定成功", f"{csv_auto_match}件", f"{csv_auto_match}/{len(results)}")
+            with col2:
+                st.metric("CSV候補検出成功", f"{csv_candidate_found}件", f"{csv_candidate_found}/{len(results)}")
 
-        with col_right:
-            st.markdown("#### 抽出結果 vs CSV値")
+        # 結果テーブル
+        st.markdown("#### 詳細一覧")
 
-            # 抽出値
-            st.write("**抽出された項目**")
-            extracted = result['extracted']
-            st.json({
-                '日付': extracted.get('date'),
-                '店舗名': extracted.get('store'),
-                '氏名': extracted.get('name'),
-                '日報DataNo': extracted.get('data_no'),
-                'タブレットNo': extracted.get('tab_no'),
-                '件数': extracted.get('count'),
-                '合計値': extracted.get('total'),
-                '備考': extracted.get('notes'),
+        table_data = []
+        for result in results:
+            table_data.append({
+                "ファイル": result.file_name,
+                "マッチング": result.matching_key,
+                "日付": result.extraction.date or "-",
+                "店舗": result.extraction.store_name or "-",
+                "スタッフ": result.extraction.staff_name or "-",
+                "ステータス": result.status,
             })
 
-            # CSV値（該当レコード）
-            st.write("**CSV側の対応レコード**")
-            if result.get('csv_record') is not None:
-                csv_rec = result['csv_record']
-                st.json({
-                    '日報DataNo': csv_rec.get('data_no'),
-                    'タブレットNo': csv_rec.get('tab_no'),
-                    '件数': csv_rec.get('count'),
-                    '合計値': csv_rec.get('total'),
-                })
+        df = pd.DataFrame(table_data)
 
-                # 差分表示
-                st.write("**差分検出**")
-                diffs = result.get('diffs', [])
-                if diffs:
-                    for diff in diffs:
-                        st.markdown(f"""
-                        <div class="diff-highlight">
-                        <strong>{diff['field']}</strong><br>
-                        抽出値: {diff['extracted']}<br>
-                        CSV値: {diff['csv']}<br>
-                        </div>
-                        """, unsafe_allow_html=True)
+        # ステータスを色分けして表示
+        def highlight_status(val):
+            if val == "一致":
+                return "background-color: #d4edda; color: #155724; font-weight: bold;"
+            elif val == "不一致":
+                return "background-color: #f8d7da; color: #721c24; font-weight: bold;"
+            elif val == "要確認":
+                return "background-color: #fff3cd; color: #856404; font-weight: bold;"
+            return ""
+
+        # ステータス列を色付け
+        def style_status(s):
+            return s.apply(lambda val: highlight_status(val) if val == s.name else "")
+
+        styled_df = df.style.map(
+            lambda val: highlight_status(val) if isinstance(val, str) and val in ["一致", "不一致", "要確認"] else "",
+            subset=["ステータス"]
+        )
+
+        st.dataframe(styled_df, use_container_width=True, height=400)
+
+        # 詳細確認
+        st.markdown("#### 詳細確認")
+
+        selected_idx = st.selectbox(
+            "詳細を確認する項目を選択",
+            range(len(results)),
+            format_func=lambda i: f"{results[i].file_name} - {results[i].status}"
+        )
+
+        if selected_idx is not None:
+            result = results[selected_idx]
+
+            st.markdown(f"**ファイル**: {result.file_name}")
+            st.markdown(f"**マッチング方式**: {result.matching_key}")
+            st.markdown(f"**ステータス**: {result.status}")
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.markdown("**帳票読み取り結果**")
+                st.write(f"日付: {result.extraction.date}")
+                st.write(f"店舗: {result.extraction.store_name}")
+                st.write(f"スタッフ: {result.extraction.staff_name}")
+                st.write(f"DataNo: {result.extraction.daily_report_no}")
+                st.write(f"TabNo: {result.extraction.tablet_no}")
+                st.write(f"左下合計: {'/'.join(result.extraction.left_totals) if result.extraction.left_totals else '-'}")
+                st.write(f"右下合計: {'/'.join(result.extraction.right_totals) if result.extraction.right_totals else '-'}")
+
+            with col2:
+                st.markdown("**Salesforceレコード**")
+                if result.matched_record:
+                    st.write(f"日付: {result.matched_record.date}")
+                    st.write(f"店舗: {result.matched_record.store_name}")
+                    st.write(f"スタッフ: {result.matched_record.staff_name}")
+                    st.write(f"DataNo: {result.matched_record.daily_report_no}")
+                    st.write(f"TabNo: {result.matched_record.tablet_no}")
+                    left_totals = result.matched_record.get_left_totals()
+                    right_totals = result.matched_record.get_right_totals()
+                    st.write(f"左下合計: {'/'.join(left_totals)}")
+                    st.write(f"右下合計: {'/'.join(right_totals)}")
                 else:
-                    st.success("✅ 差分なし（完全一致）")
-            else:
-                st.info("⚠️ CSVに対応するレコードが見つかりません")
+                    st.warning("対応するレコードが見つかりません")
 
-# ===== 出力セクション =====
-if st.session_state.matching_results:
-    st.markdown("### 5. 結果をダウンロード")
+            # 差分表示
+            if result.differences:
+                st.markdown("**差分内容**")
+                for diff in result.differences:
+                    st.markdown(f'<div class="diff-highlight">{diff}</div>', unsafe_allow_html=True)
 
-    # 結果をCSV形式で出力
-    results_df = pd.DataFrame(st.session_state.matching_results)
+            # 確認理由表示
+            if result.review_reasons:
+                st.markdown("**確認理由**")
+                for reason in result.review_reasons:
+                    st.info(reason)
 
-    output_df = results_df[[
-        'filename', 'date', 'store', 'name', 'data_no', 'tab_no',
-        'extracted_count', 'csv_count', 'status'
-    ]].copy()
+        st.divider()
 
-    output_df.columns = [
-        'ファイル', '日付', '店舗', '氏名', 'DataNo', 'TabNo',
-        '抽出件数', 'CSV件数', 'ステータス'
-    ]
+        # ===== 結果ダウンロード =====
+        st.markdown("### 結果をダウンロード")
 
-    csv_buffer = io.StringIO()
-    output_df.to_csv(csv_buffer, index=False, encoding='utf-8-sig')
-    csv_data = csv_buffer.getvalue()
+        # CSV形式で出力
+        csv_rows = [
+            [
+                "ファイル",
+                "マッチング方式",
+                "帳票_日付",
+                "帳票_店舗",
+                "帳票_スタッフ",
+                "帳票_DataNo",
+                "帳票_TabNo",
+                "帳票_左下合計",
+                "帳票_右下合計",
+                "CSV_日付",
+                "CSV_店舗",
+                "CSV_スタッフ",
+                "CSV_DataNo",
+                "CSV_TabNo",
+                "CSV_左下合計",
+                "CSV_右下合計",
+                "ステータス",
+                "差分内容",
+                "確認理由"
+            ]
+        ]
 
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        for result in results:
+            csv_rows.append([
+                result.file_name,
+                result.matching_key,
+                result.extraction.date or "",
+                result.extraction.store_name or "",
+                result.extraction.staff_name or "",
+                result.extraction.daily_report_no or "",
+                result.extraction.tablet_no or "",
+                "/".join(result.extraction.left_totals) if result.extraction.left_totals else "",
+                "/".join(result.extraction.right_totals) if result.extraction.right_totals else "",
+                result.matched_record.date if result.matched_record else "",
+                result.matched_record.store_name if result.matched_record else "",
+                result.matched_record.staff_name if result.matched_record else "",
+                result.matched_record.daily_report_no if result.matched_record else "",
+                result.matched_record.tablet_no if result.matched_record else "",
+                "/".join(result.matched_record.get_left_totals()) if result.matched_record else "",
+                "/".join(result.matched_record.get_right_totals()) if result.matched_record else "",
+                result.status,
+                " | ".join(result.differences) if result.differences else "",
+                " | ".join(result.review_reasons) if result.review_reasons else ""
+            ])
 
-    st.download_button(
-        label="結果をCSVダウンロード",
-        data=csv_data,
-        file_name=f"matching_result_{timestamp}.csv",
-        mime="text/csv"
-    )
+        csv_buffer = io.StringIO()
+        writer = csv.writer(csv_buffer)
+        for row in csv_rows:
+            writer.writerow(row)
+        csv_data = csv_buffer.getvalue()
 
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        st.download_button(
+            label="結果をCSVダウンロード",
+            data=csv_data,
+            file_name=f"reconciliation_result_{timestamp}.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+
+# ===== Tab 2: PDFから抽出（従来機能）=====
+with tab2:
+    st.markdown("### PDFファイル処理（試作版）")
+    st.info("このタブはPDFファイルから項目を抽出する従来機能です。")
+    st.markdown("""
+    **使い方:**
+    1. Salesforce CSVをアップロード
+    2. PDFファイルを複数選択
+    3. 照合を実行
+    4. 結果を確認・ダウンロード
+    """)
+    st.warning("⚠️ 現在このタブは実装準備中です。CSV照合タブをご使用ください。")
+
+st.divider()
+
+# ===== フッター =====
 st.markdown("""
-<div class="info-text">
-※ 本画面は試作版です。抽出結果は原本を確認のうえ必要に応じて修正してください。
-※ 正の字読取は100%正確ではありません。確認結果が「要確認」の場合は人による検証をお願いします。
+<div style="text-align: center; color: #999; font-size: 12px; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #eee;">
+※ 本画面はPhase 5（UI統合版）です。<br>
+※ 照合ロジックはreconciliation.pyに分離されており、直接importして使用できます。<br>
+※ 抽出結果は原本を確認のうえ必要に応じて修正してください。
 </div>
 """, unsafe_allow_html=True)
