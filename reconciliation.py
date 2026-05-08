@@ -15,7 +15,7 @@ from dataclasses import dataclass
 
 @dataclass
 class ExtractionResult:
-    """Vision API抽出結果"""
+    """帳票読み取り結果"""
     file_name: str
     date: Optional[str]
     store_name: Optional[str]
@@ -63,7 +63,7 @@ class ReconciliationResult:
 # ===== CSV読込 =====
 
 def load_extraction_results(csv_path: str) -> List[ExtractionResult]:
-    """Vision API抽出結果を読込"""
+    """帳票読み取り結果を読込"""
     results = []
     with open(csv_path, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
@@ -225,7 +225,7 @@ def reconcile(extraction: ExtractionResult, records: List[SalesforceRecord]) -> 
         if extraction.needs_review:
             # 読取値が不明瞭
             status = "要確認"
-            review_reasons.append("Vision抽出結果に不明瞭な項目があります（needs_review=True）")
+            review_reasons.append("帳票合計欄の読み取り未対応または未取得のため、確認が必要です")
         else:
             # 全項目で差分チェック
             item_diffs = []
