@@ -57,3 +57,22 @@ Thumbs.db
 *.temp
 test_*.py
 ~*
+
+# Real customer data - NOT tracked in Git (Phase 6+)
+# 実データ由来ファイルはGit管理外に
+real_*.pdf
+real_*.csv
+real_form.png
+/outputs/real_*
+/outputs/sample3_*
+sample_ground_truth.csv
+
+# AI extraction results (real data)
+outputs/extraction_result.json
+outputs/*_extraction_results.csv
+extract_real_form.py
+
+# Crop images (temporary processing)
+/outputs/crops/
+/outputs/sample3_crops/
+/outputs/synthetic_crops/
