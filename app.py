@@ -40,14 +40,14 @@ st.markdown("""
     /* メイン背景 */
     .main {
         padding: 2rem 1rem;
-        background-color: #fafbfc;
+        background-color: #ffffff;
     }
 
     /* ヘッダー */
     .header-container {
         margin-bottom: 2rem;
         padding-bottom: 1.5rem;
-        border-bottom: 2px solid #e1e8ed;
+        border-bottom: 1px solid #e2e8f0;
     }
 
     .title-text {
@@ -60,60 +60,62 @@ st.markdown("""
 
     .subtitle-text {
         font-size: 15px;
-        color: #718096;
+        color: #4a5568;
         line-height: 1.6;
         margin-bottom: 0;
     }
 
     /* セクション */
     .section-container {
-        background-color: white;
-        border-radius: 8px;
+        background-color: #fafbfc;
+        border-radius: 6px;
         padding: 2rem;
         margin-bottom: 2rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        box-shadow: none;
         border: 1px solid #e2e8f0;
     }
 
     .section-title {
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 600;
-        color: #1a202c;
+        color: #2d3748;
         margin-bottom: 1.5rem;
         padding-bottom: 0.75rem;
-        border-bottom: 2px solid #edf2f7;
+        border-bottom: 1px solid #e2e8f0;
     }
 
     /* カード */
     .metric-card {
-        background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
-        border-radius: 8px;
+        background-color: #ffffff;
+        border-radius: 6px;
         padding: 1.5rem;
-        border-left: 4px solid #4299e1;
+        border-left: 3px solid #2d3748;
         text-align: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+        box-shadow: none;
+        border: 1px solid #e2e8f0;
     }
 
     .metric-card.match {
-        border-left-color: #48bb78;
+        border-left-color: #38a169;
     }
 
     .metric-card.mismatch {
-        border-left-color: #f56565;
+        border-left-color: #c53030;
     }
 
     .metric-card.pending {
-        border-left-color: #ed8936;
+        border-left-color: #c05621;
     }
 
     .metric-number {
         font-size: 28px;
         font-weight: 700;
         margin-bottom: 0.5rem;
+        color: #1a202c;
     }
 
     .metric-label {
-        font-size: 13px;
+        font-size: 12px;
         color: #718096;
         font-weight: 500;
         text-transform: uppercase;
@@ -122,8 +124,8 @@ st.markdown("""
 
     /* 入力ボックス */
     .upload-box {
-        background-color: #f7fafc;
-        border: 2px dashed #cbd5e0;
+        background-color: #fafbfc;
+        border: 1px solid #cbd5e0;
         border-radius: 6px;
         padding: 1.5rem;
         text-align: center;
@@ -131,8 +133,8 @@ st.markdown("""
     }
 
     .upload-box:hover {
-        border-color: #4299e1;
-        background-color: #edf2f7;
+        border-color: #2d3748;
+        background-color: #f7fafc;
     }
 
     .upload-label {
@@ -152,10 +154,11 @@ st.markdown("""
 
     /* ステータスバッジ */
     .status-match {
-        background-color: #c6f6d5;
-        color: #22543d;
+        background-color: #e6fffa;
+        color: #234e52;
         padding: 0.35rem 0.75rem;
-        border-radius: 20px;
+        border-radius: 4px;
+        border: 1px solid #c6f6d5;
         font-weight: 600;
         font-size: 12px;
         display: inline-block;
@@ -163,10 +166,11 @@ st.markdown("""
     }
 
     .status-mismatch {
-        background-color: #fed7d7;
-        color: #742a2a;
+        background-color: #fff5f5;
+        color: #6b2c2c;
         padding: 0.35rem 0.75rem;
-        border-radius: 20px;
+        border-radius: 4px;
+        border: 1px solid #fed7d7;
         font-weight: 600;
         font-size: 12px;
         display: inline-block;
@@ -174,10 +178,11 @@ st.markdown("""
     }
 
     .status-pending {
-        background-color: #feebc8;
+        background-color: #fffaf0;
         color: #7c2d12;
         padding: 0.35rem 0.75rem;
-        border-radius: 20px;
+        border-radius: 4px;
+        border: 1px solid #feebc8;
         font-weight: 600;
         font-size: 12px;
         display: inline-block;
@@ -315,7 +320,7 @@ if "using_sample_data" not in st.session_state:
 with st.container():
     st.markdown("""
     <div class="header-container">
-        <div class="title-text">📋 FAX帳票 × Salesforce 照合確認</div>
+        <div class="title-text">FAX帳票 × Salesforce 照合確認</div>
         <div class="subtitle-text">帳票読み取り結果とSalesforce CSVを照合し、一致・不一致・要確認を確認します</div>
     </div>
     """, unsafe_allow_html=True)
@@ -324,7 +329,7 @@ with st.container():
 # ===== 入力セクション =====
 with st.container():
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">📥 CSVファイルをアップロード</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">CSVファイルをアップロード</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns(2, gap="large")
 
@@ -389,12 +394,12 @@ with st.container():
 # ===== サンプルデータ & 照合実行ボタン =====
 with st.container():
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
-    st.markdown('<div class="section-title">⚡ クイックスタート</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">クイックスタート</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns(2, gap="large")
 
     with col1:
-        if st.button("📊 サンプルデータで試す", use_container_width=True, key="sample_btn"):
+        if st.button("サンプルデータで試す", use_container_width=True, key="sample_btn"):
             try:
                 script_dir = Path(__file__).parent
                 samples_dir = script_dir / "samples" / "synthetic"
@@ -415,7 +420,7 @@ with st.container():
                 st.error(f"読込エラー: {str(e)}")
 
     with col2:
-        if st.button("🔄 照合を実行", use_container_width=True, key="reconcile_btn", type="primary"):
+        if st.button("照合を実行", use_container_width=True, key="reconcile_btn", type="primary"):
             if st.session_state.salesforce_records is None:
                 st.error("⚠️ Salesforce CSVを先に読込んでください")
             elif st.session_state.extraction_results is None:
@@ -435,7 +440,7 @@ with st.container():
 
     # サンプルデータ使用中の表示
     if st.session_state.using_sample_data:
-        st.markdown('<div class="sample-badge">ℹ️ サンプルデータを表示しています</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sample-badge">サンプルデータを使用しています</div>', unsafe_allow_html=True)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -452,7 +457,7 @@ if st.session_state.reconciliation_results:
     # ===== サマリーセクション =====
     with st.container():
         st.markdown('<div class="section-container">', unsafe_allow_html=True)
-        st.markdown('<div class="section-title">📊 照合結果サマリー</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">照合結果サマリー</div>', unsafe_allow_html=True)
 
         # メトリクスカード
         col1, col2, col3, col4 = st.columns(4, gap="small")
@@ -499,7 +504,7 @@ if st.session_state.reconciliation_results:
             """, unsafe_allow_html=True)
 
         # 補足指標
-        with st.expander("📌 補足指標を表示"):
+        with st.expander("補足指標"):
             csv_auto_match = sum(1 for r in results if r.matching_key != "見つかりませんでした" and "複数候補" not in r.matching_key)
             csv_candidate_found = sum(1 for r in results if r.matched_record is not None or r.matching_key.startswith("複合キー"))
 
@@ -516,7 +521,7 @@ if st.session_state.reconciliation_results:
     # ===== 結果一覧テーブル =====
     with st.container():
         st.markdown('<div class="section-container">', unsafe_allow_html=True)
-        st.markdown('<div class="section-title">📋 照合結果一覧</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">照合結果一覧</div>', unsafe_allow_html=True)
 
         table_data = []
         for result in results:
@@ -553,7 +558,7 @@ if st.session_state.reconciliation_results:
     # ===== 詳細確認セクション =====
     with st.container():
         st.markdown('<div class="section-container">', unsafe_allow_html=True)
-        st.markdown('<div class="section-title">🔍 詳細確認</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">詳細確認</div>', unsafe_allow_html=True)
 
         selected_idx = st.selectbox(
             "詳細を確認する項目を選択",
@@ -568,9 +573,9 @@ if st.session_state.reconciliation_results:
             # 基本情報
             col1, col2, col3 = st.columns([2, 1, 1], gap="small")
             with col1:
-                st.markdown(f"**📄 ファイル**: {result.file_name}")
+                st.markdown(f"**ファイル**: {result.file_name}")
             with col2:
-                st.markdown(f"**🔗 照合方法**: {result.matching_key}")
+                st.markdown(f"**照合方法**: {result.matching_key}")
             with col3:
                 status_badge = ""
                 if result.status == "一致":
@@ -589,7 +594,7 @@ if st.session_state.reconciliation_results:
             # 左：帳票読み取り結果
             st.markdown("""
             <div class="data-column">
-                <div class="data-column-title">📋 帳票読み取り結果</div>
+                <div class="data-column-title">帳票読み取り結果</div>
             """, unsafe_allow_html=True)
 
             data_items = [
@@ -614,7 +619,7 @@ if st.session_state.reconciliation_results:
             # 右：Salesforceレコード
             st.markdown("""
             <div class="data-column">
-                <div class="data-column-title">🗂️ Salesforceレコード</div>
+                <div class="data-column-title">Salesforceレコード</div>
             """, unsafe_allow_html=True)
 
             if result.matched_record:
@@ -647,20 +652,20 @@ if st.session_state.reconciliation_results:
 
             with col1:
                 if result.differences:
-                    st.markdown("#### 📌 差分内容")
+                    st.markdown("#### 差分内容")
                     for diff in result.differences:
                         st.markdown(f'<div class="diff-highlight">{diff}</div>', unsafe_allow_html=True)
                 else:
-                    st.markdown("#### 📌 差分内容")
+                    st.markdown("#### 差分内容")
                     st.markdown('<p style="color: #718096;">差分がありません</p>', unsafe_allow_html=True)
 
             with col2:
                 if result.review_reasons:
-                    st.markdown("#### 💡 確認理由")
+                    st.markdown("#### 確認理由")
                     for reason in result.review_reasons:
                         st.info(reason)
                 else:
-                    st.markdown("#### 💡 確認理由")
+                    st.markdown("#### 確認理由")
                     st.markdown('<p style="color: #718096;">確認不要</p>', unsafe_allow_html=True)
 
         st.markdown('</div>', unsafe_allow_html=True)
@@ -668,7 +673,7 @@ if st.session_state.reconciliation_results:
     # ===== ダウンロードセクション =====
     with st.container():
         st.markdown('<div class="section-container">', unsafe_allow_html=True)
-        st.markdown('<div class="section-title">⬇️ 結果をダウンロード</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">結果をダウンロード</div>', unsafe_allow_html=True)
 
         # CSV形式で出力
         csv_rows = [
@@ -727,7 +732,7 @@ if st.session_state.reconciliation_results:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
         st.download_button(
-            label="📥 結果をCSVダウンロード",
+            label="結果をCSVダウンロード",
             data=csv_data,
             file_name=f"reconciliation_result_{timestamp}.csv",
             mime="text/csv",
@@ -739,7 +744,7 @@ if st.session_state.reconciliation_results:
 # ===== フッター =====
 st.markdown("""
 <div class="footer-text">
-✨ <strong>Phase 5 試作版</strong><br>
+<strong>Phase 5 試作版</strong><br>
 このシステムはサンプルデータでのデモンストレーション・画面イメージ確認用です<br>
 実運用に進む場合は、実帳票PDF・実Salesforce CSVでの検証が必要です
 </div>
