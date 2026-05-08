@@ -474,7 +474,7 @@ with tab1:
                             # 確認理由の具体化（PDFモード用）
                             # needs_review=True かつ left_totals/right_totals が両方未取得の場合
                             for result in results:
-                                if result.needs_review and not result.extraction.left_totals and not result.extraction.right_totals:
+                                if result.extraction.needs_review and not result.extraction.left_totals and not result.extraction.right_totals:
                                     # review_reasons は List[str] なので、より具体的な理由に置き換える
                                     result.review_reasons = ["帳票合計欄の読み取り未対応または未取得のため、確認が必要です"]
 
