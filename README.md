@@ -47,8 +47,8 @@ pip install -r requirements.txt
 # .env ファイルを作成
 cp .env.example .env
 
-# エディタで .env を開き、Claude API キーを設定
-# CLAUDE_API_KEY=sk-ant-...your-key-here...
+# エディタで .env を開き、Anthropic API キーを設定してください
+# .env.example を参照してください
 ```
 
 **Claude API キーの取得方法:**
@@ -219,7 +219,7 @@ git status
 ### 絶対にコミットしてはいけないもの
 
 - ❌ `.env` （実APIキー）
-- ❌ APIキー、トークン（`sk-ant-...` など）
+- ❌ APIキー、トークン（秘密情報）
 - ❌ 実顧客データ（実FAX帳票PDF、実Salesforce CSV）
 - ❌ 読み取り結果CSV（実データ）
 - ❌ `__pycache__/` （Python キャッシュ）
