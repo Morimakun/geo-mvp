@@ -63,16 +63,9 @@ test_*.py
 real_*.pdf
 real_*.csv
 real_form.png
-/outputs/real_*
-/outputs/sample3_*
 sample_ground_truth.csv
 
-# AI extraction results (real data)
-outputs/extraction_result.json
-outputs/*_extraction_results.csv
-extract_real_form.py
-
-# Crop images (temporary processing)
-/outputs/crops/
-/outputs/sample3_crops/
-/outputs/synthetic_crops/
+# Processing outputs and temporary files
+# Phase 6A/6B検証結果、ページ分割ファイル、作業フォルダ
+/outputs/
+/tmp/
