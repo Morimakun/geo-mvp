@@ -76,3 +76,8 @@ samples/**/*.pdf
 samples/**/*.csv
 samples/**/*.png
 samples/**/*.json
+
+# Local test scripts with real data or temporary verification files
+# 実データを含む検証スクリプト、一時検証ファイル
+extract_real_form.py
+scripts/test_totals_crop.py
