@@ -69,3 +69,10 @@ sample_ground_truth.csv
 # Phase 6A/6B検証結果、ページ分割ファイル、作業フォルダ
 /outputs/
 /tmp/
+
+# Sample data - NOT tracked in Git
+# サンプルデータ、合成帳票、テストPDF/CSVはGit管理外
+samples/**/*.pdf
+samples/**/*.csv
+samples/**/*.png
+samples/**/*.json
