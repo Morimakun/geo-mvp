@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ジオソリューションズ様 ご提案書</title>
+<style>
+  @page {
+    size: A4 landscape;
+    margin: 12mm 16mm;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Yu Gothic", "YuGothic", "Meiryo", sans-serif;
+    color: #1e293b;
+    background: #fff;
+    font-size: 13px;
+    line-height: 1.7;
+    font-weight: 500;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    page-break-after: always;
+    break-after: page;
+    position: relative;
+    padding: 14mm 18mm 16mm;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .page:last-child {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .page-number {
+    position: absolute;
+    bottom: 6mm;
+    right: 16mm;
+    font-size: 10px;
+    color: #94a3b8;
+  }
+
+  /* ===== 表紙 ===== */
+  .cover {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 160mm;
+  }
+  .cover-line { width: 80px; height: 4px; background: #2563eb; margin: 20px auto; }
+  .cover h1 { font-size: 36px; font-weight: 800; color: #1e3a5f; letter-spacing: 2px; margin-bottom: 8px; }
+  .cover .subtitle { font-size: 22px; color: #2563eb; font-weight: 700; margin-bottom: 28px; }
+  .cover .message { font-size: 16px; color: #334155; max-width: 480px; line-height: 1.9; margin-bottom: 40px; font-weight: 600; }
+  .cover .author { font-size: 14px; color: #475569; font-weight: 600; }
+  .cover .date { font-size: 13px; color: #94a3b8; margin-top: 8px; }
+
+  /* ===== ページヘッダー ===== */
+  .ph { border-bottom: 3px solid #2563eb; padding-bottom: 8px; margin-bottom: 14px; }
+  .ph .pn { font-size: 12px; color: #2563eb; font-weight: 700; }
+  .ph h2 { font-size: 24px; color: #1e3a5f; font-weight: 800; }
+
+  /* ===== 共通要素 ===== */
+  .lead {
+    font-size: 15px; color: #1e293b; font-weight: 600;
+    padding: 10px 14px; background: #f0f4ff; border-left: 4px solid #2563eb;
+    border-radius: 0 4px 4px 0; margin-bottom: 12px; line-height: 1.8;
+  }
+  .emp {
+    background: #dbeafe; border: 2px solid #2563eb; border-radius: 6px;
+    padding: 12px 16px; text-align: center; font-size: 15px; font-weight: 700; color: #1e40af;
+    margin-top: 10px;
+  }
+  p { font-size: 13px; line-height: 1.7; margin-bottom: 7px; font-weight: 500; }
+  ul { padding-left: 20px; margin-bottom: 8px; }
+  li { margin-bottom: 4px; font-size: 13px; line-height: 1.6; font-weight: 500; }
+
+  /* カード */
+  .cg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cg4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+  .c {
+    background: #eff6ff; border: 2px solid #2563eb; border-radius: 8px;
+    padding: 10px 12px; font-size: 12px; line-height: 1.6; font-weight: 500;
+  }
+  .ci {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; background: #2563eb; color: #fff;
+    border-radius: 50%; font-size: 11px; font-weight: 700; margin-right: 7px; flex-shrink: 0;
+  }
+
+  /* 2カラム */
+  .tc { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .cb {
+    background: #f0f9ff; border: 2px solid #0284c7; border-radius: 8px; padding: 12px 16px;
+  }
+  .cb h3 { font-size: 18px; font-weight: 800; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 3px solid #2563eb; }
+  .cb.ai h3 { color: #2563eb; border-bottom-color: #2563eb; }
+  .cb.hu h3 { color: #059669; border-bottom-color: #059669; }
+  .cb li { font-size: 12px; font-weight: 500; }
+
+  /* フロー比較 */
+  .fc { display: grid; grid-template-columns: 1fr 50px 1fr; align-items: center; gap: 12px; }
+  .fb { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; }
+  .fb.cu { border-color: #fbbf24; background: #fef9e7; }
+  .fb.nw { border-color: #2563eb; background: #eff6ff; }
+  .fb h3 { font-size: 18px; font-weight: 800; margin-bottom: 10px; text-align: center; }
+  .fb.cu h3 { color: #b45309; }
+  .fb.nw h3 { color: #1d4ed8; }
+  .fa { display: flex; align-items: center; justify-content: center; font-size: 32px; color: #2563eb; font-weight: 800; }
+  .fs { display: flex; align-items: flex-start; margin-bottom: 7px; font-size: 12px; line-height: 1.5; font-weight: 500; }
+  .sn {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px; height: 20px; border-radius: 50%; font-size: 10px; font-weight: 800;
+    margin-right: 8px; flex-shrink: 0;
+  }
+  .fb.cu .sn { background: #fbbf24; color: #78350f; }
+  .fb.nw .sn { background: #2563eb; color: #fff; }
+
+  /* 費用 */
+  .ps { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .pb { border: 3px solid #2563eb; border-radius: 10px; overflow: hidden; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .pbh { background: #1e3a5f; color: #fff; padding: 12px 14px; font-size: 16px; font-weight: 800; text-align: center; letter-spacing: 0.5px; }
+  .pba { text-align: center; padding: 16px 12px; font-size: 44px; font-weight: 800; color: #2563eb; min-height: 100px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+  .pba small { font-size: 16px; color: #475569; font-weight: 600; margin-top: 4px; }
+  .pbd { padding: 10px 14px 12px; border-top: 2px solid #e2e8f0; background: #f9fafb; }
+  .pbd li { font-size: 11px; margin-bottom: 3px; line-height: 1.5; font-weight: 500; }
+
+  .nb {
+    background: #fef9e7; border: 2px solid #fbbf24; border-radius: 6px;
+    padding: 9px 12px; font-size: 11px; color: #78350f; margin-top: 8px; font-weight: 500;
+  }
+
+  /* テーブル */
+  .st { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+  .st th { background: #1e3a5f; color: #fff; padding: 7px 10px; text-align: left; font-weight: 700; border-bottom: 3px solid #2563eb; }
+  .st td { padding: 6px 10px; border-bottom: 1px solid #e2e8f0; font-weight: 500; }
+
+  /* データカード */
+  .dc { background: #f0f9ff; border: 2px solid #0284c7; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
+  .dc h4 { font-size: 14px; color: #1e3a5f; font-weight: 800; margin-bottom: 6px; }
+  .dc li { font-size: 12px; font-weight: 500; }
+
+  /* ロードマップ */
+  .rm { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .ri { border: 2px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #fff; }
+  .rh { padding: 8px 12px; font-size: 12px; font-weight: 800; color: #fff; }
+  .rh1 { background: #2563eb; }
+  .rh2 { background: #7c3aed; }
+  .rh3 { background: #059669; }
+  .rb { padding: 8px 12px; font-size: 11px; font-weight: 500; }
+  .rb li { margin-bottom: 3px; line-height: 1.5; }
+
+  /* まとめ */
+  .sb { background: #f0f9ff; border: 2px solid #0284c7; border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; }
+  .sb p { font-size: 14px; line-height: 1.8; margin-bottom: 7px; font-weight: 500; color: #1e293b; }
+  .fm {
+    background: #1e3a5f; color: #fff; border-radius: 8px;
+    padding: 16px 18px; text-align: center; font-size: 16px; line-height: 1.9; font-weight: 700;
+  }
+
+  /* 赤カード */
+  .rc { border-left: 4px solid #dc2626; }
+
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; padding: 12mm 16mm 14mm; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== P1: 表紙 ===== -->
+<div class="page">
+  <div class="cover">
+    <div class="cover-line"></div>
+    <h1>ジオソリューションズ様 ご提案書</h1>
+    <p class="subtitle">FAX帳票 × Salesforce CSV 照合支援 初期版</p>
+    <div class="cover-line"></div>
+    <p class="message">完全自動化ではなく、<br>人が見るべき箇所を絞り込むための仕組みです。</p>
+    <p class="author">提出者：眞利子 将大</p>
+    <p class="date">2026年5月</p>
+  </div>
+  <div class="page-number">1 / 13</div>
+</div>
+
+<!-- ===== P2: 今回のご提案の目的 ===== -->
+<div class="page">
+  <div class="ph"><div class="pn">02</div><h2>今回のご提案の目的</h2></div>
+  <div class="lead">
+    今回の目的は、FAX帳票とSalesforce CSVの確認作業をすべてAIに任せることではありません。<br>
+    <strong>AIに任せる部分と、人が確認する部分を分けること</strong>です。
+  </div>
+  <div class="tc" style="margin-top:10px;">
+    <div class="cb ai">
+      <h3>AIが担当すること</h3>
+      <ul>
+        <li>FAX帳票の主要項目の読み取り</li>
+        <li>Salesforce CSVとの見比べ</li>
+        <li>数字や内容が違うところの発見</li>
+        <li>一致 / 不一致 / 要確認の分類</li>
+      </ul>
+    </div>
+    <div class="cb hu">
+      <h3>人が担当すること</h3>
+      <ul>
+        <li>読みにくい手書き数字の最終判断</li>
+        <li>不一致箇所の確認と修正判断</li>
+        <li>Salesforce側での修正作業</li>
+        <li>最終的な運用判断</li>
+      </ul>
+    </div>
+  </div>
+  <div class="emp">目的は、作業時間と確認ミスを減らすこと。最初から全部を自動化しません。</div>
+  <div class="page-number">2 / 13</div>
+</div>
+
+<!-- ===== P3: 現在の業務理解 ===== -->
+<div class="page">
+  <div class="ph"><div class="pn">03</div><h2>現在の業務理解</h2></div>
+  <div class="lead">
+    現在は、Gmailに届いたFAX帳票PDFと、Salesforceから出力したCSVを人が1件ずつ見比べて確認されています。
+  </div>
+  <div class="cg" style="margin-top:8px;">
+    <div class="c"><span class="ci">1</span>GmailでFAX帳票PDFを開いて確認する</div>
+    <div class="c"><span class="ci">2</span>SalesforceからCSVを出して確認する</div>
+    <div class="c"><span class="ci">3</span>数字や内容を1件ずつ目で見比べる</div>
+    <div class="c"><span class="ci">4</span>違いがあれば修正対象として整理する</div>
+  </div>
+  <p style="margin-top:10px;font-weight:600;font-size:13px;color:#1e3a5f;">現在の課題</p>
+  <ul>
+    <li>確認する帳票の枚数が多い</li>
+    <li>手書きで読みづらいものがある</li>
+    <li>確認項目が多く、見落としや確認ミスが起きやすい</li>
+  </ul>
+  <div class="emp">本質は単なる読み取りではなく、紙起点の確認作業を軽くする業務改善です。</div>
+  <div class="page-number">3 / 13</div>
+</div>
+
+<!-- ===== P4: 初期版で変わる作業の流れ ===== -->
+<div class="page">
+  <div class="ph"><div class="pn">04</div><h2>初期版で変わる作業の流れ</h2></div>
+  <div class="fc">
+    <div class="fb cu">
+      <h3>現在</h3>
+      <div class="fs"><span class="sn">1</span><span>GmailでFAX PDFを確認</span></div>
+      <div class="fs"><span class="sn">2</span><span>Salesforce CSVを確認</span></div>
+      <div class="fs"><span class="sn">3</span><span>人が1件ずつ見比べる</span></div>
+      <div class="fs"><span class="sn">4</span><span>違いを探す</span></div>
+      <div class="fs"><span class="sn">5</span><span>修正対象を整理する</span></div>
+    </div>
+    <div class="fa">→</div>
+    <div class="fb nw">
+      <h3>初期版</h3>
+      <div class="fs"><span class="sn">1</span><span>確認画面でFAX PDFを選ぶ</span></div>
+      <div class="fs"><span class="sn">2</span><span>Salesforce CSVを取り込む</span></div>
+      <div class="fs"><span class="sn">3</span><span>システムが見比べる</span></div>
+      <div class="fs"><span class="sn">4</span><span>一致 / 不一致 / 要確認に分ける</span></div>
+      <div class="fs"><span class="sn">5</span><span>人は要確認を中心に確認する</span></div>
+      <div class="fs"><span class="sn">6</span><span>Salesforce側で修正しやすいCSVを出す</span></div>
+    </div>
+  </div>
+  <div class="emp" style="margin-top:10px;">すべてを人が見比べる作業から、確認すべき箇所だけに集中できる作業へ。</div>
+  <div class="page-number">4 / 13</div>
+</div>
+
+<!-- ===== P5: 初期版で行うこと ===== -->
+<div class="page">
+  <div class="ph"><div class="pn">05</div><h2>初期版で行うこと</h2></div>
+  <div class="cg">
+    <div class="c"><span class="ci">1</span>Gmailに届いたFAX PDFを確認画面から選べるようにする</div>
+    <div class="c"><span class="ci">2</span>PDFや画像の手動アップロードも残す</div>
+    <div class="c"><span class="ci">3</span>Salesforce CSVを取り込めるようにする</div>
+    <div class="c"><span class="ci">4</span>FAX帳票の主要項目を読み取る</div>
+    <div class="c"><span class="ci">5</span>FAXとSalesforceで数字や内容が違うところを見つける</div>
+    <div class="c"><span class="ci">6</span>一致 / 不一致 / 要確認に分けて表示する</div>
+    <div class="c"><span class="ci">7</span>どの店舗、どの担当者、どの項目を確認すべきか分かるようにする</div>
+    <div class="c"><span class="ci">8</span>Salesforce側で修正しやすいCSVを出す</div>
+  </div>
+  <div class="page-number">5 / 13</div>
+</div>
+
+<!-- ===== P6: AIに任せる部分と、人が確認する部分 ===== -->
+<div class="page">
+  <div class="ph"><div class="pn">06</div><h2>AIに任せる部分と、人が確認する部分</h2></div>
+  <div class="tc">
+    <div class="cb ai">
+      <h3>AIに任せる部分</h3>
+      <ul>
+        <li>FAX PDFの取込補助</li>
+        <li>帳票の主要項目の読み取り</li>
+        <li>Salesforce CSVとの見比べ</li>
+        <li>一致 / 不一致 / 要確認の分類</li>
+        <li>確認が必要な箇所の一覧化</li>
+        <li>Salesforce修正用CSVの作成支援</li>
+      </ul>
+    </div>
+    <div class="cb hu">
+      <h3>人が確認する部分</h3>
+      <ul>
+        <li>読みにくい手書き数字の最終判断</li>
+        <li>要確認になった内容の確認</li>
+        <li>どちらの値を正とするかの判断</li>
+        <li>Salesforce側での修正</li>
+        <li>問い合わせメール送信前の確認</li>
+        <li>最終的な運用判断</li>
+      </ul>
+    </div>
+  </div>
+  <div class="emp">全部を自動化するのではなく、人が見るべき箇所だけが分かる状態をつくります。</div>
+  <div class="page-number">6 / 13</div>
+</div>
+
+<!-- ===== P7: Gmailに届いたFAX PDFの扱い ===== -->
+<div class="page">
+  <div class="ph"><div class="pn">07</div><h2>Gmailに届いたFAX PDFの扱い</h2></div>
+  <div class="lead">
+    初期版では、Gmailに届いたFAX PDFを確認画面から選べるようにします。<br>
+    ただし、すべてのメールを勝手に処理する形にはしません。
+  </div>
+  <div class="c" style="margin-bottom:6px;"><span class="ci">1</span>担当者が確認画面を開く</div>
+  <div class="c" style="margin-bottom:6px;"><span class="ci">2</span>対象のFAX PDFを選ぶ</div>
+  <div class="c" style="margin-bottom:6px;"><span class="ci">3</span>選んだPDFだけを取り込む</div>
+  <div class="c" style="margin-bottom:6px;"><span class="ci">4</span>不要なPDFを読み込むリスクを避ける</div>
+  <div class="c" style="margin-bottom:6px;"><span class="ci">5</span>うまく取り込めない場合に備えて、手動アップロードも残す</div>
+  <div class="nb" style="margin-top:8px;">最初は人が対象PDFを確認して取り込む形にします。運用が安定してから、取込対象の絞り込みを段階的に効率化します。</div>
+  <div class="page-number">7 / 13</div>
+</div>
+
+<!-- ===== P8: Salesforce修正用CSVについて ===== -->
+<div class="page">
+  <div class="ph"><div class="pn">08</div><h2>Salesforce修正用CSVについて</h2></div>
+  <div class="lead">
+    初期版ではSalesforceを直接書き換えません。<br>
+    画面上で内容を確認したあと、<strong>Salesforce側で修正しやすいCSV</strong>を出します。
+  </div>
+  <p style="font-weight:600;font-size:12px;color:#1e3a5f;margin-top:6px;">CSVに入れる想定項目</p>
+  <table class="st">
+    <thead><tr><th style="width:30%">項目</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td>対象日</td><td>帳票の日付</td></tr>
+      <tr><td>店舗名 / 担当者名</td><td>対象店舗と記入者</td></tr>
+      <tr><td>日報データNo / タブレットNo</td><td>照合キー</td></tr>
+      <tr><td>確認が必要な項目</td><td>不一致・要確認の対象</td></tr>
+      <tr><td>FAX帳票側の値</td><td>帳票から読み取った値</td></tr>
+      <tr><td>Salesforce CSV側の値</td><td>CSVに記録されている値</td></tr>
+      <tr><td>確認結果 / 修正候補</td><td>一致・不一致・要確認と修正候補値</td></tr>
+    </tbody>
+  </table>
+  <div class="nb" style="margin-top:8px;">Salesforceへそのまま取り込める形式にする場合は、Salesforce側の取込ルール、列名、更新方法を確認したうえで調整します。</div>
+  <div class="page-number">8 / 13</div>
+</div>
+
+<!-- ===== P9: 初期版では行わないこと ===== -->
+<div class="page">
+  <div class="ph"><div class="pn">09</div><h2>初期版では行わないこと</h2></div>
+  <div class="cg">
+    <div class="c rc">Salesforceの中身を自動で書き換えること</div>
+    <div class="c rc">Salesforceへの自動送信、自動反映</div>
+    <div class="c rc">問い合わせメールを自動で送信すること</div>
+    <div class="c rc">Gmailとの送信連携</div>
+    <div class="c rc">AIの判断だけで最終確定すること</div>
+    <div class="c rc">Gmailに届いたすべてのメールを勝手に処理すること</div>
+    <div class="c rc">Excel集計表の完全自動作成</div>
+    <div class="c rc">過去のPDFやCSVの長期保存</div>
+    <div class="c rc">本格的なユーザー権限管理</div>
+    <div class="c rc">全社業務を一度にAI化すること</div>
+  </div>
+  <div class="emp" style="margin-top:8px;">最初からすべてをつなぐのではなく、まずは読み取り、見比べ、要確認箇所の整理、修正用CSV出力までを初期版として実装します。</div>
+  <div class="page-number">9 / 13</div>
+</div>
+
+<!-- ===== P10: 費用と月額運用サポート ===== -->
+<div class="page">
+  <div class="ph"><div class="pn">10</div><h2>費用と月額運用サポート</h2></div>
+  <div class="ps">
+    <div class="pb">
+      <div class="pbh">初期構築費</div>
+      <div class="pba">80,000<small>円</small></div>
+      <div class="nb" style="margin-top:4px; margin-bottom:6px;">※今回の初期版に含まれる範囲での固定費用です。</div>
+      <div class="pbd">
+        <ul>
+          <li>Gmailに届いたFAX PDFの選択取込</li>
+          <li>PDF / 画像の手動アップロード対応</li>
+          <li>Salesforce CSVの取込</li>
+          <li>主要項目のAI読み取り</li>
+          <li>FAX帳票とSalesforce CSVの照合</li>
+          <li>一致 / 不一致 / 要確認の表示</li>
+          <li>確認が必要な項目の画面確認</li>
+          <li>Salesforce修正用CSVの出力</li>
+          <li>初期検証データでの調整</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pb">
+      <div class="pbh">月額運用サポート</div>
+      <div class="pba">25,000<small>円〜35,000円前後</small></div>
+      <div class="nb" style="margin-top:4px; margin-bottom:6px;">※運用内容・帳票枚数・調整範囲により決定します。</div>
+      <div class="pbd">
+        <ul>
+          <li>運用中の軽微な調整</li>
+          <li>読み取り精度の確認</li>
+          <li>エラー時の確認</li>
+          <li>AI読み取り費用の管理</li>
+          <li>運用改善の相談</li>
+          <li>次段階の拡張相談</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="nb">AI読み取り費用は、帳票枚数や読み取り回数によって変動するため、初期検証後に上限目安を整理します。</div>
+  <div class="page-number">10 / 13</div>
+</div>
+
+<!-- ===== P11: 初期検証に必要なデータ ===== -->
+<div class="page">
+  <div class="ph"><div class="pn">11</div><h2>初期検証に必要なデータ</h2></div>
+  <div class="dc">
+    <h4>FAX帳票PDF</h4>
+    <ul>
+      <li>Gmailに届いている実際のFAX帳票PDF</li>
+      <li>可能であれば1週間〜10日分 / 25店舗前後</li>
+    </ul>
+  </div>
+  <div class="dc">
+    <h4>Salesforce CSV</h4>
+    <ul>
+      <li>同じ期間に対応するSalesforce CSV</li>
+      <li>CSVの列名が分かる実ファイル</li>
+    </ul>
+  </div>
+  <div class="dc">
+    <h4>その他（あれば）</h4>
+    <ul>
+      <li>見えにくい写真や読み取りづらい帳票</li>
+      <li>FAXとSalesforceで違いがあった場合の判断ルール</li>
+      <li>現在使っている確認用Excelや一覧表の例</li>
+      <li>将来的な参考として、Gmailで送信する問い合わせメール文面の例</li>
+    </ul>
+  </div>
+  <div class="emp" style="margin-top:6px;">見えにくい写真や読み取りづらい帳票も、実際の運用を考えるうえで重要な検証材料です。読めないものを無理に正解扱いにせず、「要確認」として残します。</div>
+  <div class="page-number">11 / 13</div>
+</div>
+
+<!-- ===== P12: 将来的なAI活用候補 ===== -->
+<div class="page">
+  <div class="ph"><div class="pn">12</div><h2>将来的なAI活用候補</h2></div>
+  <p style="margin-bottom:8px;color:#64748b;font-size:11px;">まずは初期版（FAX照合支援）を安定運用した後、段階的に検討できる活用案です。</p>
+  <div class="rm">
+    <div class="ri">
+      <div class="rh rh1">第2段階：日次事務作業の半自動化</div>
+      <div class="rb">
+        <ul>
+          <li>確認済み / 未確認 / 修正済みの管理</li>
+          <li>Salesforce修正用CSVの精度向上</li>
+          <li>店舗別・スタッフ別のExcel集計</li>
+          <li>問い合わせメールの下書き作成</li>
+          <li>Gmailで送信する前の確認フロー</li>
+          <li>処理履歴の管理</li>
+        </ul>
+      </div>
+    </div>
+    <div class="ri">
+      <div class="rh rh2">第3段階：社内ルール確認AIチャット</div>
+      <div class="rb">
+        <ul>
+          <li>有給申請のルール確認</li>
+          <li>勤怠修正の手順確認</li>
+          <li>経費精算の方法確認</li>
+          <li>Salesforce入力ルールの確認</li>
+          <li>報告書の書き方確認</li>
+          <li>遅刻、早退の連絡ルール確認</li>
+        </ul>
+      </div>
+    </div>
+    <div class="ri">
+      <div class="rh rh3">第4段階：つまずきポイントの見える化</div>
+      <div class="rb">
+        <p style="margin-bottom:4px;">匿名化した傾向として活用：</p>
+        <ul>
+          <li>勤怠修正の質問が多い傾向</li>
+          <li>経費精算の質問が多い傾向</li>
+          <li>新人が同じところでつまずく傾向</li>
+        </ul>
+        <p style="margin-top:4px;font-size:9px;color:#64748b;">→ マニュアル改善、教育内容の見直し、業務フロー改善に活用</p>
+      </div>
+    </div>
+  </div>
+  <div class="page-number">12 / 13</div>
+</div>
+
+<!-- ===== P13: 提案のまとめ ===== -->
+<div class="page">
+  <div class="ph"><div class="pn">13</div><h2>提案のまとめ</h2></div>
+  <div class="sb">
+    <p>今回の初期版は、FAX帳票とSalesforce CSVの照合作業を対象に、AIによる読み取りと確認箇所の絞り込みを行うものです。</p>
+    <p>Gmailに届いたFAX PDFを確認画面から選び、Salesforce CSVと見比べ、一致・不一致・要確認に分けて表示します。</p>
+    <p>確認が必要な項目を画面で確認したうえで、Salesforce側で修正しやすいCSVを出すところまで対応します。</p>
+    <p>ただし、Salesforceの自動更新や問い合わせメールの自動送信までは行いません。重要な判断や最終送信は人が確認する設計にします。</p>
+  </div>
+  <div class="fm">
+    AIが得意な読み取り、見比べ、確認箇所の整理を活用しながら、<br>
+    人が判断すべきところは人に戻す。<br><br>
+    この考え方で、現場負担の軽減とミス削減を両立する仕組みを目指します。
+  </div>
+  <div style="text-align:center;margin-top:16px;color:#94a3b8;font-size:11px;">ご不明点がございましたら、お気軽にお問い合わせください。</div>
+  <div class="page-number">13 / 13</div>
+</div>
+
+</body>
+</html>

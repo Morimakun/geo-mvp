@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAX帳票 × Salesforce CSV 照合支援 - 初期版 画面イメージ</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Noto Sans JP", sans-serif;
+    background: #f8f9fa;
+    color: #2c3e50;
+    line-height: 1.6;
+    padding: 20px;
+  }
+
+  .page-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+    color: #ffffff;
+    padding: 24px 32px;
+    border-bottom: 3px solid #1a2952;
+  }
+
+  header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+  }
+
+  header p {
+    font-size: 13px;
+    opacity: 0.95;
+    color: #e8f0ff;
+  }
+
+  .content {
+    padding: 28px 32px;
+  }
+
+  /* 画面注記 */
+  .screen-note {
+    background: #fffbea;
+    border: 1px solid #f0e68c;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 20px;
+    font-size: 11px;
+    color: #856404;
+    text-align: center;
+  }
+
+  /* サマリーカード */
+  .dashboard {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: #ffffff;
+    border: 1px solid #e0e6ed;
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.2s;
+  }
+
+  .stat-card:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  .stat-card h3 {
+    font-size: 12px;
+    font-weight: 600;
+    color: #5a6c7d;
+    margin-bottom: 8px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .stat-card .number {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1e3a5f;
+    margin-bottom: 4px;
+  }
+
+  .stat-card .unit {
+    font-size: 11px;
+    color: #7a8a99;
+    font-weight: 500;
+  }
+
+  .stat-card.match .number { color: #059669; }
+  .stat-card.alert .number { color: #dc2626; }
+  .stat-card.pending .number { color: #d97706; }
+  .stat-card.csv .number { color: #2563eb; }
+
+  /* 取込エリア */
+  .import-section {
+    background: #f8fafc;
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .import-section h2 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #2563eb;
+    display: inline-block;
+  }
+
+  .import-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .import-card {
+    background: #ffffff;
+    border: 2px dashed #cbd5e0;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .import-card:hover {
+    border-color: #2563eb;
+    background: #f0f9ff;
+  }
+
+  .import-card .icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+
+  .import-card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin-bottom: 8px;
+  }
+
+  .import-card p {
+    font-size: 12px;
+    color: #5a6c7d;
+    line-height: 1.5;
+    margin-bottom: 0;
+  }
+
+  /* 照合結果テーブル */
+  .results-section {
+    background: #f8fafc;
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .results-section h2 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #2563eb;
+    display: inline-block;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    margin-top: 16px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: #ffffff;
+    border: 1px solid #e0e6ed;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  thead {
+    background: #1e3a5f;
+    color: #ffffff;
+  }
+
+  th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 700;
+    white-space: nowrap;
+    border: none;
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #e0e6ed;
+    border: none;
+  }
+
+  tbody tr:hover {
+    background: #f8fbff;
+  }
+
+  tbody tr.selected {
+    background: #dbeafe;
+  }
+
+  /* ステータスバッジ */
+  .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .badge.match {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+
+  .badge.alert {
+    background: #fee2e2;
+    color: #7f1d1d;
+    border: 1px solid #fecaca;
+  }
+
+  .badge.pending {
+    background: #fef3c7;
+    color: #78350f;
+    border: 1px solid #fde68a;
+  }
+
+  /* 詳細パネル */
+  .detail-panel {
+    background: #f0f9ff;
+    border: 2px solid #0284c7;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .detail-panel h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #2563eb;
+  }
+
+  .detail-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 16px;
+    margin-bottom: 12px;
+    align-items: start;
+  }
+
+  .detail-row label {
+    font-weight: 600;
+    color: #1e3a5f;
+    font-size: 12px;
+  }
+
+  .detail-row value {
+    background: #ffffff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #bfdbfe;
+    font-size: 13px;
+    color: #1e40af;
+    display: block;
+  }
+
+  .detail-row.reason value,
+  .detail-row.action value {
+    color: #2c3e50;
+  }
+
+  /* アクションボタン */
+  .action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  button {
+    padding: 12px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: #2563eb;
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    background: #1d4ed8;
+  }
+
+  .btn-secondary {
+    background: #e5e7eb;
+    color: #1f2937;
+  }
+
+  .btn-secondary:hover {
+    background: #d1d5db;
+  }
+
+  .btn-success {
+    background: #059669;
+    color: #ffffff;
+  }
+
+  .btn-success:hover {
+    background: #047857;
+  }
+
+  /* CSV出力イメージ */
+  .csv-section {
+    background: #f8fafc;
+    border: 1px solid #e0e6ed;
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .csv-section h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #2563eb;
+    display: inline-block;
+  }
+
+  .csv-note {
+    font-size: 12px;
+    color: #5a6c7d;
+    margin-bottom: 12px;
+    margin-top: 8px;
+  }
+
+  .csv-table {
+    width: 100%;
+    font-size: 12px;
+    background: #ffffff;
+    border: 1px solid #e0e6ed;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .csv-table thead {
+    background: #2c5282;
+  }
+
+  .csv-table th {
+    padding: 8px 10px;
+    font-weight: 600;
+    color: #ffffff;
+    border: none;
+  }
+
+  .csv-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e0e6ed;
+    border: none;
+  }
+
+  /* フッター */
+  footer {
+    background: #f8f9fa;
+    border-top: 1px solid #e0e6ed;
+    padding: 16px 32px;
+    text-align: center;
+    font-size: 11px;
+    color: #7a8a99;
+  }
+
+  @media (max-width: 1024px) {
+    .dashboard { grid-template-columns: repeat(3, 1fr); }
+    .import-cards { grid-template-columns: 1fr; }
+    .action-buttons { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-container">
+  <header>
+    <h1>FAX帳票 × Salesforce CSV 照合支援</h1>
+    <p>初期版 画面イメージ</p>
+  </header>
+
+  <div class="content">
+    <div class="screen-note">
+      画面イメージ：実際の帳票・CSVに合わせて調整します
+    </div>
+
+    <!-- サマリーカード -->
+    <div class="dashboard">
+      <div class="stat-card">
+        <h3>本日の対象帳票</h3>
+        <div class="number">24</div>
+        <div class="unit">件</div>
+      </div>
+      <div class="stat-card match">
+        <h3>一致</h3>
+        <div class="number">18</div>
+        <div class="unit">件</div>
+      </div>
+      <div class="stat-card pending">
+        <h3>要確認</h3>
+        <div class="number">4</div>
+        <div class="unit">件</div>
+      </div>
+      <div class="stat-card alert">
+        <h3>不一致</h3>
+        <div class="number">2</div>
+        <div class="unit">件</div>
+      </div>
+      <div class="stat-card csv">
+        <h3>修正用CSV候補</h3>
+        <div class="number">6</div>
+        <div class="unit">件</div>
+      </div>
+    </div>
+
+    <!-- 取込エリア -->
+    <div class="import-section">
+      <h2>📤 データ取込</h2>
+      <div class="import-cards">
+        <div class="import-card">
+          <div class="icon">📄</div>
+          <h3>FAX帳票PDF</h3>
+          <p>Gmailに届いたFAX PDFを確認画面から選択<br>
+          PDF / 画像の手動アップロードにも対応</p>
+        </div>
+        <div class="import-card">
+          <div class="icon">📊</div>
+          <h3>Salesforce CSV</h3>
+          <p>Salesforceから出力したCSVを取り込み<br>
+          日報データNo、タブレットNo、店舗名などで照合</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 照合結果一覧 -->
+    <div class="results-section">
+      <h2>🔍 照合結果一覧</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>状態</th>
+              <th>対象日</th>
+              <th>店舗名</th>
+              <th>担当者名</th>
+              <th>確認項目</th>
+              <th>FAX帳票側</th>
+              <th>Salesforce CSV側</th>
+              <th>対応</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="selected">
+              <td><span class="badge pending">要確認</span></td>
+              <td>2026-05-15</td>
+              <td>梅田店</td>
+              <td>山田 花子</td>
+              <td>日報データNo</td>
+              <td><strong>10245</strong></td>
+              <td><strong>10254</strong></td>
+              <td>帳票確認</td>
+            </tr>
+            <tr>
+              <td><span class="badge match">一致</span></td>
+              <td>2026-05-15</td>
+              <td>難波店</td>
+              <td>佐藤 太郎</td>
+              <td>タブレットNo</td>
+              <td>T-018</td>
+              <td>T-018</td>
+              <td>対応不要</td>
+            </tr>
+            <tr>
+              <td><span class="badge alert">不一致</span></td>
+              <td>2026-05-15</td>
+              <td>京都店</td>
+              <td>鈴木 一郎</td>
+              <td>合計欄</td>
+              <td><strong>36,000</strong></td>
+              <td><strong>38,000</strong></td>
+              <td>修正候補</td>
+            </tr>
+            <tr>
+              <td><span class="badge pending">要確認</span></td>
+              <td>2026-05-15</td>
+              <td>神戸店</td>
+              <td>田中 美咲</td>
+              <td>手書き数字</td>
+              <td>判読注意</td>
+              <td>27,500</td>
+              <td>人が確認</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 詳細確認パネル -->
+    <div class="detail-panel">
+      <h3>📋 詳細確認</h3>
+      <div class="detail-row">
+        <label>選択中の確認項目</label>
+        <value>日報データNo</value>
+      </div>
+      <div class="detail-row">
+        <label>FAX帳票側</label>
+        <value>10245</value>
+      </div>
+      <div class="detail-row">
+        <label>Salesforce CSV側</label>
+        <value>10254</value>
+      </div>
+      <div class="detail-row reason">
+        <label>確認理由</label>
+        <value>数字が一致していないため、人による確認が必要です。</value>
+      </div>
+      <div class="detail-row action">
+        <label>推奨対応</label>
+        <value>帳票画像を確認し、Salesforce側で修正する値を判断してください。</value>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn-primary">要確認一覧を確認</button>
+        <button class="btn-secondary">修正用CSVを作成</button>
+        <button class="btn-success">確認済みにする</button>
+      </div>
+    </div>
+
+    <!-- CSV出力イメージ -->
+    <div class="csv-section">
+      <h3>📥 修正用CSV出力イメージ</h3>
+      <p class="csv-note">Salesforceを直接書き換えず、確認後に修正しやすいCSVを出す想定です。</p>
+      <table class="csv-table">
+        <thead>
+          <tr>
+            <th>対象日</th>
+            <th>店舗名</th>
+            <th>担当者名</th>
+            <th>修正対象項目</th>
+            <th>修正候補値</th>
+            <th>確認状態</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2026-05-15</td>
+            <td>梅田店</td>
+            <td>山田 花子</td>
+            <td>日報データNo</td>
+            <td>10254</td>
+            <td>要確認</td>
+          </tr>
+          <tr>
+            <td>2026-05-15</td>
+            <td>京都店</td>
+            <td>鈴木 一郎</td>
+            <td>合計欄</td>
+            <td>38,000</td>
+            <td>修正候補</td>
+          </tr>
+          <tr>
+            <td>2026-05-15</td>
+            <td>神戸店</td>
+            <td>田中 美咲</td>
+            <td>手書き数字</td>
+            <td>27,500</td>
+            <td>人が確認</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    FAX帳票 × Salesforce CSV 照合支援システム｜初期版 画面イメージ｜提案用資料
+  </footer>
+</div>
+
+</body>
+</html>
