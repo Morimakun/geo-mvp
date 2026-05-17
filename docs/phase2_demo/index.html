@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第二段階デモ：日次事務作業の半自動化</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Yu Gothic", "YuGothic", "Meiryo", sans-serif;
+    background: #f5f7fa;
+    color: #1e293b;
+    line-height: 1.6;
+  }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+  header {
+    background: #fff;
+    border-bottom: 3px solid #1e3a5f;
+    padding: 24px 0;
+    margin-bottom: 24px;
+  }
+
+  header h1 { font-size: 28px; font-weight: 800; color: #1e3a5f; margin-bottom: 4px; }
+  header p { font-size: 14px; color: #64748b; }
+
+  .warning {
+    background: #fef9e7;
+    border: 2px solid #fbbf24;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: #78350f;
+    line-height: 1.6;
+  }
+
+  .dashboard {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: #fff;
+    border-left: 4px solid #2563eb;
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .stat-card h3 { font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 8px; }
+  .stat-card .number { font-size: 28px; font-weight: 800; color: #2563eb; }
+  .stat-card.pending { border-left-color: #94a3b8; }
+  .stat-card.alert { border-left-color: #f97316; }
+  .stat-card.modified { border-left-color: #059669; }
+  .stat-card.inquiry { border-left-color: #7c3aed; }
+  .stat-card.completed { border-left-color: #10b981; }
+
+  .stat-card.alert .number { color: #f97316; }
+  .stat-card.modified .number { color: #059669; }
+  .stat-card.inquiry .number { color: #7c3aed; }
+  .stat-card.completed .number { color: #10b981; }
+
+  .section {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .section h2 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #1e3a5f;
+    border-bottom: 3px solid #2563eb;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+
+  .list-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .list-table thead {
+    background: #f1f5f9;
+    border-bottom: 2px solid #cbd5e1;
+  }
+
+  .list-table th {
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 700;
+    color: #1e3a5f;
+  }
+
+  .list-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .list-table tbody tr {
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .list-table tbody tr:hover {
+    background: #f0f9ff;
+  }
+
+  .list-table tbody tr.selected {
+    background: #dbeafe;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .status-alert { background: #fed7aa; color: #92400e; }
+  .status-confirm { background: #bfdbfe; color: #1e40af; }
+  .status-modified { background: #bbf7d0; color: #065f46; }
+
+  .detail-panel {
+    display: none;
+    background: #f0f9ff;
+    border: 2px solid #0284c7;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 16px;
+  }
+
+  .detail-panel.show { display: block; }
+
+  .detail-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .detail-row strong {
+    color: #1e3a5f;
+    font-weight: 700;
+  }
+
+  .detail-row p {
+    background: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #cbd5e1;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: #2563eb;
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: #1d4ed8; }
+
+  .btn-secondary {
+    background: #e2e8f0;
+    color: #1e293b;
+  }
+
+  .btn-secondary:hover { background: #cbd5e1; }
+
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal.show { display: flex; }
+
+  .modal-content {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1e3a5f;
+    border-bottom: 2px solid #cbd5e1;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+
+  .email-draft {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 12px;
+    font-family: "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .csv-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-top: 12px;
+  }
+
+  .csv-table thead {
+    background: #1e3a5f;
+    color: #fff;
+  }
+
+  .csv-table th {
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 700;
+  }
+
+  .csv-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #fff;
+  }
+
+  .timeline {
+    padding-top: 12px;
+  }
+
+  .timeline-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    width: 8px;
+    height: 8px;
+    background: #2563eb;
+    border-radius: 50%;
+  }
+
+  .timeline-time {
+    font-weight: 600;
+    color: #2563eb;
+    min-width: 50px;
+  }
+
+  .timeline-text {
+    color: #475569;
+    font-size: 13px;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #64748b;
+    cursor: pointer;
+    float: right;
+    padding: 0;
+  }
+
+  .close-btn:hover { color: #1e293b; }
+
+  footer {
+    background: #1e3a5f;
+    color: #e2e8f0;
+    padding: 16px;
+    text-align: center;
+    font-size: 12px;
+    margin-top: 40px;
+    border-radius: 6px;
+  }
+
+  @media (max-width: 1024px) {
+    .dashboard { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 768px) {
+    .dashboard { grid-template-columns: repeat(2, 1fr); }
+    .list-table { font-size: 12px; }
+    .list-table th, .list-table td { padding: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>第二段階デモ：日次事務作業の半自動化</h1>
+    <p>FAX照合後の「確認・修正・連絡・履歴管理」までを軽くする将来イメージ</p>
+  </header>
+
+  <div class="warning">
+    <strong>⚠️ このデモについて</strong><br>
+    このデモ画面は第二段階の将来イメージです。初期版の対象は、FAX帳票とSalesforce CSVの照合、要確認箇所の整理、Salesforce修正用CSVの出力までです。第二段階では、確認後の修正管理、問い合わせメール下書き、処理履歴管理などを段階的に検討します。メール送信やSalesforce更新は、必ず人が確認する前提です。
+  </div>
+
+  <!-- ダッシュボード -->
+  <div class="dashboard">
+    <div class="stat-card">
+      <h3>本日の対象帳票</h3>
+      <div class="number">24</div>
+    </div>
+    <div class="stat-card">
+      <h3>一致</h3>
+      <div class="number">18</div>
+    </div>
+    <div class="stat-card alert">
+      <h3>要確認</h3>
+      <div class="number">4</div>
+    </div>
+    <div class="stat-card modified">
+      <h3>修正済み</h3>
+      <div class="number">1</div>
+    </div>
+    <div class="stat-card inquiry">
+      <h3>問い合わせ中</h3>
+      <div class="number">1</div>
+    </div>
+  </div>
+
+  <!-- 要確認一覧 -->
+  <div class="section">
+    <h2>要確認一覧</h2>
+    <table class="list-table">
+      <thead>
+        <tr>
+          <th style="width: 20%;">店舗名</th>
+          <th style="width: 15%;">担当者名</th>
+          <th style="width: 12%;">日付</th>
+          <th style="width: 28%;">確認項目</th>
+          <th style="width: 12%;">状態</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-id="1" onclick="selectRow(this)">
+          <td>イオンモール神戸北</td>
+          <td>山田花子</td>
+          <td>2026-04-20</td>
+          <td>日報データNo不一致</td>
+          <td><span class="status-badge status-alert">要確認</span></td>
+        </tr>
+        <tr data-id="2" onclick="selectRow(this)">
+          <td>イオンモール大阪</td>
+          <td>佐藤太郎</td>
+          <td>2026-04-20</td>
+          <td>タブレットNo確認</td>
+          <td><span class="status-badge status-alert">要確認</span></td>
+        </tr>
+        <tr data-id="3" onclick="selectRow(this)">
+          <td>イオンモール京都</td>
+          <td>鈴木一郎</td>
+          <td>2026-04-20</td>
+          <td>合計欄不明瞭</td>
+          <td><span class="status-badge status-alert">要確認</span></td>
+        </tr>
+        <tr data-id="4" onclick="selectRow(this)">
+          <td>イオンモール岡山</td>
+          <td>田中美咲</td>
+          <td>2026-04-20</td>
+          <td>手書き部分確認</td>
+          <td><span class="status-badge status-confirm">確認中</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 詳細パネル -->
+    <div class="detail-panel" id="detailPanel">
+      <div class="detail-row">
+        <strong>対象日：</strong>
+        <p id="detailDate"></p>
+      </div>
+      <div class="detail-row">
+        <strong>店舗名：</strong>
+        <p id="detailStore"></p>
+      </div>
+      <div class="detail-row">
+        <strong>担当者名：</strong>
+        <p id="detailName"></p>
+      </div>
+      <div class="detail-row">
+        <strong>確認が必要な項目：</strong>
+        <p id="detailItem"></p>
+      </div>
+      <div class="detail-row">
+        <strong>FAX帳票側の値：</strong>
+        <p id="detailFaxValue"></p>
+      </div>
+      <div class="detail-row">
+        <strong>Salesforce CSV側の値：</strong>
+        <p id="detailSalesforceValue"></p>
+      </div>
+      <div class="detail-row">
+        <strong>確認理由：</strong>
+        <p id="detailReason"></p>
+      </div>
+      <div class="detail-row">
+        <strong>推奨対応：</strong>
+        <p id="detailRecommendation"></p>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-primary" onclick="showMailDraft()">問い合わせメール下書き</button>
+        <button class="btn-secondary" onclick="showCsvOutput()">修正用CSVを確認</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 修正用CSV出力イメージ -->
+  <div class="section" id="csvSection" style="display:none;">
+    <h2>修正用CSVの出力イメージ</h2>
+    <p style="margin-bottom: 12px; color: #64748b; font-size: 12px;">
+      確認結果をまとめたCSVです。このCSVを確認の上、Salesforce側で修正します。
+    </p>
+    <table class="csv-table" id="csvTable"></table>
+  </div>
+
+  <!-- 処理履歴 -->
+  <div class="section">
+    <h2>処理履歴</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-time">10:02</div>
+        <div class="timeline-text">FAX帳票24件を確認対象に追加</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">10:05</div>
+        <div class="timeline-text">Salesforce CSVを取込</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">10:07</div>
+        <div class="timeline-text">要確認4件を抽出</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">10:12</div>
+        <div class="timeline-text">1件を修正済みに変更</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-time">10:15</div>
+        <div class="timeline-text">問い合わせメール下書きを作成</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- メール下書きモーダル -->
+<div class="modal" id="mailModal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal('mailModal')">×</button>
+    <div class="modal-header">問い合わせメール下書き</div>
+    <div class="email-draft" id="emailDraft"></div>
+    <div class="button-group" style="margin-top: 20px;">
+      <button class="btn-primary" onclick="alert('デモのため、実際の送信は行いません。\n人が内容を確認してからメールを送信してください。')">送信確認画面へ（デモ）</button>
+      <button class="btn-secondary" onclick="closeModal('mailModal')">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  このデモ画面は提案・説明用です。実装・実データ連携は行っていません。<br>
+  初期版と第二段階の違いについてはREADME.mdをご覧ください。
+</footer>
+
+<script>
+const detailData = {
+  1: {
+    date: '2026-04-20',
+    store: 'イオンモール神戸北',
+    name: '山田花子',
+    item: '日報データNo不一致',
+    faxValue: '201200345',
+    salesforceValue: '201200340',
+    reason: 'FAX帳票に記載の日報データNoとSalesforceCSVに記録されている値が異なります。',
+    recommendation: 'Salesforce側の値を確認してください',
+    email: `件名：
+【確認依頼】日報データの確認について
+
+本文：
+イオンモール神戸北 山田花子様
+
+お疲れ様です。
+2026年4月20日分の日報データについて、FAX帳票とSalesforce CSVの内容に差異がありました。
+
+確認項目：
+日報データNo
+
+FAX帳票側：
+201200345
+
+Salesforce側：
+201200340
+
+お手数ですが、正しい内容をご確認いただけますでしょうか。
+
+よろしくお願いいたします。`
+  },
+  2: {
+    date: '2026-04-20',
+    store: 'イオンモール大阪',
+    name: '佐藤太郎',
+    item: 'タブレットNo確認',
+    faxValue: 'TAB-0089',
+    salesforceValue: 'TAB-0098',
+    reason: '手書き部分の読み取りが不確実です。タブレットNoの確認が必要です。',
+    recommendation: '店舗担当者へ確認してください',
+    email: `件名：
+【確認依頼】タブレットNoの確認について
+
+本文：
+イオンモール大阪 佐藤太郎様
+
+お疲れ様です。
+2026年4月20日分の日報データについて、FAX帳票とSalesforce CSVの内容に差異がありました。
+
+確認項目：
+タブレットNo
+
+FAX帳票側：
+TAB-0089
+
+Salesforce側：
+TAB-0098
+
+恐れ入りますが、正しい内容をご確認いただけますでしょうか。
+
+よろしくお願いいたします。`
+  },
+  3: {
+    date: '2026-04-20',
+    store: 'イオンモール京都',
+    name: '鈴木一郎',
+    item: '合計欄不明瞭',
+    faxValue: '不明瞭',
+    salesforceValue: '45,800',
+    reason: 'FAX帳票の合計欄が手書きで読みづらく、正確な数値が判定できません。',
+    recommendation: '帳票画像を確認してください',
+    email: `件名：
+【確認依頼】合計欄の確認について
+
+本文：
+イオンモール京都 鈴木一郎様
+
+お疲れ様です。
+2026年4月20日分の日報データについて、FAX帳票とSalesforce CSVの内容に差異がありました。
+
+確認項目：
+合計欄
+
+FAX帳票側：
+手書きで不明瞭
+
+Salesforce側：
+45,800
+
+恐れ入りますが、FAX帳票の合計欄をご確認いただき、正しい金額をお知らせください。
+
+よろしくお願いいたします。`
+  },
+  4: {
+    date: '2026-04-20',
+    store: 'イオンモール岡山',
+    name: '田中美咲',
+    item: '手書き部分確認',
+    faxValue: '要確認',
+    salesforceValue: '9,200',
+    reason: 'FAX帳票の一部が手書きで読みづらい箇所があります。',
+    recommendation: '修正用CSVに反映できます',
+    email: `件名：
+【確認依頼】手書き部分の確認について
+
+本文：
+イオンモール岡山 田中美咲様
+
+お疲れ様です。
+2026年4月20日分の日報データについて、FAX帳票とSalesforce CSVの内容に差異がありました。
+
+確認項目：
+手書き部分
+
+FAX帳票側：
+読みづらい
+
+Salesforce側：
+9,200
+
+恐れ入りますが、ご確認いただけますでしょうか。
+
+よろしくお願いいたします。`
+  }
+};
+
+const csvData = [
+  { date: '2026-04-20', store: 'イオンモール神戸北', name: '山田花子', item: '日報データNo', candidate: '201200345', status: '要確認' },
+  { date: '2026-04-20', store: 'イオンモール大阪', name: '佐藤太郎', item: 'タブレットNo', candidate: 'TAB-0089', status: '確認中' },
+  { date: '2026-04-20', store: 'イオンモール京都', name: '鈴木一郎', item: '合計欄', candidate: '手書き確認', status: '要確認' }
+];
+
+function selectRow(row) {
+  document.querySelectorAll('.list-table tbody tr').forEach(tr => tr.classList.remove('selected'));
+  row.classList.add('selected');
+
+  const id = row.dataset.id;
+  const data = detailData[id];
+
+  document.getElementById('detailDate').textContent = data.date;
+  document.getElementById('detailStore').textContent = data.store;
+  document.getElementById('detailName').textContent = data.name;
+  document.getElementById('detailItem').textContent = data.item;
+  document.getElementById('detailFaxValue').textContent = data.faxValue;
+  document.getElementById('detailSalesforceValue').textContent = data.salesforceValue;
+  document.getElementById('detailReason').textContent = data.reason;
+  document.getElementById('detailRecommendation').textContent = data.recommendation;
+
+  document.getElementById('detailPanel').classList.add('show');
+}
+
+function showMailDraft() {
+  const selectedRow = document.querySelector('.list-table tbody tr.selected');
+  if (!selectedRow) {
+    alert('一覧から件を選んでください');
+    return;
+  }
+
+  const id = selectedRow.dataset.id;
+  const emailText = detailData[id].email;
+  document.getElementById('emailDraft').textContent = emailText;
+  document.getElementById('mailModal').classList.add('show');
+}
+
+function showCsvOutput() {
+  const table = document.getElementById('csvTable');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>対象日</th>
+        <th>店舗名</th>
+        <th>担当者名</th>
+        <th>修正対象項目</th>
+        <th>修正候補値</th>
+        <th>確認状態</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${csvData.map(row => `
+        <tr>
+          <td>${row.date}</td>
+          <td>${row.store}</td>
+          <td>${row.name}</td>
+          <td>${row.item}</td>
+          <td>${row.candidate}</td>
+          <td><span class="status-badge status-alert">${row.status}</span></td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+
+  document.getElementById('csvSection').style.display = 'block';
+  document.getElementById('csvSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.remove('show');
+}
+
+// モーダル外クリックで閉じる
+document.addEventListener('click', function(event) {
+  const modal = event.target.closest('.modal');
+  if (modal && event.target === modal) {
+    modal.classList.remove('show');
+  }
+});
+</script>
+
+</body>
+</html>
