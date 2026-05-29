@@ -759,11 +759,11 @@ with tab1:
             for result in results:
                 table_data.append({
                     "対象営業日": str(st.session_state.target_business_date) if st.session_state.target_business_date else "-",
-                    "CSV日付": result.extraction.date or "-",
-                    "法人・店舗(取扱コード)": result.extraction.store_code or "-",
-                    "委託会社名": "-",  # 暫定：CSVレコードから取得するロジックは後段で
+                    "CSV日付": result.matched_record.csv_date if result.matched_record else (result.extraction.date or "-"),
+                    "法人・店舗(取扱コード)": result.matched_record.store_code if result.matched_record else (result.extraction.store_code or "-"),
+                    "委託会社名": result.matched_record.company_name if result.matched_record else "-",
                     "ステータス": result.status,
-                    "メモ": "CSVに日報DataNo/タブレットNo列なし。PDF側識別情報として保持。",
+                    "メモ": "CSVに日報DataNo/タブレットNo列なし。PDF側識別情報として保持。集計値ベース照合は先方確認後に確定。",
                 })
 
             df = pd.DataFrame(table_data)
@@ -810,7 +810,7 @@ with tab1:
                 with col1:
                     st.markdown(f"**ファイル**: {result.file_name}")
                 with col2:
-                    st.markdown(f"**照合方法**: {result.matching_key}")
+                    st.markdown(f"**対象営業日**: {st.session_state.target_business_date}")
                 with col3:
                     status_badge = ""
                     if result.status == "一致":
@@ -834,7 +834,7 @@ with tab1:
 
                 data_items = [
                     ("日付", result.extraction.date or "-"),
-                    ("店舗", result.extraction.store_name or "-"),
+                    ("法人・店舗(取扱コード)", result.extraction.store_code or "-"),
                     ("担当者", result.extraction.staff_name or "-"),
                     ("DataNo", result.extraction.daily_report_no or "-"),
                     ("TabNo", result.extraction.tablet_no or "-"),
@@ -935,9 +935,9 @@ with tab1:
             for result in results:
                 csv_rows.append([
                     result.file_name,
-                    result.matching_key,
+                    "",  # マッチング方式（Phase 1では未使用）
                     result.extraction.date or "",
-                    result.extraction.store_name or "",
+                    result.extraction.store_code or "",
                     result.extraction.staff_name or "",
                     result.extraction.daily_report_no or "",
                     result.extraction.tablet_no or "",
@@ -1241,7 +1241,7 @@ with tab2:
                 with col1:
                     st.markdown(f"**ファイル**: {result.file_name}")
                 with col2:
-                    st.markdown(f"**照合方法**: {result.matching_key}")
+                    st.markdown(f"**対象営業日**: {st.session_state.target_business_date}")
                 with col3:
                     status_badge = ""
                     if result.status == "一致":
@@ -1265,7 +1265,7 @@ with tab2:
 
                 data_items = [
                     ("日付", result.extraction.date or "-"),
-                    ("店舗", result.extraction.store_name or "-"),
+                    ("法人・店舗(取扱コード)", result.extraction.store_code or "-"),
                     ("担当者", result.extraction.staff_name or "-"),
                     ("DataNo", result.extraction.daily_report_no or "-"),
                     ("TabNo", result.extraction.tablet_no or "-"),
@@ -1366,9 +1366,9 @@ with tab2:
             for result in results:
                 csv_rows.append([
                     result.file_name,
-                    result.matching_key,
+                    "",  # マッチング方式（Phase 1では未使用）
                     result.extraction.date or "",
-                    result.extraction.store_name or "",
+                    result.extraction.store_code or "",
                     result.extraction.staff_name or "",
                     result.extraction.daily_report_no or "",
                     result.extraction.tablet_no or "",

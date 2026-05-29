@@ -484,13 +484,13 @@ def match_by_tablet_no(extraction: ExtractionResult, records: List[SalesforceRec
 
 
 def match_by_composite_key(extraction: ExtractionResult, records: List[SalesforceRecord]) -> Tuple[Optional[SalesforceRecord], List[SalesforceRecord]]:
-    """マッチング③ 複合キー（日付+店舗名+氏名）で照合"""
-    if not (extraction.date and extraction.store_name and extraction.staff_name):
+    """マッチング③ 複合キー（日付+法人・店舗コード+氏名）で照合"""
+    if not (extraction.date and extraction.store_code and extraction.staff_name):
         return None, []
 
     matches = [r for r in records
-               if r.date == extraction.date
-               and r.store_name == extraction.store_name
+               if r.csv_date == extraction.date
+               and r.store_code == extraction.store_code
                and r.staff_name == extraction.staff_name]
 
     if len(matches) == 1:
@@ -570,24 +570,24 @@ def reconcile(extraction: ExtractionResult, records: List[SalesforceRecord]) -> 
                 item_diffs.append(f"タブレットNo: 帳票={extraction.tablet_no or '未読取'}, CSV={matched_record.tablet_no}")
 
             # 日付
-            if (extraction.date or "") != (matched_record.date or ""):
-                item_diffs.append(f"日付: 帳票={extraction.date or '未読取'}, CSV={matched_record.date}")
+            if (extraction.date or "") != (matched_record.csv_date or ""):
+                item_diffs.append(f"日付: 帳票={extraction.date or '未読取'}, CSV={matched_record.csv_date}")
 
-            # 店舗名
-            if (extraction.store_name or "") != (matched_record.store_name or ""):
-                item_diffs.append(f"店舗名: 帳票={extraction.store_name or '未読取'}, CSV={matched_record.store_name}")
+            # 法人・店舗(取扱コード)
+            if (extraction.store_code or "") != (matched_record.store_code or ""):
+                item_diffs.append(f"法人・店舗(取扱コード): 帳票={extraction.store_code or '未読取'}, CSV={matched_record.store_code}")
 
             # 氏名
             if (extraction.staff_name or "") != (matched_record.staff_name or ""):
                 item_diffs.append(f"氏名: 帳票={extraction.staff_name or '未読取'}, CSV={matched_record.staff_name}")
 
-            # 左下合計欄
-            if extraction.left_totals != matched_record.get_left_totals():
-                item_diffs.append(f"左下合計欄: 帳票={'/'.join(extraction.left_totals) if extraction.left_totals else '未読取'}, CSV={'/'.join(matched_record.get_left_totals())}")
+            # 左下合計欄 (Phase 1では集計値ベース照合は先方確認後のため、スキップ)
+            # if extraction.left_totals != matched_record.left_totals:
+            #     item_diffs.append(f"左下合計欄: 帳票={'/'.join(extraction.left_totals) if extraction.left_totals else '未読取'}, CSV={...}")
 
-            # 右下合計欄
-            if extraction.right_totals != matched_record.get_right_totals():
-                item_diffs.append(f"右下合計欄: 帳票={'/'.join(extraction.right_totals) if extraction.right_totals else '未読取'}, CSV={'/'.join(matched_record.get_right_totals())}")
+            # 右下合計欄 (Phase 1では集計値ベース照合は先方確認後のため、スキップ)
+            # if extraction.right_totals != matched_record.right_totals:
+            #     item_diffs.append(f"右下合計欄: 帳票={'/'.join(extraction.right_totals) if extraction.right_totals else '未読取'}, CSV={...}")
 
             if item_diffs:
                 status = "不一致"
@@ -597,7 +597,6 @@ def reconcile(extraction: ExtractionResult, records: List[SalesforceRecord]) -> 
 
     return ReconciliationResult(
         file_name=extraction.file_name,
-        matching_key=matched_by,
         extraction=extraction,
         matched_record=matched_record,
         status=status,
@@ -637,21 +636,21 @@ def output_reconciliation_csv(results: List[ReconciliationResult], output_path: 
         for result in results:
             row = {
                 'file_name': result.file_name,
-                'matching_key': result.matching_key,
+                'matching_key': '',  # Phase 1では使用しない
                 '帳票_date': result.extraction.date or '',
-                '帳票_store_name': result.extraction.store_name or '',
+                '帳票_store_name': result.extraction.store_code or '',  # store_code を使用
                 '帳票_staff_name': result.extraction.staff_name or '',
                 '帳票_daily_report_no': result.extraction.daily_report_no or '',
                 '帳票_tablet_no': result.extraction.tablet_no or '',
                 '帳票_left_totals': '/'.join(result.extraction.left_totals) if result.extraction.left_totals else '',
                 '帳票_right_totals': '/'.join(result.extraction.right_totals) if result.extraction.right_totals else '',
-                'CSV_date': result.matched_record.date if result.matched_record else '',
-                'CSV_store_name': result.matched_record.store_name if result.matched_record else '',
+                'CSV_date': result.matched_record.csv_date if result.matched_record else '',
+                'CSV_store_name': result.matched_record.company_name if result.matched_record else '',  # company_name を使用
                 'CSV_staff_name': result.matched_record.staff_name if result.matched_record else '',
                 'CSV_daily_report_no': result.matched_record.daily_report_no if result.matched_record else '',
                 'CSV_tablet_no': result.matched_record.tablet_no if result.matched_record else '',
-                'CSV_left_totals': '/'.join(result.matched_record.get_left_totals()) if result.matched_record else '',
-                'CSV_right_totals': '/'.join(result.matched_record.get_right_totals()) if result.matched_record else '',
+                'CSV_left_totals': '',  # Phase 1では集計値ベース照合は未実装
+                'CSV_right_totals': '',  # Phase 1では集計値ベース照合は未実装
                 'status': result.status,
                 'differences': ' | '.join(result.differences) if result.differences else '',
                 'review_reasons': ' | '.join(result.review_reasons) if result.review_reasons else ''
@@ -711,12 +710,11 @@ def output_reconciliation_report(results: List[ReconciliationResult], output_pat
 
         for i, result in enumerate(status_results, 1):
             report += f"#### {i}. {result.file_name}\n\n"
-            report += f"**マッチングキー**: {result.matching_key}  \n"
             report += f"**ステータス**: {result.status}  \n\n"
 
             report += f"**帳票側（Vision API抽出値）**\n"
             report += f"- 日付: {result.extraction.date or '未読取'}  \n"
-            report += f"- 店舗名: {result.extraction.store_name or '未読取'}  \n"
+            report += f"- 法人・店舗(取扱コード): {result.extraction.store_code or '未読取'}  \n"
             report += f"- 氏名: {result.extraction.staff_name or '未読取'}  \n"
             report += f"- 日報DataNo: {result.extraction.daily_report_no or '未読取'}  \n"
             report += f"- タブレットNo: {result.extraction.tablet_no or '未読取'}  \n"
@@ -725,13 +723,13 @@ def output_reconciliation_report(results: List[ReconciliationResult], output_pat
 
             if result.matched_record:
                 report += f"**CSV側（期待値）**\n"
-                report += f"- 日付: {result.matched_record.date}  \n"
-                report += f"- 店舗名: {result.matched_record.store_name}  \n"
+                report += f"- 日付: {result.matched_record.csv_date}  \n"
+                report += f"- 委託会社名: {result.matched_record.company_name}  \n"
                 report += f"- 氏名: {result.matched_record.staff_name}  \n"
                 report += f"- 日報DataNo: {result.matched_record.daily_report_no}  \n"
                 report += f"- タブレットNo: {result.matched_record.tablet_no}  \n"
-                report += f"- 左下合計: {'/'.join(result.matched_record.get_left_totals())}  \n"
-                report += f"- 右下合計: {'/'.join(result.matched_record.get_right_totals())}  \n\n"
+                report += f"- 成約総数（新規）: {result.matched_record.total_new_contracts or ''}  \n"
+                report += f"- 来店数計: {result.matched_record.existing_users or ''}  \n\n"
             else:
                 report += f"**CSV側**: マッチなし  \n\n"
 
