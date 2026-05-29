@@ -29,13 +29,13 @@ class ExtractionResult:
     date: Optional[str]
 
     # 識別情報・証跡（CSVとの直接照合キーではない）
-    daily_report_no: Optional[str]  # 帳票を特定するための参照情報
-    tablet_no: Optional[str]        # デバイスを特定するための参照情報
+    daily_report_no: Optional[str] = ""  # 帳票を特定するための参照情報
+    tablet_no: Optional[str] = ""        # デバイスを特定するための参照情報
 
     # 店舗情報（CSV側の法人・店舗(取扱コード) と紐づけるため）
-    store_code: Optional[str]  # PDFから読み取った店舗コード（見読範囲で）
-    store_name: Optional[str]  # 店舗名（見読範囲で）
-    staff_name: Optional[str]  # 担当者名（見読範囲で）
+    store_code: Optional[str] = ""  # PDFから読み取った店舗コード（見読範囲で）
+    store_name: Optional[str] = ""  # 店舗名（見読範囲で）
+    staff_name: Optional[str] = ""  # 担当者名（見読範囲で）
 
     # 集計値（PDF右側の商材別実績表）
     # キー：商材名、値：実績数
@@ -307,10 +307,11 @@ def load_extraction_results(csv_path: str) -> List[ExtractionResult]:
             result = ExtractionResult(
                 file_name=row['file_name'],
                 date=row['date'] if row['date'] else None,
-                store_name=row['store_name'] if row['store_name'] else None,
-                staff_name=row['staff_name'] if row['staff_name'] else None,
-                daily_report_no=row['daily_report_no'] if row['daily_report_no'] else None,
-                tablet_no=row['tablet_no'] if row['tablet_no'] else None,
+                daily_report_no=row['daily_report_no'] if row['daily_report_no'] else "",
+                tablet_no=row['tablet_no'] if row['tablet_no'] else "",
+                store_code=row.get('store_code', ""),
+                store_name=row['store_name'] if row['store_name'] else "",
+                staff_name=row['staff_name'] if row['staff_name'] else "",
                 left_totals=left_totals,
                 right_totals=right_totals,
                 needs_review=row['needs_review'].lower() == 'true'

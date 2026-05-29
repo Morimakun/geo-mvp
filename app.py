@@ -403,10 +403,11 @@ def dict_to_extraction_result(data: dict, filename: str) -> ExtractionResult:
     return ExtractionResult(
         file_name=data.get("filename") or filename,
         date=data.get("date"),
-        store_name=data.get("store"),
-        staff_name=data.get("name"),
-        daily_report_no=data.get("data_no"),
-        tablet_no=data.get("tab_no"),
+        daily_report_no=data.get("data_no") or "",
+        tablet_no=data.get("tab_no") or "",
+        store_code=data.get("store_code") or "",
+        store_name=data.get("store") or "",
+        staff_name=data.get("name") or "",
         left_totals=left_totals,
         right_totals=right_totals,
         needs_review=needs_review
