@@ -725,18 +725,25 @@ with tab1:
                 </div>
                 """, unsafe_allow_html=True)
 
-            # 補足指標
+            # 補足指標（Phase 1: 直接キー照合未対応）
             with st.expander("補足指標"):
-                csv_auto_match = sum(1 for r in results if r.matching_key != "見つかりませんでした" and "複数候補" not in r.matching_key)
-                csv_candidate_found = sum(1 for r in results if r.matched_record is not None or r.matching_key.startswith("複合キー"))
+                # Phase 1では日報DataNo/タブレットNoがCSVに存在しないため、直接キー照合は0%
+                needs_review_count = sum(1 for r in results if r.status == "要確認")
+                csv_matched_count = sum(1 for r in results if r.matched_record is not None)
 
-                col1, col2 = st.columns(2)
+                col1, col2, col3 = st.columns(3)
                 with col1:
-                    pct1 = int((csv_auto_match / len(results) * 100)) if len(results) > 0 else 0
-                    st.metric("CSV行自動特定成功", f"{csv_auto_match}/{len(results)}", f"{pct1}%")
+                    st.markdown("### 直接キー照合")
+                    st.markdown("**未対応** (0%)")
+                    st.markdown("<small>CSVに日報DataNo/タブレットNo列が存在しないため</small>", unsafe_allow_html=True)
                 with col2:
-                    pct2 = int((csv_candidate_found / len(results) * 100)) if len(results) > 0 else 0
-                    st.metric("CSV候補検出成功", f"{csv_candidate_found}/{len(results)}", f"{pct2}%")
+                    st.markdown("### 現在の判定")
+                    pct_review = int((needs_review_count / len(results) * 100)) if len(results) > 0 else 0
+                    st.metric("要確認", f"{needs_review_count}/{len(results)}", f"{pct_review}%")
+                with col3:
+                    st.markdown("### CSV照合")
+                    pct_matched = int((csv_matched_count / len(results) * 100)) if len(results) > 0 else 0
+                    st.metric("CSV行検出", f"{csv_matched_count}/{len(results)}", f"{pct_matched}%")
 
             st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1166,18 +1173,25 @@ with tab2:
                 </div>
                 """, unsafe_allow_html=True)
 
-            # 補足指標
+            # 補足指標（Phase 1: 直接キー照合未対応）
             with st.expander("補足指標"):
-                csv_auto_match = sum(1 for r in results if r.matching_key != "見つかりませんでした" and "複数候補" not in r.matching_key)
-                csv_candidate_found = sum(1 for r in results if r.matched_record is not None or r.matching_key.startswith("複合キー"))
+                # Phase 1では日報DataNo/タブレットNoがCSVに存在しないため、直接キー照合は0%
+                needs_review_count = sum(1 for r in results if r.status == "要確認")
+                csv_matched_count = sum(1 for r in results if r.matched_record is not None)
 
-                col1, col2 = st.columns(2)
+                col1, col2, col3 = st.columns(3)
                 with col1:
-                    pct1 = int((csv_auto_match / len(results) * 100)) if len(results) > 0 else 0
-                    st.metric("CSV行自動特定成功", f"{csv_auto_match}/{len(results)}", f"{pct1}%")
+                    st.markdown("### 直接キー照合")
+                    st.markdown("**未対応** (0%)")
+                    st.markdown("<small>CSVに日報DataNo/タブレットNo列が存在しないため</small>", unsafe_allow_html=True)
                 with col2:
-                    pct2 = int((csv_candidate_found / len(results) * 100)) if len(results) > 0 else 0
-                    st.metric("CSV候補検出成功", f"{csv_candidate_found}/{len(results)}", f"{pct2}%")
+                    st.markdown("### 現在の判定")
+                    pct_review = int((needs_review_count / len(results) * 100)) if len(results) > 0 else 0
+                    st.metric("要確認", f"{needs_review_count}/{len(results)}", f"{pct_review}%")
+                with col3:
+                    st.markdown("### CSV照合")
+                    pct_matched = int((csv_matched_count / len(results) * 100)) if len(results) > 0 else 0
+                    st.metric("CSV行検出", f"{csv_matched_count}/{len(results)}", f"{pct_matched}%")
 
             st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1190,11 +1204,12 @@ with tab2:
             for result in results:
                 table_data.append({
                     "ファイル名": result.file_name,
-                    "照合方法": result.matching_key,
+                    "対象営業日": str(st.session_state.target_business_date) if st.session_state.target_business_date else "-",
                     "日付": result.extraction.date or "-",
-                    "店舗": result.extraction.store_name or "-",
+                    "法人・店舗(取扱コード)": result.extraction.store_code or "-",
                     "担当者": result.extraction.staff_name or "-",
                     "ステータス": result.status,
+                    "メモ": result.memo or "CSVに日報DataNo/タブレットNo列なし。PDF側識別情報として保持。",
                 })
 
             df = pd.DataFrame(table_data)
