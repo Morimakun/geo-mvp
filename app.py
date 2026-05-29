@@ -858,13 +858,13 @@ with tab1:
 
                 if result.matched_record:
                     csv_data_items = [
-                        ("日付", result.matched_record.date),
-                        ("店舗", result.matched_record.store_name),
+                        ("日付", result.matched_record.csv_date or "-"),
+                        ("店舗", result.matched_record.company_name or "-"),
                         ("担当者", result.matched_record.staff_name),
                         ("DataNo", result.matched_record.daily_report_no),
                         ("TabNo", result.matched_record.tablet_no),
-                        ("左下合計", "/".join(result.matched_record.get_left_totals())),
-                        ("右下合計", "/".join(result.matched_record.get_right_totals())),
+                        ("左下合計", "-"),
+                        ("右下合計", "-"),
                     ]
 
                     for label, value in csv_data_items:
@@ -942,13 +942,13 @@ with tab1:
                     result.extraction.tablet_no or "",
                     "/".join(result.extraction.left_totals) if result.extraction.left_totals else "",
                     "/".join(result.extraction.right_totals) if result.extraction.right_totals else "",
-                    result.matched_record.date if result.matched_record else "",
-                    result.matched_record.store_name if result.matched_record else "",
+                    result.matched_record.csv_date or "-" if result.matched_record else "",
+                    result.matched_record.company_name or "-" if result.matched_record else "",
                     result.matched_record.staff_name if result.matched_record else "",
                     result.matched_record.daily_report_no if result.matched_record else "",
                     result.matched_record.tablet_no if result.matched_record else "",
-                    "/".join(result.matched_record.get_left_totals()) if result.matched_record else "",
-                    "/".join(result.matched_record.get_right_totals()) if result.matched_record else "",
+                    "-" if result.matched_record else "",
+                    "-" if result.matched_record else "",
                     result.status,
                     " | ".join(result.differences) if result.differences else "",
                     " | ".join(result.review_reasons) if result.review_reasons else ""
@@ -1289,13 +1289,13 @@ with tab2:
 
                 if result.matched_record:
                     csv_data_items = [
-                        ("日付", result.matched_record.date),
-                        ("店舗", result.matched_record.store_name),
+                        ("日付", result.matched_record.csv_date or "-"),
+                        ("店舗", result.matched_record.company_name or "-"),
                         ("担当者", result.matched_record.staff_name),
                         ("DataNo", result.matched_record.daily_report_no),
                         ("TabNo", result.matched_record.tablet_no),
-                        ("左下合計", "/".join(result.matched_record.get_left_totals())),
-                        ("右下合計", "/".join(result.matched_record.get_right_totals())),
+                        ("左下合計", "-"),
+                        ("右下合計", "-"),
                     ]
 
                     for label, value in csv_data_items:
@@ -1373,13 +1373,13 @@ with tab2:
                     result.extraction.tablet_no or "",
                     "/".join(result.extraction.left_totals) if result.extraction.left_totals else "",
                     "/".join(result.extraction.right_totals) if result.extraction.right_totals else "",
-                    result.matched_record.date if result.matched_record else "",
-                    result.matched_record.store_name if result.matched_record else "",
+                    result.matched_record.csv_date or "-" if result.matched_record else "",
+                    result.matched_record.company_name or "-" if result.matched_record else "",
                     result.matched_record.staff_name if result.matched_record else "",
                     result.matched_record.daily_report_no if result.matched_record else "",
                     result.matched_record.tablet_no if result.matched_record else "",
-                    "/".join(result.matched_record.get_left_totals()) if result.matched_record else "",
-                    "/".join(result.matched_record.get_right_totals()) if result.matched_record else "",
+                    "-" if result.matched_record else "",
+                    "-" if result.matched_record else "",
                     result.status,
                     " | ".join(result.differences) if result.differences else "",
                     " | ".join(result.review_reasons) if result.review_reasons else ""

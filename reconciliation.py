@@ -69,23 +69,43 @@ class ExtractionResult:
 
 @dataclass
 class SalesforceRecord:
-    """Salesforce CSV レコード"""
-    date: str
-    store_name: str
-    staff_name: str
-    daily_report_no: str
-    tablet_no: str
-    left_total_1: str
-    left_total_2: str
-    left_total_3: str
-    right_total_1: str
-    right_total_2: str
+    """Salesforce / 実績レポート CSV レコード
 
-    def get_left_totals(self) -> List[str]:
-        return [self.left_total_1, self.left_total_2, self.left_total_3]
+    実CSVは販売実績レポート形式で、旧想定の日報明細CSVではない。
+    そのため、日報DataNo / タブレットNo は存在しないことを前提に対応する。
+    """
+    # 基本情報
+    csv_date: Optional[str]           # CSV側の日付列（日付、date など）
+    store_code: Optional[str]         # 法人・店舗(取扱コード)
+    company_name: Optional[str]       # 委託会社名
+    staff_name: Optional[str] = ""    # 担当者名（見つからない場合は空）
+    daily_report_no: Optional[str] = ""  # 日報DataNo（見つからない場合は空）
+    tablet_no: Optional[str] = ""     # タブレットNo（見つからない場合は空）
 
-    def get_right_totals(self) -> List[str]:
-        return [self.right_total_1, self.right_total_2]
+    # 集計値（実CSVから抽出可能な列）
+    total_new_contracts: Optional[str] = None      # 成約総数（新規）
+    htmz_contracts: Optional[str] = None           # HT/Mz成約数
+    mt_contracts: Optional[str] = None             # MT成約数
+    existing_users: Optional[str] = None           # 既存ユーザー数
+    overall_htmz_total: Optional[str] = None       # 全体：HT/MZ成約数計
+    overall_mt_total: Optional[str] = None         # 全体：MT成約数計
+    overall_existing_total: Optional[str] = None   # 全体：既存サービス数計
+
+    # メモ・追跡情報
+    memo: str = ""                    # 列なし情報など
+    raw_row: Dict = None              # 元行データ（デバッグ用）
+
+    def __post_init__(self):
+        """デフォルト値の初期化"""
+        if self.raw_row is None:
+            self.raw_row = {}
+        # デフォルト値の確保
+        if self.daily_report_no is None:
+            self.daily_report_no = ""
+        if self.tablet_no is None:
+            self.tablet_no = ""
+        if self.staff_name is None:
+            self.staff_name = ""
 
 
 @dataclass
@@ -141,7 +161,24 @@ class ReconciliationResult:
             self.pending_confirmations = []
 
 
-# ===== 日付列検出・正規化 =====
+# ===== 汎用列検出・日付処理 =====
+
+def find_column(df: pd.DataFrame, candidates: List[str]) -> Optional[str]:
+    """
+    DataFrame から複数の候補列から最初にマッチする列を検出
+
+    Args:
+        df: pandas DataFrame
+        candidates: 検出対象の列名候補リスト（優先順）
+
+    Returns:
+        見つかった列名、見つからない場合は None
+    """
+    for col in candidates:
+        if col in df.columns:
+            return col
+    return None
+
 
 def find_date_column(df: pd.DataFrame) -> Optional[str]:
     """
@@ -282,25 +319,121 @@ def load_extraction_results(csv_path: str) -> List[ExtractionResult]:
     return results
 
 
-def load_salesforce_csv(csv_path: str) -> List[SalesforceRecord]:
-    """Salesforce CSV を読込"""
+def load_salesforce_csv(csv_path: str, encoding: str = 'utf-8') -> List[SalesforceRecord]:
+    """
+    Salesforce / 実績レポート CSV を読込
+
+    実CSVは販売実績レポート形式で、旧想定の日報明細CSVではない。
+    列検出により、存在しない列はエラーにせず、空欄またはメモとして扱う。
+
+    Args:
+        csv_path: CSV ファイルパス
+        encoding: CSV エンコーディング（デフォルト：utf-8）
+
+    Returns:
+        SalesforceRecord リスト
+    """
     records = []
-    with open(csv_path, 'r', encoding='utf-8') as f:
+
+    # 複数エンコーディングを試す
+    encodings_to_try = [encoding, 'cp932', 'shift_jis', 'utf-8-sig', 'utf-8']
+    df_temp = None
+
+    for enc in encodings_to_try:
+        try:
+            df_temp = pd.read_csv(csv_path, encoding=enc)
+            break
+        except (UnicodeDecodeError, LookupError):
+            continue
+
+    if df_temp is None:
+        raise ValueError(f"Unable to read CSV with any encoding: {csv_path}")
+
+    # DictReader 用のエンコーディングを検出した encoding で開く
+    actual_encoding = None
+    for enc in encodings_to_try:
+        try:
+            with open(csv_path, 'r', encoding=enc) as f:
+                reader = csv.DictReader(f)
+                _ = next(reader, None)  # 最初の行を読んでみる
+                actual_encoding = enc
+                break
+        except (UnicodeDecodeError, LookupError):
+            continue
+
+    if actual_encoding is None:
+        raise ValueError(f"Unable to read CSV with any encoding: {csv_path}")
+
+    # 本読み込み
+    with open(csv_path, 'r', encoding=actual_encoding) as f:
         reader = csv.DictReader(f)
-        for row in reader:
+
+        # 列検出：候補リストから最初にマッチする列を使用
+        date_col = find_column(df_temp, ["日付", "date", "Date", "営業日", "対象日"])
+        store_code_col = find_column(df_temp, ["法人・店舗(取扱コード)", "取扱コード", "店舗コード", "store_code", "store_id"])
+        company_name_col = find_column(df_temp, ["委託会社名", "店舗名", "store_name", "company_name"])
+        staff_name_col = find_column(df_temp, ["担当者名", "スタッフ名", "staff_name"])
+        daily_report_no_col = find_column(df_temp, ["日報DataNo", "日報データNo", "daily_report_no"])
+        tablet_no_col = find_column(df_temp, ["タブレットNo", "tablet_no", "Tab No"])
+
+        # 集計値列の検出
+        total_contracts_col = find_column(df_temp, ["成約総数（新規）", "成約総数"])
+        htmz_col = find_column(df_temp, ["HT/Mz（電話+テレビ含む）成約数", "HT/Mz成約数"])
+        mt_col = find_column(df_temp, ["MT成約数"])
+        existing_users_col = find_column(df_temp, ["既存ユーザー数"])
+        overall_htmz_col = find_column(df_temp, ["全体：HT/MZ（電話＋テレビ含む）成約数計", "全体：HT/MZ成約数計"])
+        overall_mt_col = find_column(df_temp, ["全体：MT成約数計"])
+        overall_existing_col = find_column(df_temp, ["全体：既存サービス数計"])
+
+        # メモ作成：見つからない列を記録
+        missing_cols = []
+        if daily_report_no_col is None:
+            missing_cols.append("日報DataNo")
+        if tablet_no_col is None:
+            missing_cols.append("タブレットNo")
+
+        memo_base = ""
+        if missing_cols:
+            memo_base = f"CSVに{'/'.join(missing_cols)}列なし。PDF側識別情報として保持。"
+
+        # 行を読込
+        for idx, row in enumerate(reader):
+            # 列の値を取得（存在しない場合は None）
+            csv_date = row.get(date_col) if date_col else None
+            store_code = row.get(store_code_col) if store_code_col else None
+            company_name = row.get(company_name_col) if company_name_col else None
+            staff_name = row.get(staff_name_col) if staff_name_col else ""
+            daily_report_no = row.get(daily_report_no_col) if daily_report_no_col else ""
+            tablet_no = row.get(tablet_no_col) if tablet_no_col else ""
+
+            # 集計値を取得
+            total_contracts = row.get(total_contracts_col) if total_contracts_col else None
+            htmz = row.get(htmz_col) if htmz_col else None
+            mt = row.get(mt_col) if mt_col else None
+            existing_users = row.get(existing_users_col) if existing_users_col else None
+            overall_htmz = row.get(overall_htmz_col) if overall_htmz_col else None
+            overall_mt = row.get(overall_mt_col) if overall_mt_col else None
+            overall_existing = row.get(overall_existing_col) if overall_existing_col else None
+
             record = SalesforceRecord(
-                date=row['date'],
-                store_name=row['store_name'],
-                staff_name=row['staff_name'],
-                daily_report_no=row['daily_report_no'],
-                tablet_no=row['tablet_no'],
-                left_total_1=row['left_total_1'],
-                left_total_2=row['left_total_2'],
-                left_total_3=row['left_total_3'],
-                right_total_1=row['right_total_1'],
-                right_total_2=row['right_total_2'],
+                csv_date=csv_date,
+                store_code=store_code,
+                company_name=company_name,
+                staff_name=staff_name,
+                daily_report_no=daily_report_no,
+                tablet_no=tablet_no,
+                total_new_contracts=total_contracts,
+                htmz_contracts=htmz,
+                mt_contracts=mt,
+                existing_users=existing_users,
+                overall_htmz_total=overall_htmz,
+                overall_mt_total=overall_mt,
+                overall_existing_total=overall_existing,
+                memo=memo_base,
+                raw_row=dict(row)
             )
             records.append(record)
+
     return records
 
 
