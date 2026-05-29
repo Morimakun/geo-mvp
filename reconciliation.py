@@ -132,6 +132,9 @@ class ReconciliationResult:
     differences: List[str] = None
     review_reasons: List[str] = None
 
+    # メモ・備考（Phase 1では重要：直接照合不可の理由などを記録）
+    memo: str = ""
+
     # 新規フィールド：PDF側の識別情報を記録
     extraction_details: Dict[str, Any] = None  # {
     #   "daily_report_no": "...",
@@ -595,13 +598,20 @@ def reconcile(extraction: ExtractionResult, records: List[SalesforceRecord]) -> 
             else:
                 status = "一致"
 
+    # Phase 1 用 memo の生成
+    # CSVに日報DataNo/タブレットNoがないため、直接照合できないことを示す
+    memo = "CSVに日報DataNo/タブレットNo列なし。PDF側識別情報として保持。集計値ベース照合は先方確認後に確定。"
+    if extraction.daily_report_no or extraction.tablet_no:
+        memo = f"CSVに日報DataNo/タブレットNo列なし。PDF側DataNo({extraction.daily_report_no or ''})/TabNo({extraction.tablet_no or ''})は識別情報として保持。"
+
     return ReconciliationResult(
         file_name=extraction.file_name,
         extraction=extraction,
         matched_record=matched_record,
         status=status,
         differences=differences,
-        review_reasons=review_reasons
+        review_reasons=review_reasons,
+        memo=memo
     )
 
 

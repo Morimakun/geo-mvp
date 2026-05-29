@@ -1209,7 +1209,7 @@ with tab2:
                     "法人・店舗(取扱コード)": result.extraction.store_code or "-",
                     "担当者": result.extraction.staff_name or "-",
                     "ステータス": result.status,
-                    "メモ": result.memo or "CSVに日報DataNo/タブレットNo列なし。PDF側識別情報として保持。",
+                    "メモ": getattr(result, "memo", "") or "CSVに日報DataNo/タブレットNo列なし。PDF側識別情報として保持。",
                 })
 
             df = pd.DataFrame(table_data)
