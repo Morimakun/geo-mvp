@@ -20,6 +20,8 @@ from reconciliation import (
     load_extraction_results,
     load_salesforce_csv,
     reconcile,
+    normalize_date,
+    filter_csv_by_business_date,
     ExtractionResult,
     SalesforceRecord
 )
@@ -323,6 +325,16 @@ if "pdf_files" not in st.session_state:
 if "active_tab_context" not in st.session_state:
     st.session_state.active_tab_context = "pdf"  # Default to PDF tab
 
+# Step 3: 対象営業日フィルタ用の session_state 初期化
+if "target_business_date" not in st.session_state:
+    st.session_state.target_business_date = None
+if "csv_date_candidates" not in st.session_state:
+    st.session_state.csv_date_candidates = None
+if "filtered_csv_df" not in st.session_state:
+    st.session_state.filtered_csv_df = None
+if "filtered_salesforce_records" not in st.session_state:
+    st.session_state.filtered_salesforce_records = None
+
 # ===== ヘルパー関数 =====
 
 def dict_to_extraction_result(data: dict, filename: str) -> ExtractionResult:
@@ -425,11 +437,94 @@ with tab1:
                     st.session_state.using_sample_data = False
                     st.success(f"✓ {len(st.session_state.salesforce_records)}件のレコードを読込")
 
+                    # Step 3: CSV日付候補を抽出
+                    try:
+                        df_csv = pd.read_csv(salesforce_file_pdf, encoding='shift_jis', on_bad_lines='skip')
+                    except:
+                        try:
+                            df_csv = pd.read_csv(salesforce_file_pdf, encoding='cp932', on_bad_lines='skip')
+                        except:
+                            df_csv = pd.read_csv(salesforce_file_pdf)
+
+                        # CSV内の日付列を検出（最後の列が日付である可能性が高い）
+                    date_col = df_csv.columns[-1] if len(df_csv.columns) > 0 else None
+
+                    if date_col:
+                        # 日付別の件数を集計
+                        date_counts = df_csv[date_col].value_counts().sort_index()
+                        st.session_state.csv_date_candidates = date_counts.to_dict()
+
+                        # 日付候補を表示
+                        st.markdown("**📅 CSV内の日付候補**")
+                        cols = st.columns(len(st.session_state.csv_date_candidates))
+                        for col, (date, count) in zip(cols, st.session_state.csv_date_candidates.items()):
+                            with col:
+                                st.metric(f"{date}", f"{count}件")
+
+                    # CSV全体をメモリに保持
+                    st.session_state.salesforce_csv = df_csv
+
                     with st.expander("プレビュー"):
-                        df = pd.read_csv(salesforce_file_pdf)
-                        st.dataframe(df.head(5), use_container_width=True)
+                        st.dataframe(df_csv.head(5), use_container_width=True)
                 except Exception as e:
                     st.error(f"読込エラー: {str(e)}")
+
+        # Step 3: 対象営業日選択セクション
+        if st.session_state.salesforce_csv is not None:
+            st.markdown('<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;"></div>', unsafe_allow_html=True)
+            st.markdown('<div class="section-title">対象営業日を選択</div>', unsafe_allow_html=True)
+            st.markdown('<div class="upload-description">照合対象となる営業日を選択してください。CSV内の日付列をこの日付で絞り込みます。</div>', unsafe_allow_html=True)
+
+            target_date = st.date_input(
+                "対象営業日",
+                value=None,
+                label_visibility="collapsed"
+            )
+
+            if target_date is not None:
+                # 対象営業日を YYYY-MM-DD 形式で文字列化
+                target_date_str = target_date.strftime("%Y-%m-%d")
+                st.session_state.target_business_date = target_date_str
+
+                # フィルタ実行
+                if st.session_state.salesforce_csv is not None:
+                    date_col = st.session_state.salesforce_csv.columns[-1]
+                    filtered_df, error_msg = filter_csv_by_business_date(
+                        st.session_state.salesforce_csv,
+                        target_date_str,
+                        date_column=date_col
+                    )
+
+                    if error_msg:
+                        st.warning(f"⚠️ {error_msg}")
+                        st.session_state.filtered_csv_df = None
+                    else:
+                        st.session_state.filtered_csv_df = filtered_df
+                        st.success(f"✓ 対象営業日：{target_date_str}、対象CSV件数：{len(filtered_df)}件")
+
+                        # フィルタ済みCSVプレビュー（優先する列だけ表示）
+                        st.markdown("**📊 フィルタ済みCSVプレビュー**")
+
+                        # 優先表示列（存在する列だけを表示）
+                        priority_cols = [
+                            "日付",
+                            "法人・店舗(取扱コード)",
+                            "委託会社名",
+                            "成約総数（新規）",
+                            "HT/Mz（電話+テレビ含む）成約数",
+                            "MT成約数",
+                            "既存ユーザー数",
+                            "全体：HT/MZ（電話＋テレビ含む）成約数計",
+                            "全体：MT成約数計",
+                            "全体：既存サービス数計"
+                        ]
+
+                        # 存在する列をフィルタ
+                        display_cols = [col for col in priority_cols if col in filtered_df.columns]
+                        if len(display_cols) > 0:
+                            st.dataframe(filtered_df[display_cols].head(10), use_container_width=True)
+                        else:
+                            st.dataframe(filtered_df.head(10), use_container_width=True)
 
         # FAX帳票 PDF 複数アップロード
         with col2:
@@ -460,17 +555,47 @@ with tab1:
                     st.error("⚠️ FAX帳票PDFを選択してください")
                 elif st.session_state.salesforce_records is None:
                     st.error("⚠️ Salesforce CSVを先に読込んでください")
+                elif st.session_state.target_business_date is None:
+                    st.error("⚠️ 対象営業日を選択してください")
+                elif st.session_state.filtered_csv_df is None or len(st.session_state.filtered_csv_df) == 0:
+                    st.error("⚠️ 対象営業日に一致するCSVデータがありません")
                 else:
                     with st.spinner("🔄 帳票読み取り + 照合処理を実行中..."):
                         try:
                             # PDFから帳票読み取り結果を生成
                             extraction_results = extract_results_from_pdfs(pdf_files)
 
+                            # Step 3: フィルタ済みCSVレコードを生成
+                            # フィルタ済みDataFrameから SalesforceRecord リストを再構築
+                            filtered_df = st.session_state.filtered_csv_df
+                            date_col = filtered_df.columns[-1]  # 日付列は最後の列
+
+                            # フィルタ済みレコードを生成（簡易版：最初の数項目だけサポート）
+                            filtered_records = []
+                            try:
+                                for idx, row in filtered_df.iterrows():
+                                    record = SalesforceRecord(
+                                        date=str(row[date_col]) if date_col in row else None,
+                                        store_name=str(row.get("法人・店舗(取扱コード)", "")) if "法人・店舗(取扱コード)" in filtered_df.columns else None,
+                                        staff_name="",
+                                        daily_report_no="",
+                                        tablet_no="",
+                                        left_total_1="",
+                                        left_total_2="",
+                                        left_total_3="",
+                                        right_total_1="",
+                                        right_total_2=""
+                                    )
+                                    filtered_records.append(record)
+                            except:
+                                # フィルタ済みレコード生成に失敗した場合は全レコードを使用
+                                filtered_records = st.session_state.salesforce_records
+
                             # Salesforce CSVと照合
                             st.session_state.extraction_results_from_pdf = extraction_results
                             results = []
                             for extraction in extraction_results:
-                                result = reconcile(extraction, st.session_state.salesforce_records)
+                                result = reconcile(extraction, filtered_records)
                                 results.append(result)
 
                             st.session_state.reconciliation_results = results
@@ -488,7 +613,7 @@ with tab1:
 
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # 照合結果がある場合は表示
+    # 照合結果がある場合は表示（PDFモード）
     if st.session_state.reconciliation_results:
         results = st.session_state.reconciliation_results
 
@@ -502,6 +627,10 @@ with tab1:
         with st.container():
             st.markdown('<div class="section-container">', unsafe_allow_html=True)
             st.markdown('<div class="section-title">照合結果サマリー</div>', unsafe_allow_html=True)
+
+            # Step 3: 対象営業日を表示
+            if st.session_state.target_business_date:
+                st.markdown(f"**対象営業日:** {st.session_state.target_business_date} | **対象CSV件数:** {len(st.session_state.filtered_csv_df)}件")
 
             # メトリクスカード
             col1, col2, col3, col4 = st.columns(4, gap="small")
@@ -562,20 +691,30 @@ with tab1:
 
             st.markdown('</div>', unsafe_allow_html=True)
 
+        # ===== 注意文：日報DataNo/タブレットNo非存在 =====
+        with st.container():
+            st.warning(
+                "⚠️ **重要な注記：**\n\n"
+                "今回のCSVには日報DataNo / タブレットNo列が含まれていないため、"
+                "これらはCSV照合キーではなく、PDF帳票の識別情報として扱います。"
+                "現時点では、対象営業日・店舗コード・集計値をもとに確認する方式です。"
+            )
+
         # ===== 結果一覧テーブル =====
         with st.container():
             st.markdown('<div class="section-container">', unsafe_allow_html=True)
             st.markdown('<div class="section-title">照合結果一覧</div>', unsafe_allow_html=True)
 
+            # Step 3: 対象営業日・CSV日付・法人・店舗(取扱コード)・委託会社名・ステータス・メモを表示
             table_data = []
             for result in results:
                 table_data.append({
-                    "ファイル名": result.file_name,
-                    "照合方法": result.matching_key,
-                    "日付": result.extraction.date or "-",
-                    "店舗": result.extraction.store_name or "-",
-                    "担当者": result.extraction.staff_name or "-",
+                    "対象営業日": str(st.session_state.target_business_date) if st.session_state.target_business_date else "-",
+                    "CSV日付": result.extraction.date or "-",
+                    "法人・店舗(取扱コード)": result.extraction.store_code or "-",
+                    "委託会社名": "-",  # 暫定：CSVレコードから取得するロジックは後段で
                     "ステータス": result.status,
+                    "メモ": "CSVに日報DataNo/タブレットNo列なし。PDF側識別情報として保持。",
                 })
 
             df = pd.DataFrame(table_data)

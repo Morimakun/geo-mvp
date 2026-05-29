@@ -6,25 +6,65 @@ FAX帳票 × Salesforce CSV 照合ロジック
 """
 
 import csv
+import re
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
+import pandas as pd
+from datetime import datetime
 
 
 # ===== データ構造 =====
 
 @dataclass
 class ExtractionResult:
-    """帳票読み取り結果"""
+    """帳票読み取り結果
+
+    新方針（2026-05-29 修正版）：
+    - daily_report_no / tablet_no は「識別情報・証跡」
+    - PDF右側の商材別実績、左下/右下の手書き集計を抽出
+    - CSV側との照合キーは「日付 + 法人・店舗コード + 集計値」
+    """
     file_name: str
     date: Optional[str]
-    store_name: Optional[str]
-    staff_name: Optional[str]
-    daily_report_no: Optional[str]
-    tablet_no: Optional[str]
-    left_totals: List[str]  # ["29", "9", "3"] or []
-    right_totals: List[str]  # ["27", "5"] or []
-    needs_review: bool
+
+    # 識別情報・証跡（CSVとの直接照合キーではない）
+    daily_report_no: Optional[str]  # 帳票を特定するための参照情報
+    tablet_no: Optional[str]        # デバイスを特定するための参照情報
+
+    # 店舗情報（CSV側の法人・店舗(取扱コード) と紐づけるため）
+    store_code: Optional[str]  # PDFから読み取った店舗コード（見読範囲で）
+    store_name: Optional[str]  # 店舗名（見読範囲で）
+    staff_name: Optional[str]  # 担当者名（見読範囲で）
+
+    # 集計値（PDF右側の商材別実績表）
+    # キー：商材名、値：実績数
+    right_side_data: Dict[str, str] = None  # {"eo光": "20", "eo光電話": "15", ...}
+
+    # 手書き集計欄（PDF左下）
+    left_bottom_totals: Dict[str, str] = None  # {"成約": "22", "来店": "50", ...}
+
+    # 手書き集計欄（PDF右下）
+    right_bottom_totals: Dict[str, str] = None  # {"全体成約": "22", "全体人員": "5", ...}
+
+    # 旧フォーマットとの互換性（廃止予定）
+    left_totals: List[str] = None   # ["29", "9", "3"] or [] (deprecated)
+    right_totals: List[str] = None  # ["27", "5"] or [] (deprecated)
+
+    needs_review: bool = False
+
+    def __post_init__(self):
+        """デフォルト値の初期化"""
+        if self.right_side_data is None:
+            self.right_side_data = {}
+        if self.left_bottom_totals is None:
+            self.left_bottom_totals = {}
+        if self.right_bottom_totals is None:
+            self.right_bottom_totals = {}
+        if self.left_totals is None:
+            self.left_totals = []
+        if self.right_totals is None:
+            self.right_totals = []
 
 
 @dataclass
@@ -50,14 +90,138 @@ class SalesforceRecord:
 
 @dataclass
 class ReconciliationResult:
-    """照合結果"""
+    """照合結果
+
+    新方針（2026-05-29 修正版）：
+    - 照合キー：「日付 + 法人・店舗(取扱コード) + 委託会社名 + 集計値」
+    - 日報DataNo / タブレットNo は識別情報として保持
+    - CSVの7項目の先方確認が完了するまで「要確認」が標準
+    """
     file_name: str
-    matching_key: str  # "DataNo" | "TabNo" | "複合キー"
-    extraction: ExtractionResult
-    matched_record: Optional[SalesforceRecord]
-    status: str  # "一致" | "不一致" | "要確認"
-    differences: List[str]
-    review_reasons: List[str]
+
+    # 照合方式の明記
+    matching_strategy: str = "日付+法人・店舗(取扱コード)+集計値ベース"
+
+    extraction: ExtractionResult = None
+    matched_record: Optional[SalesforceRecord] = None
+
+    # ステータス判定
+    status: str = "要確認"  # "一致" | "不一致" | "要確認"
+
+    # 照合詳細
+    differences: List[str] = None
+    review_reasons: List[str] = None
+
+    # 新規フィールド：PDF側の識別情報を記録
+    extraction_details: Dict[str, Any] = None  # {
+    #   "daily_report_no": "...",
+    #   "tablet_no": "...",
+    #   "store_code": "...",
+    #   "right_side_data": {...},
+    #   "left_bottom_totals": {...},
+    #   "right_bottom_totals": {...}
+    # }
+
+    # 先方確認待ち項目
+    pending_confirmations: List[str] = None  # [
+    #   "Q1: このCSVが照合対象ファイルとして正しいか",
+    #   "Q4: PDF右側の商材別表はCSVのどの列に対応するか",
+    #   ...
+    # ]
+
+    def __post_init__(self):
+        """デフォルト値の初期化"""
+        if self.differences is None:
+            self.differences = []
+        if self.review_reasons is None:
+            self.review_reasons = []
+        if self.extraction_details is None:
+            self.extraction_details = {}
+        if self.pending_confirmations is None:
+            self.pending_confirmations = []
+
+
+# ===== 日付正規化 =====
+
+def normalize_date(value: Optional[str]) -> Optional[str]:
+    """
+    日付文字列を YYYY-MM-DD 形式に正規化
+
+    対応形式：
+    - 2026/05/17 → 2026-05-17
+    - 2026-05-17 → 2026-05-17
+    - 2026年5月17日 → 2026-05-17
+    - 2026/5/17 → 2026-05-17
+    - 2026-5-17 → 2026-05-17
+
+    Args:
+        value: 日付文字列
+
+    Returns:
+        正規化された日付（YYYY-MM-DD形式）、または None
+    """
+    if not value or not isinstance(value, str):
+        return None
+
+    value = value.strip()
+    if not value:
+        return None
+
+    # Pattern 1: スラッシュ形式 (2026/05/17 または 2026/5/17)
+    match = re.match(r'(\d{4})[/\-\s]*(\d{1,2})[/\-\s]*(\d{1,2})', value)
+    if match:
+        try:
+            year, month, day = int(match.group(1)), int(match.group(2)), int(match.group(3))
+            # 妥当性チェック
+            if 1900 <= year <= 2100 and 1 <= month <= 12 and 1 <= day <= 31:
+                return f"{year:04d}-{month:02d}-{day:02d}"
+        except:
+            pass
+
+    # Pattern 2: 日本語形式 (2026年5月17日)
+    match = re.match(r'(\d{4})年\s*(\d{1,2})月\s*(\d{1,2})日', value)
+    if match:
+        try:
+            year, month, day = int(match.group(1)), int(match.group(2)), int(match.group(3))
+            if 1900 <= year <= 2100 and 1 <= month <= 12 and 1 <= day <= 31:
+                return f"{year:04d}-{month:02d}-{day:02d}"
+        except:
+            pass
+
+    return None
+
+
+def filter_csv_by_business_date(df: pd.DataFrame, target_business_date: str, date_column: str = '日付') -> Tuple[pd.DataFrame, Optional[str]]:
+    """
+    CSV DataFrame を対象営業日でフィルタ
+
+    Args:
+        df: CSV を読み込んだ DataFrame
+        target_business_date: 対象営業日（例：2026-05-17）
+        date_column: 日付列の名前（デフォルト：'日付'）
+
+    Returns:
+        (フィルタされた DataFrame, エラーメッセージまたはNone)
+        - エラーメッセージはフィルタ対象行なし時に返される
+    """
+    if date_column not in df.columns:
+        return pd.DataFrame(), f"日付列 '{date_column}' が見つかりません"
+
+    # 対象営業日を正規化
+    normalized_target = normalize_date(target_business_date)
+    if not normalized_target:
+        return pd.DataFrame(), f"不正な日付形式: {target_business_date}"
+
+    # CSV内の日付を正規化してフィルタ
+    df_copy = df.copy()
+    df_copy['_normalized_date'] = df_copy[date_column].apply(normalize_date)
+
+    filtered = df_copy[df_copy['_normalized_date'] == normalized_target].drop(columns=['_normalized_date'])
+
+    if len(filtered) == 0:
+        return pd.DataFrame(), f"対象営業日 {target_business_date} に該当する行がありません（検出日付: {df[date_column].unique().tolist()}）"
+
+    return filtered, None
 
 
 # ===== CSV読込 =====
