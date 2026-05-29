@@ -337,6 +337,47 @@ if "filtered_salesforce_records" not in st.session_state:
 
 # ===== ヘルパー関数 =====
 
+def read_csv_with_fallback(uploaded_file):
+    """
+    複数のエンコーディングを試してCSVを読み込む関数
+
+    日本語CSVを扱うため、UTF-8を優先するのではなく、
+    cp932 / shift_jis を優先して試す。
+
+    Args:
+        uploaded_file: Streamlit のアップロードファイルオブジェクト
+
+    Returns:
+        (df, encoding, error_message):
+        - 成功時: (DataFrame, 使用エンコーディング, None)
+        - 失敗時: (None, None, エラーメッセージ)
+    """
+    encodings = ["utf-8-sig", "cp932", "shift_jis", "utf-8"]
+    last_error = None
+
+    for encoding in encodings:
+        try:
+            # ファイルポインタをリセット
+            uploaded_file.seek(0)
+
+            # CSV読込
+            df = pd.read_csv(uploaded_file, encoding=encoding, on_bad_lines='skip')
+
+            # 成功時は encoding 情報と共に返す
+            return df, encoding, None
+        except Exception as e:
+            last_error = e
+            continue
+
+    # すべてのエンコーディングで失敗した場合
+    error_message = (
+        "CSVを読み込めませんでした。UTF-8 / CP932 / Shift_JIS で読み込みを試しましたが失敗しました。"
+        "ファイル形式または文字コードをご確認ください。"
+    )
+
+    return None, None, error_message
+
+
 def dict_to_extraction_result(data: dict, filename: str) -> ExtractionResult:
     """
     帳票読み取り結果 (Dict) → ExtractionResult に変換
@@ -437,35 +478,35 @@ with tab1:
                     st.session_state.using_sample_data = False
                     st.success(f"✓ {len(st.session_state.salesforce_records)}件のレコードを読込")
 
-                    # Step 3: CSV日付候補を抽出
-                    try:
-                        df_csv = pd.read_csv(salesforce_file_pdf, encoding='shift_jis', on_bad_lines='skip')
-                    except:
-                        try:
-                            df_csv = pd.read_csv(salesforce_file_pdf, encoding='cp932', on_bad_lines='skip')
-                        except:
-                            df_csv = pd.read_csv(salesforce_file_pdf)
+                    # Step 3: CSV日付候補を抽出（複数エンコーディング対応）
+                    df_csv, encoding_used, error_msg = read_csv_with_fallback(salesforce_file_pdf)
+
+                    if error_msg:
+                        st.error(f"❌ {error_msg}")
+                    else:
+                        # 成功時：エンコーディング情報を表示
+                        st.info(f"✓ CSV読込成功：{len(df_csv)}行 × {len(df_csv.columns)}列  文字コード：{encoding_used}")
 
                         # CSV内の日付列を検出（最後の列が日付である可能性が高い）
-                    date_col = df_csv.columns[-1] if len(df_csv.columns) > 0 else None
+                        date_col = df_csv.columns[-1] if len(df_csv.columns) > 0 else None
 
-                    if date_col:
-                        # 日付別の件数を集計
-                        date_counts = df_csv[date_col].value_counts().sort_index()
-                        st.session_state.csv_date_candidates = date_counts.to_dict()
+                        if date_col:
+                            # 日付別の件数を集計
+                            date_counts = df_csv[date_col].value_counts().sort_index()
+                            st.session_state.csv_date_candidates = date_counts.to_dict()
 
-                        # 日付候補を表示
-                        st.markdown("**📅 CSV内の日付候補**")
-                        cols = st.columns(len(st.session_state.csv_date_candidates))
-                        for col, (date, count) in zip(cols, st.session_state.csv_date_candidates.items()):
-                            with col:
-                                st.metric(f"{date}", f"{count}件")
+                            # 日付候補を表示
+                            st.markdown("**📅 CSV内の日付候補**")
+                            cols = st.columns(len(st.session_state.csv_date_candidates))
+                            for col, (date, count) in zip(cols, st.session_state.csv_date_candidates.items()):
+                                with col:
+                                    st.metric(f"{date}", f"{count}件")
 
-                    # CSV全体をメモリに保持
-                    st.session_state.salesforce_csv = df_csv
+                        # CSV全体をメモリに保持
+                        st.session_state.salesforce_csv = df_csv
 
-                    with st.expander("プレビュー"):
-                        st.dataframe(df_csv.head(5), use_container_width=True)
+                        with st.expander("プレビュー"):
+                            st.dataframe(df_csv.head(5), use_container_width=True)
                 except Exception as e:
                     st.error(f"読込エラー: {str(e)}")
 
@@ -948,17 +989,26 @@ with tab2:
 
             if salesforce_file is not None:
                 try:
-                    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
-                        tmp.write(salesforce_file.getvalue().decode('utf-8'))
-                        tmp_path = tmp.name
+                    # 複数エンコーディング対応で読込
+                    df, encoding_used, error_msg = read_csv_with_fallback(salesforce_file)
 
-                    st.session_state.salesforce_records = load_salesforce_csv(tmp_path)
-                    st.session_state.using_sample_data = False
-                    st.success(f"✓ {len(st.session_state.salesforce_records)}件のレコードを読込")
+                    if error_msg:
+                        st.error(f"❌ {error_msg}")
+                    else:
+                        # 成功時：エンコーディング情報を表示
+                        st.info(f"✓ CSV読込成功：{len(df)}行 × {len(df.columns)}列  文字コード：{encoding_used}")
 
-                    with st.expander("プレビュー"):
-                        df = pd.read_csv(salesforce_file)
-                        st.dataframe(df.head(5), use_container_width=True)
+                        # DataFrame を一度 CSV 保存して load_salesforce_csv() で読込（互換性維持）
+                        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
+                            df.to_csv(tmp.name, index=False, encoding='utf-8')
+                            tmp_path = tmp.name
+
+                        st.session_state.salesforce_records = load_salesforce_csv(tmp_path)
+                        st.session_state.using_sample_data = False
+                        st.success(f"✓ {len(st.session_state.salesforce_records)}件のレコードを読込")
+
+                        with st.expander("プレビュー"):
+                            st.dataframe(df.head(5), use_container_width=True)
                 except Exception as e:
                     st.error(f"読込エラー: {str(e)}")
 
@@ -976,17 +1026,26 @@ with tab2:
 
             if extraction_file is not None:
                 try:
-                    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
-                        tmp.write(extraction_file.getvalue().decode('utf-8'))
-                        tmp_path = tmp.name
+                    # 複数エンコーディング対応で読込
+                    df, encoding_used, error_msg = read_csv_with_fallback(extraction_file)
 
-                    st.session_state.extraction_results = load_extraction_results(tmp_path)
-                    st.session_state.using_sample_data = False
-                    st.success(f"✓ {len(st.session_state.extraction_results)}件の抽出結果を読込")
+                    if error_msg:
+                        st.error(f"❌ {error_msg}")
+                    else:
+                        # 成功時：エンコーディング情報を表示
+                        st.info(f"✓ CSV読込成功：{len(df)}行 × {len(df.columns)}列  文字コード：{encoding_used}")
 
-                    with st.expander("プレビュー"):
-                        df = pd.read_csv(extraction_file)
-                        st.dataframe(df.head(5), use_container_width=True)
+                        # DataFrame を一度 CSV 保存して load_extraction_results() で読込（互換性維持）
+                        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
+                            df.to_csv(tmp.name, index=False, encoding='utf-8')
+                            tmp_path = tmp.name
+
+                        st.session_state.extraction_results = load_extraction_results(tmp_path)
+                        st.session_state.using_sample_data = False
+                        st.success(f"✓ {len(st.session_state.extraction_results)}件の抽出結果を読込")
+
+                        with st.expander("プレビュー"):
+                            st.dataframe(df.head(5), use_container_width=True)
                 except Exception as e:
                     st.error(f"読込エラー: {str(e)}")
 
