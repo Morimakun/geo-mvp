@@ -1,2 +1,4 @@
+# 注意: このCSVは全30ページの読取結果ではなく、現時点で確認できた1件分の初期読取結果です。
+# 全ページ読取テストは次ステップで実施予定です。
 page_number,date,date_status,staff_name,staff_name_status,daily_report_no,daily_report_no_status,tablet_no,tablet_no_status,store_code,store_code_status,left_total,left_total_status,right_total,right_total_status,handwritten_memo,memo_status,overall_status,review_reason
-1,2026-05-17,読取成功,原田,読取成功,00157846,読取成功,2408-5317,読取成功,,読取不可,,読取不可,,読取不可,,読取不可,一部読取,基本項目は読取成功。集計欄は読取不可。
+1,2026-05-17,読取成功,原田,読取成功,00157846,読取成功,2408-5317,読取成功,,読取不可,,読取不可,,読取不可,,読取不可,一部読取,基本項目は読取成功。集計欄は読取不可。全ページ読取テストは次ステップ。
