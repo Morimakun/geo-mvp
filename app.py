@@ -470,15 +470,7 @@ with tab1:
 
             if salesforce_file_pdf is not None:
                 try:
-                    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
-                        tmp.write(salesforce_file_pdf.getvalue().decode('utf-8'))
-                        tmp_path = tmp.name
-
-                    st.session_state.salesforce_records = load_salesforce_csv(tmp_path)
-                    st.session_state.using_sample_data = False
-                    st.success(f"✓ {len(st.session_state.salesforce_records)}件のレコードを読込")
-
-                    # Step 3: CSV日付候補を抽出（複数エンコーディング対応）
+                    # Step 3: 複数エンコーディング対応で最初に読込（UTF-8固定を避ける）
                     df_csv, encoding_used, error_msg = read_csv_with_fallback(salesforce_file_pdf)
 
                     if error_msg:
@@ -486,6 +478,15 @@ with tab1:
                     else:
                         # 成功時：エンコーディング情報を表示
                         st.info(f"✓ CSV読込成功：{len(df_csv)}行 × {len(df_csv.columns)}列  文字コード：{encoding_used}")
+
+                        # load_salesforce_csv() 用に temp CSV に保存
+                        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
+                            df_csv.to_csv(tmp.name, index=False, encoding='utf-8')
+                            tmp_path = tmp.name
+
+                        st.session_state.salesforce_records = load_salesforce_csv(tmp_path)
+                        st.session_state.using_sample_data = False
+                        st.success(f"✓ {len(st.session_state.salesforce_records)}件のレコードを読込")
 
                         # CSV内の日付列を検出（最後の列が日付である可能性が高い）
                         date_col = df_csv.columns[-1] if len(df_csv.columns) > 0 else None
