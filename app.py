@@ -334,6 +334,8 @@ if "filtered_csv_df" not in st.session_state:
     st.session_state.filtered_csv_df = None
 if "filtered_salesforce_records" not in st.session_state:
     st.session_state.filtered_salesforce_records = None
+if "detected_date_column" not in st.session_state:
+    st.session_state.detected_date_column = None
 
 # ===== ヘルパー関数 =====
 
@@ -476,8 +478,15 @@ with tab1:
                     if error_msg:
                         st.error(f"❌ {error_msg}")
                     else:
-                        # 成功時：エンコーディング情報を表示
-                        st.info(f"✓ CSV読込成功：{len(df_csv)}行 × {len(df_csv.columns)}列  文字コード：{encoding_used}")
+                        # 日付列を動的に検出
+                        from reconciliation import find_date_column
+                        date_col = find_date_column(df_csv)
+
+                        # 成功時：エンコーディング情報と日付列名を表示
+                        if date_col:
+                            st.info(f"✓ CSV読込成功：{len(df_csv)}行 × {len(df_csv.columns)}列  文字コード：{encoding_used}  日付列：{date_col}")
+                        else:
+                            st.info(f"✓ CSV読込成功：{len(df_csv)}行 × {len(df_csv.columns)}列  文字コード：{encoding_used}")
 
                         # load_salesforce_csv() 用に temp CSV に保存
                         with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
@@ -487,9 +496,6 @@ with tab1:
                         st.session_state.salesforce_records = load_salesforce_csv(tmp_path)
                         st.session_state.using_sample_data = False
                         st.success(f"✓ {len(st.session_state.salesforce_records)}件のレコードを読込")
-
-                        # CSV内の日付列を検出（最後の列が日付である可能性が高い）
-                        date_col = df_csv.columns[-1] if len(df_csv.columns) > 0 else None
 
                         if date_col:
                             # 日付別の件数を集計
@@ -530,11 +536,10 @@ with tab1:
 
                 # フィルタ実行
                 if st.session_state.salesforce_csv is not None:
-                    date_col = st.session_state.salesforce_csv.columns[-1]
-                    filtered_df, error_msg = filter_csv_by_business_date(
+                    filtered_df, error_msg, detected_date_col = filter_csv_by_business_date(
                         st.session_state.salesforce_csv,
                         target_date_str,
-                        date_column=date_col
+                        date_column=None
                     )
 
                     if error_msg:
@@ -542,6 +547,7 @@ with tab1:
                         st.session_state.filtered_csv_df = None
                     else:
                         st.session_state.filtered_csv_df = filtered_df
+                        st.session_state.detected_date_column = detected_date_col
                         st.success(f"✓ 対象営業日：{target_date_str}、対象CSV件数：{len(filtered_df)}件")
 
                         # フィルタ済みCSVプレビュー（優先する列だけ表示）

@@ -141,7 +141,30 @@ class ReconciliationResult:
             self.pending_confirmations = []
 
 
-# ===== 日付正規化 =====
+# ===== 日付列検出・正規化 =====
+
+def find_date_column(df: pd.DataFrame) -> Optional[str]:
+    """
+    DataFrame から日付列を検出する関数
+
+    複数の言語対応：日本語の「日付」、英語の「date」など
+
+    Args:
+        df: pandas DataFrame
+
+    Returns:
+        検出した日付列名、見つからない場合は None
+    """
+    # 候補列の優先順
+    candidates = ["日付", "date", "Date", "DATE", "営業日", "対象日", "年月日"]
+
+    for col in candidates:
+        if col in df.columns:
+            return col
+
+    # 見つからない場合
+    return None
+
 
 def normalize_date(value: Optional[str]) -> Optional[str]:
     """
@@ -191,26 +214,34 @@ def normalize_date(value: Optional[str]) -> Optional[str]:
     return None
 
 
-def filter_csv_by_business_date(df: pd.DataFrame, target_business_date: str, date_column: str = '日付') -> Tuple[pd.DataFrame, Optional[str]]:
+def filter_csv_by_business_date(df: pd.DataFrame, target_business_date: str, date_column: Optional[str] = None) -> Tuple[pd.DataFrame, Optional[str], Optional[str]]:
     """
     CSV DataFrame を対象営業日でフィルタ
 
     Args:
         df: CSV を読み込んだ DataFrame
         target_business_date: 対象営業日（例：2026-05-17）
-        date_column: 日付列の名前（デフォルト：'日付'）
+        date_column: 日付列の名前（デフォルト：None -> 自動検出）
 
     Returns:
-        (フィルタされた DataFrame, エラーメッセージまたはNone)
+        (フィルタされた DataFrame, エラーメッセージまたはNone, 検出した日付列名)
         - エラーメッセージはフィルタ対象行なし時に返される
+        - 日付列名は検出時に返される
     """
+    # 日付列を自動検出
+    if date_column is None:
+        date_column = find_date_column(df)
+
+    if date_column is None:
+        return pd.DataFrame(), "日付列が見つかりません", None
+
     if date_column not in df.columns:
-        return pd.DataFrame(), f"日付列 '{date_column}' が見つかりません"
+        return pd.DataFrame(), f"日付列 '{date_column}' が見つかりません", None
 
     # 対象営業日を正規化
     normalized_target = normalize_date(target_business_date)
     if not normalized_target:
-        return pd.DataFrame(), f"不正な日付形式: {target_business_date}"
+        return pd.DataFrame(), f"不正な日付形式: {target_business_date}", date_column
 
     # CSV内の日付を正規化してフィルタ
     df_copy = df.copy()
@@ -219,9 +250,9 @@ def filter_csv_by_business_date(df: pd.DataFrame, target_business_date: str, dat
     filtered = df_copy[df_copy['_normalized_date'] == normalized_target].drop(columns=['_normalized_date'])
 
     if len(filtered) == 0:
-        return pd.DataFrame(), f"対象営業日 {target_business_date} に該当する行がありません（検出日付: {df[date_column].unique().tolist()}）"
+        return pd.DataFrame(), f"対象営業日 {target_business_date} に該当する行がありません（検出日付: {df[date_column].unique().tolist()}）", date_column
 
-    return filtered, None
+    return filtered, None, date_column
 
 
 # ===== CSV読込 =====
