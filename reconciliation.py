@@ -461,48 +461,57 @@ def normalize_tablet_no(tablet_no: Optional[str]) -> Optional[str]:
 
 
 def match_by_daily_report_no(extraction: ExtractionResult, records: List[SalesforceRecord]) -> Tuple[Optional[SalesforceRecord], List[SalesforceRecord]]:
-    """マッチング① 日報DataNo で照合"""
-    if not extraction.daily_report_no:
-        return None, []
+    """
+    マッチング① 日報DataNo で照合（現在は未使用）
 
-    matches = [r for r in records if r.daily_report_no == extraction.daily_report_no]
-    if len(matches) == 1:
-        return matches[0], matches
-    elif len(matches) > 1:
-        return None, matches  # 複数マッチ
-    else:
-        return None, []
+    2026-05-30: Salesforce CSV には日報DataNo が出力されないため、
+    この関数は常に None を返す。
+
+    PDF側の日報DataNoは確認補助情報・参照情報として保持するが、
+    CSV直接照合キーとしては使用しない。
+    """
+    # Salesforce CSV には日報DataNo が出力されないため、照合不可
+    return None, []
 
 
 def match_by_tablet_no(extraction: ExtractionResult, records: List[SalesforceRecord]) -> Tuple[Optional[SalesforceRecord], List[SalesforceRecord]]:
-    """マッチング② タブレットNo で照合"""
-    if not extraction.tablet_no:
-        return None, []
+    """
+    マッチング② タブレットNo で照合（現在は未使用）
 
-    extraction_tab_norm = normalize_tablet_no(extraction.tablet_no)
-    matches = []
-    for r in records:
-        record_tab_norm = normalize_tablet_no(r.tablet_no)
-        if record_tab_norm == extraction_tab_norm:
-            matches.append(r)
+    2026-05-30: Salesforce CSV にはタブレットNo が出力されないため、
+    この関数は常に None を返す。
 
-    if len(matches) == 1:
-        return matches[0], matches
-    elif len(matches) > 1:
-        return None, matches  # 複数マッチ
-    else:
-        return None, []
+    タブレットと店舗は紐づいており、PDF側のタブレットNoは店舗推定の
+    補助情報として使用するが、CSV直接照合キーとしては使用しない。
+    """
+    # Salesforce CSV にはタブレットNo が出力されないため、照合不可
+    return None, []
 
 
 def match_by_composite_key(extraction: ExtractionResult, records: List[SalesforceRecord]) -> Tuple[Optional[SalesforceRecord], List[SalesforceRecord]]:
-    """マッチング③ 複合キー（日付+法人・店舗コード+氏名）で照合"""
-    if not (extraction.date and extraction.store_code and extraction.staff_name):
+    """
+    マッチング③ 複合キー（日付+取扱店コード）で照合
+
+    2026-05-30 改定：
+    旧方針では日付+店舗コード+staff_name で照合していたが、
+    Salesforce CSV に staff_name が出力されないため修正。
+
+    新方針：
+    日付 + 取扱店コード（store_code）で照合する。
+
+    PDF側の担当者名OCR結果は確認補助情報・候補提示情報として保持するが、
+    CSV直接照合キーとしては使用しない。
+
+    注：集計欄・商品別数字のCSV列対応は片山様回答待ちのため、
+    現時点ではフル照合ではなく、プレマッチング扱い。
+    """
+    if not (extraction.date and extraction.store_code):
         return None, []
 
+    # 日付 + 取扱店コード で照合（staff_name は除外）
     matches = [r for r in records
                if r.csv_date == extraction.date
-               and r.store_code == extraction.store_code
-               and r.staff_name == extraction.staff_name]
+               and r.store_code == extraction.store_code]
 
     if len(matches) == 1:
         return matches[0], matches
@@ -516,11 +525,19 @@ def generate_comparison_key(result: ReconciliationResult) -> Optional[str]:
     """
     初回結果または再照合結果から比較キーを生成
 
-    優先順：
-    1. 日報DataNo (data_no:{値})
-    2. タブレットNo (tablet_no:{値})
-    3. 日付＋店舗＋担当者 (date_store_staff:{日付}:{店舗}:{担当者})
-    4. None（キー不足）
+    2026-05-30 改定：
+    Salesforce CSV に DataNo / TabNo / 担当者名が出力されないため、
+    比較キーから削除。
+
+    新方針：
+    日付 + 取扱店コード を主キーとする。
+
+    優先順（簡略化）：
+    1. 日付＋取扱店コード (date_store_code:{日付}:{店舗コード})
+    2. None（キー不足）
+
+    PDF側のDataNo / TabNo / 担当者名は確認補助情報・参照情報として
+    別途保持するが、CSV直接照合キーとしては使用しない。
 
     Args:
         result: ReconciliationResult
@@ -531,19 +548,11 @@ def generate_comparison_key(result: ReconciliationResult) -> Optional[str]:
     if not result.extraction:
         return None
 
-    # ① 日報DataNo が存在する場合
-    if result.extraction.daily_report_no:
-        return f"data_no:{result.extraction.daily_report_no}"
+    # 日付＋取扱店コード が存在する場合
+    if result.extraction.date and result.extraction.store_code:
+        return f"date_store_code:{result.extraction.date}:{result.extraction.store_code}"
 
-    # ② タブレットNo が存在する場合
-    if result.extraction.tablet_no:
-        return f"tablet_no:{result.extraction.tablet_no}"
-
-    # ③ 日付＋店舗＋担当者 が存在する場合
-    if result.extraction.date and result.extraction.store_code and result.extraction.staff_name:
-        return f"date_store_staff:{result.extraction.date}:{result.extraction.store_code}:{result.extraction.staff_name}"
-
-    # ④ キーが作れない場合
+    # キーが作れない場合
     return None
 
 
