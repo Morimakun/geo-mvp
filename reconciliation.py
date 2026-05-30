@@ -24,9 +24,11 @@ class ExtractionResult:
     - daily_report_no / tablet_no は「識別情報・証跡」
     - PDF右側の商材別実績、左下/右下の手書き集計を抽出
     - CSV側との照合キーは「日付 + 法人・店舗コード + 集計値」
+    - page_number: PDF内のページ番号（複数ページ対応）
     """
     file_name: str
     date: Optional[str]
+    page_number: int = 0  # ページ番号（1から始まる、複数ページ対応）
 
     # 識別情報・証跡（CSVとの直接照合キーではない）
     daily_report_no: Optional[str] = ""  # 帳票を特定するための参照情報
@@ -116,6 +118,7 @@ class ReconciliationResult:
     - 照合キー：「日付 + 法人・店舗(取扱コード) + 委託会社名 + 集計値」
     - 日報DataNo / タブレットNo は識別情報として保持
     - CSVの7項目の先方確認が完了するまで「要確認」が標準
+    - 確認ステータス：初期版の簡易管理機能
     """
     file_name: str
 
@@ -151,6 +154,11 @@ class ReconciliationResult:
     #   "Q4: PDF右側の商材別表はCSVのどの列に対応するか",
     #   ...
     # ]
+
+    # ===== 初期版：確認ステータス（簡易機能） =====
+    # 「未確認」「確認済み」「修正候補」「再照合済み」「要再確認」
+    # STAGE2 で誰がいつ確認したか、問い合わせ中管理、長期履歴は実装予定
+    confirmation_status: str = "未確認"  # "未確認" | "確認済み" | "修正候補" | "再照合済み" | "要再確認"
 
     def __post_init__(self):
         """デフォルト値の初期化"""
@@ -504,6 +512,41 @@ def match_by_composite_key(extraction: ExtractionResult, records: List[Salesforc
         return None, []
 
 
+def generate_comparison_key(result: ReconciliationResult) -> Optional[str]:
+    """
+    初回結果または再照合結果から比較キーを生成
+
+    優先順：
+    1. 日報DataNo (data_no:{値})
+    2. タブレットNo (tablet_no:{値})
+    3. 日付＋店舗＋担当者 (date_store_staff:{日付}:{店舗}:{担当者})
+    4. None（キー不足）
+
+    Args:
+        result: ReconciliationResult
+
+    Returns:
+        比較キー文字列、またはキーが作れない場合は None
+    """
+    if not result.extraction:
+        return None
+
+    # ① 日報DataNo が存在する場合
+    if result.extraction.daily_report_no:
+        return f"data_no:{result.extraction.daily_report_no}"
+
+    # ② タブレットNo が存在する場合
+    if result.extraction.tablet_no:
+        return f"tablet_no:{result.extraction.tablet_no}"
+
+    # ③ 日付＋店舗＋担当者 が存在する場合
+    if result.extraction.date and result.extraction.store_code and result.extraction.staff_name:
+        return f"date_store_staff:{result.extraction.date}:{result.extraction.store_code}:{result.extraction.staff_name}"
+
+    # ④ キーが作れない場合
+    return None
+
+
 def reconcile(extraction: ExtractionResult, records: List[SalesforceRecord]) -> ReconciliationResult:
     """1件の抽出結果を照合"""
 
@@ -618,7 +661,7 @@ def reconcile(extraction: ExtractionResult, records: List[SalesforceRecord]) -> 
 # ===== 結果出力 =====
 
 def output_reconciliation_csv(results: List[ReconciliationResult], output_path: str):
-    """照合結果をCSV出力"""
+    """照合結果をCSV出力（確認ステータスを含む）"""
     with open(output_path, 'w', encoding='utf-8', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=[
             'file_name',
@@ -638,6 +681,7 @@ def output_reconciliation_csv(results: List[ReconciliationResult], output_path: 
             'CSV_left_totals',
             'CSV_right_totals',
             'status',
+            'confirmation_status',
             'differences',
             'review_reasons'
         ])
@@ -662,6 +706,7 @@ def output_reconciliation_csv(results: List[ReconciliationResult], output_path: 
                 'CSV_left_totals': '',  # Phase 1では集計値ベース照合は未実装
                 'CSV_right_totals': '',  # Phase 1では集計値ベース照合は未実装
                 'status': result.status,
+                'confirmation_status': result.confirmation_status,
                 'differences': ' | '.join(result.differences) if result.differences else '',
                 'review_reasons': ' | '.join(result.review_reasons) if result.review_reasons else ''
             }

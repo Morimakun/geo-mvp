@@ -403,6 +403,7 @@ def dict_to_extraction_result(data: dict, filename: str) -> ExtractionResult:
     return ExtractionResult(
         file_name=data.get("filename") or filename,
         date=data.get("date"),
+        page_number=data.get("page_number", 0),  # ページ番号（複数ページ対応）
         daily_report_no=data.get("data_no") or "",
         tablet_no=data.get("tab_no") or "",
         store_code=data.get("store_code") or "",
@@ -415,7 +416,7 @@ def dict_to_extraction_result(data: dict, filename: str) -> ExtractionResult:
 
 
 def extract_results_from_pdfs(pdf_files: list) -> list:
-    """複数の PDF から ExtractionResult リストを生成"""
+    """複数の PDF から ExtractionResult リストを生成（複数ページ対応）"""
     from typing import List
     results = []
     for pdf_file in pdf_files:
@@ -423,12 +424,14 @@ def extract_results_from_pdfs(pdf_files: list) -> list:
         filename = pdf_file.name
 
         try:
-            # 帳票読み取り処理を実行（既存 extractor.py を利用）
-            extracted_dict = extract_items_from_pdf(pdf_bytes, filename)
+            # 帳票読み取り処理を実行（複数ページ対応）
+            # extract_items_from_pdf() は List[Dict] を返すように修正
+            extracted_list = extract_items_from_pdf(pdf_bytes, filename)
 
-            # ExtractionResult に変換（filename を明示的に渡す）
-            result = dict_to_extraction_result(extracted_dict, filename)
-            results.append(result)
+            # 各ページの抽出結果を ExtractionResult に変換
+            for extracted_dict in extracted_list:
+                result = dict_to_extraction_result(extracted_dict, filename)
+                results.append(result)
         except Exception as e:
             st.warning(f"⚠️ {filename} の読み取りに失敗しました: {str(e)}")
 
@@ -761,15 +764,17 @@ with tab1:
             st.markdown('<div class="section-container">', unsafe_allow_html=True)
             st.markdown('<div class="section-title">照合結果一覧</div>', unsafe_allow_html=True)
 
-            # Step 3: 対象営業日・CSV日付・法人・店舗(取扱コード)・委託会社名・ステータス・メモを表示
+            # Step 3: 対象営業日・CSV日付・法人・店舗(取扱コード)・委託会社名・ステータス・確認ステータス・メモを表示
             table_data = []
-            for result in results:
+            for idx, result in enumerate(results):
                 table_data.append({
+                    "ページ": result.extraction.page_number if hasattr(result.extraction, 'page_number') else 1,
                     "対象営業日": str(st.session_state.target_business_date) if st.session_state.target_business_date else "-",
                     "CSV日付": result.matched_record.csv_date if result.matched_record else (result.extraction.date or "-"),
                     "法人・店舗(取扱コード)": result.matched_record.store_code if result.matched_record else (result.extraction.store_code or "-"),
                     "委託会社名": result.matched_record.company_name if result.matched_record else "-",
                     "ステータス": result.status,
+                    "確認ステータス": result.confirmation_status,
                     "メモ": "CSVに日報DataNo/タブレットNo列なし。PDF側識別情報として保持。集計値ベース照合は先方確認後に確定。",
                 })
 
@@ -827,6 +832,32 @@ with tab1:
                     else:
                         status_badge = '<span class="status-pending">? 要確認</span>'
                     st.markdown(f"**ステータス**: {status_badge}", unsafe_allow_html=True)
+
+                # ===== 確認ステータス変更 UI（初期版：簡易機能）=====
+                st.markdown("---")
+                st.markdown("**確認ステータス**（初期版：簡易管理）")
+
+                # session_state に確認ステータスを保存するキー
+                confirmation_key = f"confirmation_{selected_idx}_{st.session_state.get('active_tab_context', 'default')}"
+
+                # 初回アクセス時に初期値を設定
+                if confirmation_key not in st.session_state:
+                    st.session_state[confirmation_key] = result.confirmation_status
+
+                # selectbox で確認ステータスを選択
+                new_confirmation_status = st.selectbox(
+                    "確認状況を選択",
+                    ["未確認", "確認済み", "修正候補", "再照合済み", "要再確認"],
+                    index=["未確認", "確認済み", "修正候補", "再照合済み", "要再確認"].index(st.session_state[confirmation_key]),
+                    label_visibility="collapsed",
+                    key=f"confirmation_select_{selected_idx}_{st.session_state.get('active_tab_context', 'default')}"
+                )
+
+                # 変更を results に反映
+                if new_confirmation_status != result.confirmation_status:
+                    result.confirmation_status = new_confirmation_status
+                    st.session_state[confirmation_key] = new_confirmation_status
+                    st.info(f"✓ 確認ステータスを「{new_confirmation_status}」に更新しました")
 
                 st.markdown("---")
 
@@ -977,6 +1008,140 @@ with tab1:
                 mime="text/csv",
                 use_container_width=True
             )
+
+        # ===== 修正後CSV再取り込み / 再照合セクション =====
+        st.markdown('<div class="section-container">', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">修正後CSVの再取り込み / 再照合</div>', unsafe_allow_html=True)
+        st.markdown('<div class="upload-description">Salesforce側で修正した内容を反映させるため、修正後のCSVを再度アップロードして再照合できます。</div>', unsafe_allow_html=True)
+
+        # 初回結果を保存（初めて照合を実行した時点）
+        if "initial_reconciliation_results" not in st.session_state or st.session_state.initial_reconciliation_results is None:
+            st.session_state.initial_reconciliation_results = results
+
+        col_revised1, col_revised2 = st.columns(2, gap="large")
+
+        with col_revised1:
+            st.markdown('<div class="upload-label">修正後のSalesforce CSV</div>', unsafe_allow_html=True)
+            st.markdown('<div class="upload-description">Salesforce側で修正したCSVをアップロード</div>', unsafe_allow_html=True)
+
+            revised_csv_file = st.file_uploader(
+                "修正後CSVを選択",
+                type=["csv"],
+                key="revised_csv_uploader_pdf",
+                label_visibility="collapsed"
+            )
+
+        with col_revised2:
+            st.markdown('<div class="upload-label">再照合実行</div>', unsafe_allow_html=True)
+
+            if revised_csv_file is not None and st.button("修正後CSVで再照合を実行", type="primary", use_container_width=True, key="rereconcile_btn"):
+                try:
+                    # 修正後CSVを読み込み
+                    revised_df, encoding_used, error_msg = read_csv_with_fallback(revised_csv_file)
+
+                    if error_msg:
+                        st.error(f"❌ {error_msg}")
+                    else:
+                        st.info(f"✓ 修正後CSV読込成功：{len(revised_df)}行")
+
+                        # 修正後CSVから SalesforceRecord を生成
+                        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
+                            revised_df.to_csv(tmp.name, index=False, encoding='utf-8')
+                            tmp_path = tmp.name
+
+                        revised_records = load_salesforce_csv(tmp_path)
+
+                        # 同じPDF結果で再照合
+                        rereconciled_results = []
+                        if st.session_state.extraction_results_from_pdf:
+                            for extraction in st.session_state.extraction_results_from_pdf:
+                                result = reconcile(extraction, revised_records)
+                                rereconciled_results.append(result)
+
+                        st.session_state.rereconciliation_results = rereconciled_results
+                        st.success(f"✓ {len(rereconciled_results)}件の再照合が完了しました")
+
+                        # 初回結果との比較（キーベース照合）
+                        st.markdown("**再照合結果の比較（キーベース照合）**")
+
+                        # キーベース照合用の辞書を作成
+                        from reconciliation import generate_comparison_key
+
+                        rereconciled_by_key = {}
+                        for result in rereconciled_results:
+                            key = generate_comparison_key(result)
+                            if key:
+                                rereconciled_by_key[key] = result
+
+                        comparison_data = []
+                        resolved_count = 0
+                        still_mismatch_count = 0
+                        still_pending_count = 0
+                        newly_mismatch_count = 0
+
+                        for initial in st.session_state.initial_reconciliation_results:
+                            initial_key = generate_comparison_key(initial)
+
+                            # 再照合結果をキーで検索
+                            rereconciled = None
+                            if initial_key:
+                                rereconciled = rereconciled_by_key.get(initial_key)
+
+                            if not rereconciled:
+                                # 比較キー不足の場合
+                                status_change = "⚠️ 比較キー不足"
+                                row_data = {
+                                    "ファイル": initial.file_name,
+                                    "初回判定": initial.status,
+                                    "再照合判定": "（比較できず）",
+                                    "照合キー": initial_key or "なし",
+                                    "変化": status_change
+                                }
+                            else:
+                                # キーベースで比較結果を分類
+                                if initial.status == "不一致" and rereconciled.status in ["一致", "要確認"]:
+                                    status_change = "✓ 解消"
+                                    resolved_count += 1
+                                elif initial.status == "不一致" and rereconciled.status == "不一致":
+                                    status_change = "⚠️ まだ不一致"
+                                    still_mismatch_count += 1
+                                elif initial.status == "要確認" and rereconciled.status == "要確認":
+                                    status_change = "? 要確認のまま"
+                                    still_pending_count += 1
+                                elif initial.status in ["一致", "要確認"] and rereconciled.status == "不一致":
+                                    status_change = "❌ 新たに不一致"
+                                    newly_mismatch_count += 1
+                                else:
+                                    status_change = "→ " + rereconciled.status
+
+                                row_data = {
+                                    "ファイル": initial.file_name,
+                                    "初回判定": initial.status,
+                                    "再照合判定": rereconciled.status,
+                                    "照合キー": initial_key or "なし",
+                                    "変化": status_change
+                                }
+
+                            comparison_data.append(row_data)
+
+                        df_comparison = pd.DataFrame(comparison_data)
+                        st.dataframe(df_comparison, use_container_width=True, height=250)
+
+                        # 統計表示
+                        col_stat1, col_stat2, col_stat3, col_stat4 = st.columns(4, gap="small")
+                        with col_stat1:
+                            st.metric("解消済み", f"{resolved_count}件")
+                        with col_stat2:
+                            st.metric("まだ不一致", f"{still_mismatch_count}件")
+                        with col_stat3:
+                            st.metric("要確認のまま", f"{still_pending_count}件")
+                        with col_stat4:
+                            st.metric("新たに不一致", f"{newly_mismatch_count}件")
+
+                except Exception as e:
+                    st.error(f"再照合処理エラー: {str(e)}")
+
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ===== Tab 2: CSVデモモード =====
@@ -1266,6 +1431,32 @@ with tab2:
                     else:
                         status_badge = '<span class="status-pending">? 要確認</span>'
                     st.markdown(f"**ステータス**: {status_badge}", unsafe_allow_html=True)
+
+                # ===== 確認ステータス変更 UI（初期版：簡易機能）=====
+                st.markdown("---")
+                st.markdown("**確認ステータス**（初期版：簡易管理）")
+
+                # session_state に確認ステータスを保存するキー
+                confirmation_key = f"confirmation_{selected_idx}_{st.session_state.get('active_tab_context', 'default')}"
+
+                # 初回アクセス時に初期値を設定
+                if confirmation_key not in st.session_state:
+                    st.session_state[confirmation_key] = result.confirmation_status
+
+                # selectbox で確認ステータスを選択
+                new_confirmation_status = st.selectbox(
+                    "確認状況を選択",
+                    ["未確認", "確認済み", "修正候補", "再照合済み", "要再確認"],
+                    index=["未確認", "確認済み", "修正候補", "再照合済み", "要再確認"].index(st.session_state[confirmation_key]),
+                    label_visibility="collapsed",
+                    key=f"confirmation_select_{selected_idx}_{st.session_state.get('active_tab_context', 'default')}"
+                )
+
+                # 変更を results に反映
+                if new_confirmation_status != result.confirmation_status:
+                    result.confirmation_status = new_confirmation_status
+                    st.session_state[confirmation_key] = new_confirmation_status
+                    st.info(f"✓ 確認ステータスを「{new_confirmation_status}」に更新しました")
 
                 st.markdown("---")
 
