@@ -337,6 +337,10 @@ if "filtered_salesforce_records" not in st.session_state:
 if "detected_date_column" not in st.session_state:
     st.session_state.detected_date_column = None
 
+# 再照合の比較結果（ボタン押下後も表示を維持するために保持）
+if "rereconciliation_comparison" not in st.session_state:
+    st.session_state.rereconciliation_comparison = None
+
 # ===== ヘルパー関数 =====
 
 def read_csv_with_fallback(uploaded_file):
@@ -508,10 +512,22 @@ with tab1:
 
                             # 日付候補を表示
                             st.markdown("**📅 CSV内の日付候補**")
-                            cols = st.columns(len(st.session_state.csv_date_candidates))
-                            for col, (date, count) in zip(cols, st.session_state.csv_date_candidates.items()):
-                                with col:
-                                    st.metric(f"{date}", f"{count}件")
+                            date_items = list(st.session_state.csv_date_candidates.items())
+                            MAX_DATE_COLS = 6
+                            if len(date_items) == 0:
+                                st.caption("日付候補が見つかりませんでした")
+                            elif len(date_items) <= MAX_DATE_COLS:
+                                cols = st.columns(len(date_items))
+                                for col, (date, count) in zip(cols, date_items):
+                                    with col:
+                                        st.metric(f"{date}", f"{count}件")
+                            else:
+                                # 日付が多い場合は列が潰れるため、表形式でコンパクト表示
+                                st.caption(f"日付候補が{len(date_items)}件あります（一覧表示）")
+                                date_df = pd.DataFrame(
+                                    [{"日付": d, "件数": c} for d, c in date_items]
+                                )
+                                st.dataframe(date_df, use_container_width=True, hide_index=True, height=200)
 
                         # CSV全体をメモリに保持
                         st.session_state.salesforce_csv = df_csv
@@ -527,10 +543,16 @@ with tab1:
             st.markdown('<div class="section-title">対象営業日を選択</div>', unsafe_allow_html=True)
             st.markdown('<div class="upload-description">照合対象となる営業日を選択してください。CSV内の日付列をこの日付で絞り込みます。</div>', unsafe_allow_html=True)
 
+            # CSV内に存在する日付をヒントとして表示
+            if st.session_state.csv_date_candidates:
+                _candidate_dates = "、".join(str(d) for d in st.session_state.csv_date_candidates.keys())
+                st.caption(f"CSV内に存在する日付：{_candidate_dates}")
+
             target_date = st.date_input(
                 "対象営業日",
                 value=None,
-                label_visibility="collapsed"
+                label_visibility="collapsed",
+                help="CSVに存在する日付を選択してください。該当データがない日付を選ぶと照合対象は0件になります。"
             )
 
             if target_date is not None:
@@ -620,7 +642,10 @@ with tab1:
                             # Step 3: フィルタ済みCSVレコードを生成
                             # フィルタ済みDataFrameから SalesforceRecord リストを再構築
                             filtered_df = st.session_state.filtered_csv_df
-                            date_col = filtered_df.columns[-1]  # 日付列は最後の列
+                            # 検出済みの日付列を優先使用（フォールバック：最後の列）
+                            date_col = st.session_state.detected_date_column
+                            if not date_col or date_col not in filtered_df.columns:
+                                date_col = filtered_df.columns[-1]
 
                             # フィルタ済みレコードを生成（簡易版：最初の数項目だけサポート）
                             filtered_records = []
@@ -766,7 +791,13 @@ with tab1:
             st.markdown('<div class="section-container">', unsafe_allow_html=True)
             st.markdown('<div class="section-title">照合結果一覧</div>', unsafe_allow_html=True)
 
-            # Step 3: 対象営業日・CSV日付・法人・店舗(取扱コード)・委託会社名・ステータス・確認ステータス・メモを表示
+            # 全行共通の注記は表の列ではなくキャプションで1回だけ表示（表の横伸びを防止）
+            st.caption(
+                "※ 全行共通: CSVに日報DataNo/タブレットNo列がないため、PDF側は識別補助情報として保持。"
+                "集計値ベース照合は先方確認後に確定。"
+            )
+
+            # Step 3: 対象営業日・CSV日付・法人・店舗(取扱コード)・委託会社名・ステータス・確認ステータスを表示
             table_data = []
             for idx, result in enumerate(results):
                 table_data.append({
@@ -777,7 +808,6 @@ with tab1:
                     "委託会社名": result.matched_record.company_name if result.matched_record else "-",
                     "ステータス": result.status,
                     "確認ステータス": result.confirmation_status,
-                    "メモ": "CSVに日報DataNo/タブレットNo列なし。PDF側識別情報として保持。集計値ベース照合は先方確認後に確定。",
                 })
 
             df = pd.DataFrame(table_data)
@@ -1043,6 +1073,7 @@ with tab1:
 
                     if error_msg:
                         st.error(f"❌ {error_msg}")
+                        st.session_state.rereconciliation_comparison = None
                     else:
                         st.info(f"✓ 修正後CSV読込成功：{len(revised_df)}行")
 
@@ -1061,12 +1092,8 @@ with tab1:
                                 rereconciled_results.append(result)
 
                         st.session_state.rereconciliation_results = rereconciled_results
-                        st.success(f"✓ {len(rereconciled_results)}件の再照合が完了しました")
 
                         # 初回結果との比較（キーベース照合）
-                        st.markdown("**再照合結果の比較（キーベース照合）**")
-
-                        # キーベース照合用の辞書を作成
                         from reconciliation import generate_comparison_key
 
                         rereconciled_by_key = {}
@@ -1126,22 +1153,45 @@ with tab1:
 
                             comparison_data.append(row_data)
 
-                        df_comparison = pd.DataFrame(comparison_data)
-                        st.dataframe(df_comparison, use_container_width=True, height=250)
-
-                        # 統計表示
-                        col_stat1, col_stat2, col_stat3, col_stat4 = st.columns(4, gap="small")
-                        with col_stat1:
-                            st.metric("解消済み", f"{resolved_count}件")
-                        with col_stat2:
-                            st.metric("まだ不一致", f"{still_mismatch_count}件")
-                        with col_stat3:
-                            st.metric("要確認のまま", f"{still_pending_count}件")
-                        with col_stat4:
-                            st.metric("新たに不一致", f"{newly_mismatch_count}件")
+                        # 比較結果を session_state に保持（再描画後も表示を維持・フル幅で表示）
+                        st.session_state.rereconciliation_comparison = {
+                            "comparison_data": comparison_data,
+                            "resolved": resolved_count,
+                            "still_mismatch": still_mismatch_count,
+                            "still_pending": still_pending_count,
+                            "newly_mismatch": newly_mismatch_count,
+                            "revised_rows": len(revised_df),
+                            "rereconciled_count": len(rereconciled_results),
+                        }
+                        st.success(f"✓ {len(rereconciled_results)}件の再照合が完了しました")
 
                 except Exception as e:
                     st.error(f"再照合処理エラー: {str(e)}")
+                    st.session_state.rereconciliation_comparison = None
+
+        # ===== 再照合の比較結果（フル幅・永続表示）=====
+        comparison = st.session_state.rereconciliation_comparison
+        if comparison:
+            st.markdown('<div style="margin-top: 1rem;"></div>', unsafe_allow_html=True)
+            st.markdown("**再照合結果の比較（キーベース照合）**")
+            st.caption(
+                f"修正後CSV {comparison['revised_rows']}行 / 再照合 {comparison['rereconciled_count']}件 ・ "
+                "照合キー（日付＋取扱店コード）で初回と突き合わせています。"
+            )
+
+            df_comparison = pd.DataFrame(comparison["comparison_data"])
+            st.dataframe(df_comparison, use_container_width=True, height=250)
+
+            # 統計表示
+            col_stat1, col_stat2, col_stat3, col_stat4 = st.columns(4, gap="small")
+            with col_stat1:
+                st.metric("解消済み", f"{comparison['resolved']}件")
+            with col_stat2:
+                st.metric("まだ不一致", f"{comparison['still_mismatch']}件")
+            with col_stat3:
+                st.metric("要確認のまま", f"{comparison['still_pending']}件")
+            with col_stat4:
+                st.metric("新たに不一致", f"{comparison['newly_mismatch']}件")
 
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1367,6 +1417,9 @@ with tab2:
             st.markdown('<div class="section-container">', unsafe_allow_html=True)
             st.markdown('<div class="section-title">照合結果一覧</div>', unsafe_allow_html=True)
 
+            # 全行共通の注記は表の列ではなくキャプションで1回だけ表示（表の横伸びを防止）
+            st.caption("※ 全行共通: CSVに日報DataNo/タブレットNo列がないため、PDF側は識別補助情報として保持。")
+
             table_data = []
             for result in results:
                 table_data.append({
@@ -1376,7 +1429,6 @@ with tab2:
                     "法人・店舗(取扱コード)": result.extraction.store_code or "-",
                     "担当者": result.extraction.staff_name or "-",
                     "ステータス": result.status,
-                    "メモ": getattr(result, "memo", "") or "CSVに日報DataNo/タブレットNo列なし。PDF側識別情報として保持。",
                 })
 
             df = pd.DataFrame(table_data)
