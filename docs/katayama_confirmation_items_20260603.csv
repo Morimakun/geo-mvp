@@ -1,16 +1,7 @@
-"category","priority","section","subsection","fax_item_name","current_csv_column_code","current_csv_column_name","current_status","question_for_katayama","memo"
-"A","high","内訳","⑦CATV〜⑫引越予定(HT/Mz)","声掛側3列（組数/内提案/内成約）","","","master rows missing","⑦CATV〜⑫引越予定(HT/Mz) の各項目について、声掛側3列に対応するCSV列コードを教えてください。","紹介側は BS/BT/BU, BV/BW/BX, BY/BZ/CA, CB/CC/CD, CE/CF/CG, CH/CI/CJ を確認済み。声掛側は現行マスタ未登録。連番推測は未実施。"
-"A","high","内訳","⑭eo光ユーザー数(MT)","声掛側3列（組数/内提案/内成約）","FC / FD / FE","Meo光既存ユーザーお声がけ数（MT） / 内eo光既存ユーザー提案数（MT） / 内eo光既存ユーザー成約数（MT）","uncertain / needs_confirmation=true","⑭eo光ユーザー数(MT) の声掛側3列は FC / FD / FE で合っていますか。異なる場合は正しい列コードを教えてください。","PDF赤字が読みにくく、現行は周辺パターンからの仮置き。"
-"A","high","内訳","⑮導入物件数(MT)","声掛側3列（組数/内提案/内成約）","FF / FG / FH","N導入物件お声がけ数（MT） / 内導入物件提案数（MT） / 内導入物件成約数（MT）","uncertain / needs_confirmation=true","⑮導入物件数(MT) の声掛側3列は FF / FG / FH で合っていますか。異なる場合は正しい列コードを教えてください。","PDF赤字が読みにくく、現行は周辺パターンからの仮置き。"
-"A","medium","内訳","⑯未利用者数(MT)・⑰引越予定ユーザー数(MT)","声掛側3列（組数/内提案/内成約）","","","master rows missing","⑯未利用者数(MT) と ⑰引越予定ユーザー数(MT) について、声掛側3列に対応するCSV列コードを教えてください。","紹介側は ⑯=CR/CS/CT、⑰=CU/CV/CW を確認済み。声掛側は現行マスタ未登録。"
-"A","medium","内訳","合計","声掛側3列（組数/内提案/内成約）","DA / DC / DE","新規ターゲットお声がけ総数 / 内新規ターゲット提案数 / 内新規ターゲット成約数","uncertain / needs_confirmation=true","内訳合計の声掛側3列は DA / DC / DE で合っていますか。列順も含めてご確認をお願いします。","PDF上は読みにくく、現行名と fax_item_name の対応順も確認したい。"
-"B","high","既存対応","28","コースアップ⇒5G+10G","","","uncertain / needs_confirmation=true","コースアップ⇒5G+10G に対応するCSV列はありますか。ある場合は列コードと列名を教えてください。5G と 10G の合算扱いでよいかも確認したいです。","25=IF(1G)、26=IG(5G)、27=IH(10G) は確認済み。28 だけCSV列が未設定。"
-"C","low","既存対応","10","みやブル","HQ","インターネットサギウォール","confirmed / name mismatch note","PDFの「みやブル」は CSV の「インターネットサギウォール」と同一項目でよいですか。","mapping_status=confirmed だが memo に名称差異あり。"
-"C","low","既存対応","12","おうちの環境保険","HS","おうちの機器保障","confirmed / name mismatch note","PDFの「おうちの環境保険」は CSV の「おうちの機器保障」と同一項目でよいですか。","mapping_status=confirmed だが memo に名称差異あり。"
-"D","high","スタッフ名","staff_name_master","クロダ / 黒田 / くろだ","","","not found in staff_name_master.csv","帳票上の「クロダ」に該当するスタッフ様は一覧外でしょうか。正式表記・カナ表記・所属情報があれば教えてください。","staff_name_master.csv の28名を確認したが該当なし。"
-"E","high","内訳","②フレッツ光ユーザー数(HT/Mz)","フレッツ光_紹介_組数","BP","ENURO光ユーザー紹介数（HT/Mz）","uncertain / needs_confirmation=true","②フレッツ光ユーザー数(HT/Mz) の紹介_組数は BP でよいですか。それとも別列でしょうか。","PDF赤字が読みにくく、memo では BP か BF か要確認。CSV列名も ENURO光 表記。"
-"E","medium","内訳","⑭eo光ユーザー数(MT)","紹介側2列（内提案/内成約）","CM / CN","内eo光既存ユーザーの提案数（MT） / 内eo光既存ユーザー成約数（MT）","uncertain / needs_confirmation=true","⑭eo光ユーザー数(MT) の紹介側2列は CM / CN で合っていますか。","内提案は PDF 赤字が「ネット通知のNo2」と重なり判読困難。内成約は周辺パターンからの仮置き。"
-"E","medium","内訳","⑮導入物件数(MT)","導入物件_紹介_内成約","CQ","内導入物件成約数（MT）","uncertain / needs_confirmation=true","⑮導入物件数(MT) の紹介_内成約は CQ で合っていますか。","紹介_組数 CO と 紹介_内提案 CP は確認済み。"
-"E","medium","内訳","⑱未導入物件数(MT)","未導入物件_紹介","CX","Q未導入物件紹介数（MT）","uncertain / needs_confirmation=true","⑱未導入物件数(MT) は CX で合っていますか。1コードのみの項目でよいかも確認したいです。","PDF赤字が判読困難。"
-"E","medium","内訳","⑲ヒアリング不可or不明(HT/Mz/MT)","ヒアリング不可_紹介","CY","Rヒアリング不可or不明紹介数(HT/Mz/MT)","uncertain / needs_confirmation=true","⑲ヒアリング不可or不明(HT/Mz/MT) は CY で合っていますか。1コードのみの項目でよいかも確認したいです。","PDF赤字が判読困難。"
-"E","high","識別情報","","店舗（取扱店コード）","JV","委託会社名","uncertain / needs_confirmation=true","店舗（取扱店コード）に対応する列は JV でしょうか。それとも JU（col281「法人・店舗(取扱コード)」）でしょうか。","現行は JV=col282「委託会社名」を仮置き。store_code_mapping 側では col281 が店コード一致。"
+項目番号,項目名,優先度,状態,片山様回答,反映状況
+1,⑦CATV以降の声掛側列コード,高,確認済み,"⑦EJ/EK/EL,⑧EM/EN/EO,⑨EP/EQ/ER,⑩ES/ET/EU,⑪EV/EW/EX,⑫EY/EZ/FA,⑭FC/FD/FE,⑮EF/FG/FH,⑯FI/FJ/FK",反映済み（2026-06-03）
+2,店舗コード列,中,確認済み,JU（JVではなく）,反映済み（2026-06-03）
+3,コースアップ5G,中,確認済み,IG,反映済み（2026-06-03）
+4,コースアップ10G,中,確認済み,IH,反映済み（2026-06-03）
+5,クロダ問題,高,未確認,未確認のため引き続き確認待ち,未反映（確認待ち）
+6,名称不一致（みやブル等）,低,未確認,回答なし,未反映（確認待ち）

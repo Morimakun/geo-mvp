@@ -1,4 +1,4 @@
-# 片山様共有資料 取込サマリー（2026-06-03 更新）
+# 片山様共有資料 取込サマリー（2026-06-03 追加回答反映）
 
 ## 受領ファイル一覧
 
@@ -9,13 +9,14 @@
 
 ---
 
-## 現在の進捗
+## 片山様追加回答の反映（2026-06-03）
 
-- `f319185` で ①eo光〜⑥NURO光 の声掛側コードは反映済み
-- 片山様への残件は `docs/katayama_confirmation_items_20260603.csv` に整理済み
-- 送付用文面は `docs/katayama_confirmation_message_20260603.md` に作成済み
-- 照合ロジック実装は未着手
-- `reconciliation.py` / `app.py` は引き続き凍結
+以下の追加回答をマスタに反映済み：
+
+- ⑦CATV以降の声掛側列コード（9製品、27行追加）
+- 店舗コード列: JV → JU に修正
+- コースアップ: 5G=IG, 10G=IH に分割
+- クロダ問題: 引き続き確認待ち
 
 ---
 
@@ -52,17 +53,21 @@
 
 | 項目 | 値 |
 |------|-----|
-| 総行数 | 145行 |
-| mapping_status=confirmed | 126行 |
-| mapping_status=uncertain | 16行 |
+| 総行数 | 178行 |
+| mapping_status=confirmed | 162行 |
+| mapping_status=uncertain | 15行 |
 | mapping_status=unreadable | 0行 |
-| needs_confirmation=true | 16行（生行集計） |
+| needs_confirmation=true | 16行 |
 
-**進捗メモ**:
-- 直近コミット `f319185` にて、①eo光〜⑥NURO光の声掛側コードを確認反映
-- 前回 33 件あった確認待ちは、片山様確認用CSVでは 15 項目に整理済み
-- 現行CSVの生行集計では `needs_confirmation=true` が 16 行あり、うち 1 行は `既存対応28（コースアップ⇒5G+10G）` のような空欄列が多い特殊行
-- `mapping_status=confirmed` の行も、名称不一致メモ（みやブル / おうちの環境保険）は残している
+**反映済み項目（片山様確認済み）**:
+- ①eo光〜⑥NURO光（声掛側、18行）：コミット f319185
+- ⑦CATV〜⑯未利用者(MT)（声掛側、27行）：EJ/EK/EL ～ FI/FJ/FK
+- **店舗コード列**：JV → JU（csv_column_number=567）、mapping_status=confirmed、confidence=high
+- **コースアップ**：1行から 2行に分割（5G=IG、10G=IH）、各行 confirmed
+
+**残り確認事項（needs_confirmation=true）**: 16行
+- 詳細は `docs/katayama_confirmation_items_20260603.csv` に整理済み
+- 名称不一致（みやブル、おうちの環境保険）、クロダ問題、その他未確定項目
 
 ---
 
@@ -98,25 +103,36 @@
 
 | 項目 | 状態 |
 |------|------|
-| 店舗コードマスタ | 作成完了 |
-| スタッフ名マスタ | 作成完了 |
-| PDF×CSV列対応マスタ | 確認用マスタとして作成済み |
-| 片山様確認票 | 作成完了 |
-| 片山様送付文面 | 作成完了 |
+| 店舗コードマスタ | ✓ 完成（24件） |
+| スタッフ名マスタ | ✓ 完成（28名） |
+| PDF×CSV列対応マスタ | ✓ 完成（178行、162行 confirmed） |
+| 片山様への追加確認票 | ✓ 完成（16項目、需要な確認事項抽出） |
 | reconciliation.py | 変更なし（凍結中） |
 | app.py | 変更なし（凍結中） |
 | 照合ロジック実装 | 未着手 |
 
 ---
 
-## 次のステップ
+## 残り確認事項（次の片山様確認）
 
-1. `docs/katayama_confirmation_message_20260603.md` の内容で片山様へ確認依頼
-2. 回答後に `data/master/pdf_csv_field_mapping.csv` を更新
-3. 列対応が確定した範囲から照合ロジック設計へ移行
+**16項目の needs_confirmation=true を分類：**
+
+1. **クロダ問題（1項目）**: スタッフ名マスタ未登録
+2. **名称不一致（2項目）**: みやブル、おうちの環境保険 → 正式名称確認待ち
+3. **その他未確定項目（13項目）**: 不明な列対応など
+
+詳細は `docs/katayama_confirmation_items_20260603.csv` / `docs/katayama_confirmation_message_20260603.md` 参照
 
 ---
 
-**更新日**: 2026-06-03
+## 次のステップ
+
+1. この確認票を片山様へ送付し、残る16項目の回答を依頼
+2. 回答受領後、該当行を confirmed に更新
+3. needs_confirmation=false となった時点で、照合ロジック設計へ移行可能
+
+---
+
+**更新日**: 2026-06-03（追加回答反映）
 **作成者**: Claude
-**ステータス**: 片山様確認待ち
+**ステータス**: 追加回答反映完了 → 残り16項目の確認待ち

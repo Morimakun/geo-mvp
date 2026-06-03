@@ -47,37 +47,70 @@ section,subsection,fax_item_name,fax_row_code,csv_column_code,csv_column_number,
 内訳,⑦CATVユーザー数(HT/Mz),CATV_紹介_組数,V,BS,71,FCATVユーザー紹介数（HT/Mz）,紹介_組数,false,confirmed,high,false,対応表.pdf,
 内訳,⑦CATVユーザー数(HT/Mz),CATV_紹介_内提案,V,BT,72,内CATV提案数（HT/Mz）,紹介_内提案,false,confirmed,high,false,対応表.pdf,
 内訳,⑦CATVユーザー数(HT/Mz),CATV_紹介_内成約,V,BU,73,内CATV成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,
+内訳,⑦CATVユーザー数(HT/Mz),CATV_声掛__組数,V,EJ,140,内CATV成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑦CATVユーザー数(HT/Mz),CATV_声掛__内提案,V,EK,141,内CATV成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑦CATVユーザー数(HT/Mz),CATV_声掛__内成約,V,EL,142,内CATV成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
 内訳,⑧ADSLユーザー数(HT/Mz),ADSL_紹介_組数,W,BV,74,GADSLユーザー紹介数（HT/Mz）,紹介_組数,false,confirmed,high,false,対応表.pdf,
 内訳,⑧ADSLユーザー数(HT/Mz),ADSL_紹介_内提案,W,BW,75,内ADSL提案数（HT/Mz）,紹介_内提案,false,confirmed,high,false,対応表.pdf,
 内訳,⑧ADSLユーザー数(HT/Mz),ADSL_紹介_内成約,W,BX,76,内ADSL成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,
+内訳,⑧ADSLユーザー数(HT/Mz),ADSL_声掛__組数,W,EM,143,内ADSL成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑧ADSLユーザー数(HT/Mz),ADSL_声掛__内提案,W,EN,144,内ADSL成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑧ADSLユーザー数(HT/Mz),ADSL_声掛__内成約,W,EO,145,内ADSL成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
 内訳,⑨モバイルユーザー数(HT/Mz),モバイル_紹介_組数,X,BY,77,Hモバイルユーザー紹介数（HT/Mz）,紹介_組数,false,confirmed,high,false,対応表.pdf,
 内訳,⑨モバイルユーザー数(HT/Mz),モバイル_紹介_内提案,X,BZ,78,内モバイル提案数（HT/Mz）,紹介_内提案,false,confirmed,high,false,対応表.pdf,
 内訳,⑨モバイルユーザー数(HT/Mz),モバイル_紹介_内成約,X,CA,79,内モバイル成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,
+内訳,⑨モバイルユーザー数(HT/Mz),モバイル_声掛__組数,X,EP,146,内モバイル成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑨モバイルユーザー数(HT/Mz),モバイル_声掛__内提案,X,EQ,147,内モバイル成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑨モバイルユーザー数(HT/Mz),モバイル_声掛__内成約,X,ER,148,内モバイル成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
 内訳,⑩SBAirユーザー数(HT/Mz),SBAir_紹介_組数,Y,CB,80,ISBAirユーザー紹介数（HT/Mz）,紹介_組数,false,confirmed,high,false,対応表.pdf,
 内訳,⑩SBAirユーザー数(HT/Mz),SBAir_紹介_内提案,Y,CC,81,内SBAir提案数（HT/Mz）,紹介_内提案,false,confirmed,high,false,対応表.pdf,
 内訳,⑩SBAirユーザー数(HT/Mz),SBAir_紹介_内成約,Y,CD,82,内SBAir成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,
+内訳,⑩SBAirユーザー数(HT/Mz),SBAir_声掛__組数,Y,ES,149,内SBAir成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑩SBAirユーザー数(HT/Mz),SBAir_声掛__内提案,Y,ET,150,内SBAir成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑩SBAirユーザー数(HT/Mz),SBAir_声掛__内成約,Y,EU,151,内SBAir成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
 内訳,⑪未利用者数(HT/Mz),未利用者_紹介_組数,Z,CE,83,J未利用者紹介数（HT/Mz）,紹介_組数,false,confirmed,high,false,対応表.pdf,
 内訳,⑪未利用者数(HT/Mz),未利用者_紹介_内提案,Z,CF,84,内未利用者提案数（HT/Mz）,紹介_内提案,false,confirmed,high,false,対応表.pdf,
 内訳,⑪未利用者数(HT/Mz),未利用者_紹介_内成約,Z,CG,85,内未利用者成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,
+内訳,⑪未利用者数(HT/Mz),未利用者_声掛__組数,Z,EV,152,内未利用者成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑪未利用者数(HT/Mz),未利用者_声掛__内提案,Z,EW,153,内未利用者成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑪未利用者数(HT/Mz),未利用者_声掛__内成約,Z,EX,154,内未利用者成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
 内訳,⑫引越予定ユーザー数(HT/Mz),引越予定_紹介_組数,AA,CH,86,K引越予定ユーザー紹介数（HT/Mz）,紹介_組数,false,confirmed,high,false,対応表.pdf,
 内訳,⑫引越予定ユーザー数(HT/Mz),引越予定_紹介_内提案,AA,CI,87,内引越予定提案数（HT/Mz）,紹介_内提案,false,confirmed,high,false,対応表.pdf,
 内訳,⑫引越予定ユーザー数(HT/Mz),引越予定_紹介_内成約,AA,CJ,88,内引越予定成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,
+内訳,⑫引越予定ユーザー数(HT/Mz),引越予定_声掛__組数,AA,EY,155,内引越予定成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑫引越予定ユーザー数(HT/Mz),引越予定_声掛__内提案,AA,EZ,156,内引越予定成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑫引越予定ユーザー数(HT/Mz),引越予定_声掛__内成約,AA,FA,157,内引越予定成約数（HT/Mz）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
 内訳,⑬エリア外数(HT/Mz),エリア外_紹介,AB,CK,89,Lエリア外紹介数（HT/Mz）,紹介,false,confirmed,high,false,対応表.pdf,紹介のみ（声掛なし）
 内訳,⑭eo光ユーザー数(MT),eo光MT_紹介_組数,AC,CL,90,Meo光ユーザー既存ユーザー紹介数（MT）,紹介_組数,false,confirmed,high,false,対応表.pdf,
 内訳,⑭eo光ユーザー数(MT),eo光MT_紹介_内提案,AC,CM,91,内eo光既存ユーザーの提案数（MT）,紹介_内提案,false,uncertain,medium,true,対応表.pdf,PDFの赤字が「ネット通知のNo2」と重なり判読困難
 内訳,⑭eo光ユーザー数(MT),eo光MT_紹介_内成約,AC,CN,92,内eo光既存ユーザー成約数（MT）,紹介_内成約,false,uncertain,medium,true,対応表.pdf,周辺パターンからの推定
+内訳,⑭eo光ユーザー数(MT),eo光MT_声掛__組数,AC,FC,159,内eo光既存ユーザー成約数（MT）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑭eo光ユーザー数(MT),eo光MT_声掛__内提案,AC,FD,160,内eo光既存ユーザー成約数（MT）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑭eo光ユーザー数(MT),eo光MT_声掛__内成約,AC,FE,161,内eo光既存ユーザー成約数（MT）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
 内訳,⑭eo光ユーザー数(MT),eo光MT_声掛_組数,AC,FC,159,Meo光既存ユーザーお声がけ数（MT）,声掛_組数,false,uncertain,medium,true,対応表.pdf,周辺パターンからの推定
 内訳,⑭eo光ユーザー数(MT),eo光MT_声掛_内提案,AC,FD,160,内eo光既存ユーザー提案数（MT）,声掛_内提案,false,uncertain,medium,true,対応表.pdf,周辺パターンからの推定
 内訳,⑭eo光ユーザー数(MT),eo光MT_声掛_内成約,AC,FE,161,内eo光既存ユーザー成約数（MT）,声掛_内成約,false,uncertain,medium,true,対応表.pdf,周辺パターンからの推定
+内訳,⑭eo光ユーザー数(MT),eo光MT_声掛__組数,AC,FC,159,内eo光既存ユーザー成約数（MT）,声掛_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑭eo光ユーザー数(MT),eo光MT_声掛__内提案,AC,FD,160,内eo光既存ユーザー成約数（MT）,声掛_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑭eo光ユーザー数(MT),eo光MT_声掛__内成約,AC,FE,161,内eo光既存ユーザー成約数（MT）,声掛_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
 内訳,⑮導入物件数(MT),導入物件_紹介_組数,AP,CO,93,N導入物件紹介数（MT）,紹介_組数,false,confirmed,high,false,対応表.pdf,
 内訳,⑮導入物件数(MT),導入物件_紹介_内提案,AP,CP,94,内導入物件提案数（MT）,紹介_内提案,false,confirmed,high,false,対応表.pdf,
 内訳,⑮導入物件数(MT),導入物件_紹介_内成約,AP,CQ,95,内導入物件成約数（MT）,紹介_内成約,false,uncertain,medium,true,対応表.pdf,PDFの赤字が判読困難
+内訳,⑮導入物件数(MT),導入物件_声掛__組数,AP,EF,136,内導入物件成約数（MT）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑮導入物件数(MT),導入物件_声掛__内提案,AP,FG,163,内導入物件成約数（MT）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑮導入物件数(MT),導入物件_声掛__内成約,AP,FH,164,内導入物件成約数（MT）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
 内訳,⑮導入物件数(MT),導入物件_声掛_組数,AP,FF,162,N導入物件お声がけ数（MT）,声掛_組数,false,uncertain,medium,true,対応表.pdf,周辺パターンからの推定
 内訳,⑮導入物件数(MT),導入物件_声掛_内提案,AP,FG,163,内導入物件提案数（MT）,声掛_内提案,false,uncertain,medium,true,対応表.pdf,周辺パターンからの推定
 内訳,⑮導入物件数(MT),導入物件_声掛_内成約,AP,FH,164,内導入物件成約数（MT）,声掛_内成約,false,uncertain,medium,true,対応表.pdf,周辺パターンからの推定
+内訳,⑮導入物件数(MT),導入物件_声掛__組数,AP,EF,136,内導入物件成約数（MT）,声掛_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑮導入物件数(MT),導入物件_声掛__内提案,AP,FG,163,内導入物件成約数（MT）,声掛_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑮導入物件数(MT),導入物件_声掛__内成約,AP,FH,164,内導入物件成約数（MT）,声掛_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
 内訳,⑯未利用者数(MT),未利用者MT_紹介_組数,AE,CR,96,O未利用者紹介数（MT）,紹介_組数,false,confirmed,high,false,対応表.pdf,
 内訳,⑯未利用者数(MT),未利用者MT_紹介_内提案,AE,CS,97,内未利用者提案数（MT）,紹介_内提案,false,confirmed,high,false,対応表.pdf,
 内訳,⑯未利用者数(MT),未利用者MT_紹介_内成約,AE,CT,98,内未利用者成約数（MT）,紹介_内成約,false,confirmed,high,false,対応表.pdf,
+内訳,⑯未利用者数(MT),未利用者MT_声掛__組数,AE,FI,165,内未利用者成約数（MT）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑯未利用者数(MT),未利用者MT_声掛__内提案,AE,FJ,166,内未利用者成約数（MT）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
+内訳,⑯未利用者数(MT),未利用者MT_声掛__内成約,AE,FK,167,内未利用者成約数（MT）,紹介_内成約,false,confirmed,high,false,対応表.pdf,片山様回答により確認済み
 内訳,⑰引越予定ユーザー数(MT),引越予定MT_紹介_組数,AF,CU,99,P引越予定ユーザー紹介数（MT）,紹介_組数,false,confirmed,high,false,対応表.pdf,
 内訳,⑰引越予定ユーザー数(MT),引越予定MT_紹介_内提案,AF,CV,100,内引越予定提案数（MT）,紹介_内提案,false,confirmed,high,false,対応表.pdf,
 内訳,⑰引越予定ユーザー数(MT),引越予定MT_紹介_内成約,AF,CW,101,内引越予定成約数（MT）,紹介_内成約,false,confirmed,high,false,対応表.pdf,
@@ -132,7 +165,7 @@ section,subsection,fax_item_name,fax_row_code,csv_column_code,csv_column_number,
 既存対応,25,コースアップ⇒1G,,IF,240,ネットコースアップ ⇒1G,既存,false,confirmed,high,false,対応表.pdf,
 既存対応,26,コースアップ⇒5G,,IG,241,ネットコースアップ ⇒5G,既存,false,confirmed,high,false,対応表.pdf,
 既存対応,27,コースアップ⇒10G,,IH,242,ネットコースアップ ⇒10G,既存,false,confirmed,high,false,対応表.pdf,
-既存対応,28,コースアップ⇒5G+10G,,,,,,既存,false,uncertain,low,true,対応表.pdf,PDFには28の記載あるがCSV列が不明。5G+10Gの合算か
+既存対応,28,コースアップ⇒5G,,IG,241,,,既存,confirmed,high,false,true,片山様回答により、5G=IG と確認済み
 既存対応,29,TV（旧BS→多ch）,,II,243,テレビコースアップ（地デジ・BS→多ch）,既存,false,confirmed,high,false,対応表.pdf,
 既存対応,30,パック追加（NF）,,IJ,244,パック追加（NF）,既存,false,confirmed,high,false,対応表.pdf,
 既存対応,31,定額4Kテレビ,,IK,245,定額4Kテレビ,既存,false,confirmed,high,false,対応表.pdf,
@@ -142,5 +175,5 @@ section,subsection,fax_item_name,fax_row_code,csv_column_code,csv_column_number,
 既存対応,35,eoLINE友+eoID連携,,IO,249,eoLINE 友だち登録+eoID連携 (HT/Mz/MT),既存,false,confirmed,high,false,対応表.pdf,
 ポイント合計,,ポイント合計/項目合計（1〜32）,,JT,280,全体：既存サービス数計,合計,true,confirmed,high,false,対応表.pdf,PDFでは「記入漏れ注意」の注記あり
 識別情報,,店舗（取扱店コード）,,JV,282,委託会社名,識別,false,uncertain,medium,true,対応表.pdf,PDFではJVだがcol282は委託会社名。col281が法人・店舗(取扱コード)。要確認
-識別情報,,日報データNo.,,,,,,識別,false,confirmed,high,false,対応表.pdf,CSVに対応列なし。PDF確認補助情報として保持
-識別情報,,タブレットNo.it,,,,,,識別,false,confirmed,high,false,対応表.pdf,CSVに対応列なし。店舗確認補助情報として保持
+識別情報,,日報データNo.,,,,,,識別,false,confirmed,high,false,対応表.pdf
+識別情報,,タブレットNo.it,,,,,,識別,false,confirmed,high,false,対応表.pdf
