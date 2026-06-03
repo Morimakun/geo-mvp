@@ -177,3 +177,9 @@ section,subsection,fax_item_name,fax_row_code,csv_column_code,csv_column_number,
 識別情報,,店舗（取扱店コード）,,JV,282,委託会社名,識別,false,uncertain,medium,true,対応表.pdf,PDFではJVだがcol282は委託会社名。col281が法人・店舗(取扱コード)。要確認
 識別情報,,日報データNo.,,,,,,識別,false,confirmed,high,false,対応表.pdf
 識別情報,,タブレットNo.it,,,,,,識別,false,confirmed,high,false,対応表.pdf
+内訳,⑰,⑰（製品名未確認）,⑰,FL,168,,内訳,false,confirmed,high,false,片山様追加回答,片山様回答により確定
+内訳,⑰,⑰（製品名未確認）,⑰,FM,169,,内訳,false,confirmed,high,false,片山様追加回答,片山様回答により確定
+内訳,⑰,⑰（製品名未確認）,⑰,FN,170,,内訳,false,confirmed,high,false,片山様追加回答,片山様回答により確定
+合計,,合計（数字で記入）,,DA,105,,合計,true,confirmed,high,false,片山様追加回答,記入漏れ注意！！
+合計,,合計（数字で記入）,,DC,107,,合計,true,confirmed,high,false,片山様追加回答,記入漏れ注意！！
+合計,,合計（数字で記入）,,DE,109,,合計,true,confirmed,high,false,片山様追加回答,記入漏れ注意！！
