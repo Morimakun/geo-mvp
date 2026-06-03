@@ -63,7 +63,11 @@
 - ①eo光〜⑥NURO光（声掛側、18行）：コミット f319185
 - ⑦CATV〜⑯未利用者(MT)（声掛側、27行）：EJ/EK/EL ～ FI/FJ/FK
 - **店舗コード列**：JV → JU（csv_column_number=567）、mapping_status=confirmed、confidence=high
-- **コースアップ**：1行から 2行に分割（5G=IG、10G=IH）、各行 confirmed
+
+**確認要の項目**:
+- **コースアップ 5G→10G**：IG / IH の列コード自体は確定したが、帳票上の「5G→10G」との対応解釈が不明
+  - IG（5G）と IH（10G）のどちらが「5G→10Gアップグレード件数」を示すか未確認
+  - 合算ルール（sum(IG, IH)）は実装しない、運用確認待ち
 
 **残り確認事項（needs_confirmation=true）**: 16行
 - 詳細は `docs/katayama_confirmation_items_20260603.csv` に整理済み

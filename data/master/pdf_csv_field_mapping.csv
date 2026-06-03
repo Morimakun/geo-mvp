@@ -162,10 +162,10 @@ section,subsection,fax_item_name,fax_row_code,csv_column_code,csv_column_number,
 既存対応,22,有料STB（追加含む）,,IC,237,有料STB（追加含む）,既存,false,confirmed,high,false,対応表.pdf,
 既存対応,23,TV（STB→CSコース）,,ID,238,STB⇒CSコース変更,既存,false,confirmed,high,false,対応表.pdf,
 既存対応,24,NHK団括,,IE,239,NHK団括,既存,false,confirmed,high,false,対応表.pdf,
-既存対応,25,コースアップ⇒1G,,IF,240,ネットコースアップ ⇒1G,既存,false,confirmed,high,false,対応表.pdf,
-既存対応,26,コースアップ⇒5G,,IG,241,ネットコースアップ ⇒5G,既存,false,confirmed,high,false,対応表.pdf,
-既存対応,27,コースアップ⇒10G,,IH,242,ネットコースアップ ⇒10G,既存,false,confirmed,high,false,対応表.pdf,
-既存対応,28,コースアップ⇒5G,,IG,241,,,既存,confirmed,high,false,true,片山様回答により、5G=IG と確認済み
+既存対応,25,コースアップ⇒1G,,IF,240,ネットコースアップ ⇒1G,既存,false,confirmed,high,true,対応表.pdf,帳票上のコースアップとの対応は運用確認要
+既存対応,26,コースアップ⇒5G,,IG,241,ネットコースアップ ⇒5G,既存,false,confirmed,high,true,対応表.pdf,帳票上の5G→10G(コースアップ)との対応は運用確認要。IG(5G)とIH(10G)のどちらが5G→10Gの件数を示すか不明
+既存対応,27,コースアップ⇒10G,,IH,242,ネットコースアップ ⇒10G,既存,false,confirmed,high,true,対応表.pdf,帳票上の5G→10G(コースアップ)との対応は運用確認要。IG(5G)とIH(10G)のどちらが5G→10Gの件数を示すか不明
+既存対応,28,コースアップ⇒5G,,IG,241,,,既存,confirmed,high,true,true,帳票上の5G→10G(コースアップ)との対応は運用確認要。IG(5G)とIH(10G)のどちらが5G→10Gの件数を示すか不明
 既存対応,29,TV（旧BS→多ch）,,II,243,テレビコースアップ（地デジ・BS→多ch）,既存,false,confirmed,high,false,対応表.pdf,
 既存対応,30,パック追加（NF）,,IJ,244,パック追加（NF）,既存,false,confirmed,high,false,対応表.pdf,
 既存対応,31,定額4Kテレビ,,IK,245,定額4Kテレビ,既存,false,confirmed,high,false,対応表.pdf,
