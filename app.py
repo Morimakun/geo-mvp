@@ -26,6 +26,7 @@ from reconciliation import (
     SalesforceRecord
 )
 from extractor import extract_items_from_pdf
+from reconciliation_phase1 import create_phase1_engine
 
 # 環境変数読込
 load_dotenv()
@@ -650,7 +651,7 @@ with tab1:
 
         # ===== ボタン行 =====
         st.markdown('<div style="margin-top: 1rem;"></div>', unsafe_allow_html=True)
-        col_btn1, col_btn2 = st.columns(2, gap="large")
+        col_btn1, col_btn2, col_btn3 = st.columns(3, gap="large")
 
         with col_btn1:
             if st.button("照合を実行", use_container_width=True, key="pdf_reconcile_btn", type="primary"):
@@ -716,6 +717,68 @@ with tab1:
                             st.success(f"✓ {len(results)}件の照合が完了しました")
                         except Exception as e:
                             st.error(f"照合処理エラー: {str(e)}")
+
+        with col_btn2:
+            pass  # スペーサー
+
+        with col_btn3:
+            if st.button("Phase 1照合を実行", use_container_width=True, key="phase1_reconcile_btn", type="secondary"):
+                if not pdf_files:
+                    st.error("⚠️ FAX帳票PDFを選択してください")
+                elif st.session_state.salesforce_records is None:
+                    st.error("⚠️ Salesforce CSVを先に読込んでください")
+                elif st.session_state.target_business_date is None:
+                    st.error("⚠️ 対象営業日を選択してください")
+                elif st.session_state.filtered_csv_df is None or len(st.session_state.filtered_csv_df) == 0:
+                    st.error("⚠️ 対象営業日に一致するCSVデータがありません")
+                else:
+                    with st.spinner("🔄 Phase 1最小照合を実行中..."):
+                        try:
+                            # PDFから帳票読み取り結果を生成
+                            extraction_results = extract_results_from_pdfs(pdf_files)
+
+                            if not extraction_results:
+                                st.error("PDFの読み取りに失敗しました")
+                            else:
+                                # Phase 1エンジン初期化
+                                @st.cache_resource
+                                def load_phase1_engine():
+                                    return create_phase1_engine(
+                                        'data/master/pdf_csv_field_mapping.csv',
+                                        'data/master/store_code_mapping.csv',
+                                        'data/master/staff_name_master.csv'
+                                    )
+
+                                engine = load_phase1_engine()
+
+                                # Phase 1照合実行
+                                phase1_results = []
+                                target_date_str = st.session_state.target_business_date.strftime('%Y/%m/%d')
+                                filtered_df = st.session_state.filtered_csv_df
+
+                                for extraction in extraction_results:
+                                    # ExtractionResult → Phase 1フォーマットに変換
+                                    pdf_record = {
+                                        'page_no': extraction.page_number,
+                                        'store_name': extraction.store_name,
+                                        'staff_name': extraction.staff_name,
+                                        'tablet_no': extraction.tablet_no,
+                                        'data_no': extraction.daily_report_no,
+                                        'mapped_values': {}  # 将来拡張: 集計値を追加
+                                    }
+
+                                    # Phase 1照合実行
+                                    result = engine.reconcile_pdf_with_csv(pdf_record, filtered_df, target_date_str)
+                                    result['pdf_file'] = extraction.file_name  # ファイル名追加
+                                    phase1_results.append(result)
+
+                                st.session_state.phase1_results = phase1_results
+                                st.success(f"✓ {len(phase1_results)}件のPhase 1照合が完了しました")
+
+                        except Exception as e:
+                            st.error(f"Phase 1照合処理エラー: {str(e)}")
+                            import traceback
+                            st.error(traceback.format_exc()[:500])
 
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1692,6 +1755,170 @@ with tab2:
                 use_container_width=True,
                 key="download_reconciliation_result_after_rerun"
             )
+
+    # ===== Phase 1 最小照合結果表示 =====
+    if st.session_state.get('phase1_results'):
+        from phase1_reconciliation_ui import (
+            display_phase1_reconciliation_summary,
+            display_phase1_reconciliation_detail,
+            create_phase1_detail_csv
+        )
+
+        st.markdown("---")
+        st.markdown("## Phase 1 最小照合結果")
+
+        phase1_results = st.session_state.phase1_results
+
+        # サマリー表示
+        st.markdown("### 照合サマリー")
+        display_phase1_reconciliation_summary(phase1_results)
+
+        # 詳細表示
+        st.markdown("### 詳細")
+        display_phase1_reconciliation_detail(phase1_results)
+
+        # ダウンロードCSV生成
+        st.markdown("### ダウンロード")
+
+        csv_content = create_phase1_detail_csv(phase1_results)
+
+        st.download_button(
+            label="Phase 1詳細をCSVダウンロード",
+            data=csv_content,
+            file_name=f"phase1_reconciliation_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv",
+            mime="text/csv",
+            use_container_width=True,
+            key="download_phase1_reconciliation_detail"
+        )
+
+# ===== Phase 1 最小照合ロジック =====
+# この関数は後で定義（モジュール化）
+
+def run_phase1_reconciliation():
+    """Phase 1 最小照合ロジック実行"""
+    from phase1_reconciliation_ui import (
+        display_phase1_reconciliation_summary,
+        display_phase1_reconciliation_detail,
+        create_phase1_detail_csv
+    )
+
+    st.markdown("## Phase 1 最小照合（試験版）")
+    st.info("このセクションでは保守的な照合を行います。候補提示と差分理由表示が主目的です。")
+
+    # CSV読込（上のセクションと共通）
+    csv_file = st.file_uploader("CSV ファイルを選択", type=["csv"], key="phase1_csv_upload")
+    if not csv_file:
+        st.warning("CSV ファイルを選択してください")
+        return
+
+    try:
+        df_csv = pd.read_csv(csv_file, encoding='cp932')
+    except UnicodeDecodeError:
+        df_csv = pd.read_csv(csv_file, encoding='utf-8')
+
+    st.success(f"CSV読込完了: {len(df_csv)} 行")
+
+    # 対象営業日選択
+    target_date = st.date_input("対象営業日", value=pd.Timestamp.today())
+    target_date_str = target_date.strftime('%Y/%m/%d')
+
+    # CSV営業日でフィルタ
+    # 列283（0-indexed: 282）が営業日
+    df_target = df_csv[df_csv.iloc[:, 282] == target_date_str]
+
+    if len(df_target) == 0:
+        st.warning(f"対象営業日 {target_date_str} のCSVレコードが見つかりません")
+        return
+
+    st.success(f"対象営業日のCSVレコード: {len(df_target)} 件")
+
+    # PDF読込
+    pdf_files = st.file_uploader("PDF ファイルを選択", type=["pdf"], accept_multiple_files=True, key="phase1_pdf_upload")
+    if not pdf_files:
+        st.warning("PDF ファイルを選択してください")
+        return
+
+    st.success(f"PDF読込完了: {len(pdf_files)} ファイル")
+
+    # Phase 1エンジン初期化
+    @st.cache_resource
+    def load_phase1_engine():
+        return create_phase1_engine(
+            'data/master/pdf_csv_field_mapping.csv',
+            'data/master/store_code_mapping.csv',
+            'data/master/staff_name_master.csv'
+        )
+
+    engine = load_phase1_engine()
+
+    # PDF処理と照合実行
+    st.markdown("### 照合処理中...")
+    progress_bar = st.progress(0)
+
+    all_results = []
+    pdf_names = []
+
+    for pdf_idx, pdf_file in enumerate(pdf_files):
+        progress_bar.progress((pdf_idx + 1) / len(pdf_files))
+
+        try:
+            # PDF抽出（既存の extractor.extract_items_from_pdf を使用）
+            extracted_data = extract_items_from_pdf(pdf_file)
+
+            # 抽出結果が dict の場合（PDF 1ページ = 1帳票）
+            if isinstance(extracted_data, dict):
+                pdf_record = {
+                    'page_no': 1,
+                    'store_name': extracted_data.get('store_name'),
+                    'staff_name': extracted_data.get('staff_name'),
+                    'tablet_no': extracted_data.get('tablet_no'),
+                    'data_no': extracted_data.get('data_no'),
+                    'mapped_values': extracted_data.get('mapped_values', {})
+                }
+
+                # Phase 1照合実行
+                result = engine.reconcile_pdf_with_csv(pdf_record, df_target, target_date_str)
+                all_results.append(result)
+                pdf_names.append(pdf_file.name)
+
+        except Exception as e:
+            st.error(f"PDF処理エラー ({pdf_file.name}): {str(e)}")
+
+    progress_bar.empty()
+
+    if not all_results:
+        st.error("照合対象のPDFが処理できませんでした")
+        return
+
+    # 照合結果表示
+    st.markdown("### 照合結果")
+
+    # サマリー表示
+    display_phase1_reconciliation_summary(all_results)
+
+    # 詳細表示
+    st.markdown("### 詳細")
+    display_phase1_reconciliation_detail(all_results)
+
+    # ダウンロードCSV生成
+    st.markdown("### ダウンロード")
+
+    csv_content = create_phase1_detail_csv(all_results)
+
+    # ファイル名にpdf_fileを設定
+    for idx, (result, pdf_name) in enumerate(zip(all_results, pdf_names)):
+        result['pdf_file'] = pdf_name
+
+    csv_content = create_phase1_detail_csv(all_results)
+
+    st.download_button(
+        label="照合詳細をダウンロード（CSV）",
+        data=csv_content,
+        file_name=f"phase1_reconciliation_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv",
+        mime="text/csv",
+        key="download_phase1_reconciliation_detail"
+    )
+
 
 # ===== フッター =====
 st.markdown("""
