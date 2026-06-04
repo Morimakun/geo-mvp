@@ -176,7 +176,7 @@ section,subsection,fax_item_name,fax_row_code,csv_column_code,csv_column_number,
 既存対応,25,コースアップ⇒1G,,IF,240,ネットコースアップ ⇒1G,既存,false,confirmed,high,true,対応表.pdf,帳票上のコースアップとの対応は運用確認要
 既存対応,26,コースアップ⇒5G,,IG,241,ネットコースアップ ⇒5G,既存,false,confirmed,high,true,対応表.pdf,帳票上の5G→10G(コースアップ)との対応は運用確認要。IG(5G)とIH(10G)のどちらが5G→10Gの件数を示すか不明
 既存対応,27,コースアップ⇒10G,,IH,242,ネットコースアップ ⇒10G,既存,false,confirmed,high,true,対応表.pdf,帳票上の5G→10G(コースアップ)との対応は運用確認要。IG(5G)とIH(10G)のどちらが5G→10Gの件数を示すか不明
-既存対応,28,コースアップ→5G→10G,,,,,,既存,needs_confirmation,low,true,true,5G→10Gは5Gと10Gの合算ではなく、独立したコースアップ項目。対応コードは画像上未記入のため片山様確認要
+既存対応,28,コースアップ→5G→10G,,,,,,既存,needs_confirmation,low,false,true,5G→10G は現段階では未使用。対応コードがないため照合対象外。将来、片山様から使用指示がある場合のみ別途確認して追加する。IG/IHの合算はしない。
 既存対応,29,TV（旧BS→多ch）,,II,243,テレビコースアップ（地デジ・BS→多ch）,既存,false,confirmed,high,false,対応表.pdf,
 既存対応,30,パック追加（NF）,,IJ,244,パック追加（NF）,既存,false,confirmed,high,false,対応表.pdf,
 既存対応,31,定額4Kテレビ,,IK,245,定額4Kテレビ,既存,false,confirmed,high,false,対応表.pdf,
