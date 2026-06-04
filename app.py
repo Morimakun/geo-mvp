@@ -392,6 +392,22 @@ def dict_to_extraction_result(data: dict, filename: str) -> ExtractionResult:
         data: extractor.py から返された辞書
         filename: アップロードされたPDFファイル名（data に filename が無い場合のフォールバック）
     """
+    # 防御処理: data が dict でない場合
+    if not isinstance(data, dict):
+        return ExtractionResult(
+            file_name=filename,
+            date=None,
+            page_number=0,
+            daily_report_no="",
+            tablet_no="",
+            store_code="",
+            store_name="",
+            staff_name="",
+            left_totals=[],
+            right_totals=[],
+            needs_review=True
+        )
+
     # エラー判定
     has_error = bool(data.get("error"))
 
@@ -428,16 +444,29 @@ def extract_results_from_pdfs(pdf_files: list) -> list:
         filename = pdf_file.name
 
         try:
-            # 帳票読み取り処理を実行（複数ページ対応）
-            # extract_items_from_pdf() は List[Dict] を返すように修正
-            extracted_list = extract_items_from_pdf(pdf_bytes, filename)
+            # 帳票読み取り処理を実行
+            extracted_result = extract_items_from_pdf(pdf_bytes, filename)
 
-            # 各ページの抽出結果を ExtractionResult に変換
-            for extracted_dict in extracted_list:
-                result = dict_to_extraction_result(extracted_dict, filename)
-                results.append(result)
+            # 戻り値が str である場合の防御処理
+            if isinstance(extracted_result, str):
+                st.error(f"❌ {filename} の読み取りに失敗しました: 'str' object has no attribute 'get'")
+                st.warning(f"戻り値が文字列で返ったため、JSON変換に失敗しました。詳細: {extracted_result[:500]}")
+                continue
+
+            # 戻り値が dict でない場合の防御処理
+            if not isinstance(extracted_result, dict):
+                st.error(f"❌ {filename} の読み取りに失敗しました: 予期しない戻り値型 {type(extracted_result).__name__}")
+                continue
+
+            # 抽出結果をExtractionResultに変換
+            result = dict_to_extraction_result(extracted_result, filename)
+            results.append(result)
+
         except Exception as e:
-            st.warning(f"⚠️ {filename} の読み取りに失敗しました: {str(e)}")
+            st.error(f"❌ {filename} の読み取りに失敗しました: {str(e)}")
+            # エラー詳細をログに出力（開発用）
+            import traceback
+            st.debug(f"トレースバック:\n{traceback.format_exc()}")
 
     return results
 
@@ -1038,7 +1067,8 @@ with tab1:
                 data=csv_data,
                 file_name=f"reconciliation_result_{timestamp}.csv",
                 mime="text/csv",
-                use_container_width=True
+                use_container_width=True,
+                key="download_reconciliation_result_main"
             )
 
         # ===== 修正後CSV再取り込み / 再照合セクション =====
@@ -1659,7 +1689,8 @@ with tab2:
                 data=csv_data,
                 file_name=f"reconciliation_result_{timestamp}.csv",
                 mime="text/csv",
-                use_container_width=True
+                use_container_width=True,
+                key="download_reconciliation_result_after_rerun"
             )
 
 # ===== フッター =====

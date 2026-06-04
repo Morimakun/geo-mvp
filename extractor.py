@@ -245,20 +245,41 @@ def validate_extraction_result(data: Dict) -> Dict:
     抽出結果を検証し、型を正規化する
 
     Args:
-        data: 抽出結果
+        data: 抽出結果（dict である必要があります）
 
     Returns:
         正規化されたデータ
     """
+    # 防御処理: data が dict でない場合
+    if not isinstance(data, dict):
+        return {
+            "date": None,
+            "store": None,
+            "name": None,
+            "data_no": None,
+            "tab_no": None,
+            "count": None,
+            "total": None,
+            "notes": None,
+            "left_totals": [],
+            "right_totals": [],
+            "error": f"validate_extraction_result: 入力がdictではありません (type: {type(data).__name__})"
+        }
+
     validated = {}
 
     # 文字列フィールド
     for field in ["date", "store", "name", "data_no", "tab_no", "notes"]:
-        validated[field] = data.get(field)
-        if validated[field] is not None:
-            validated[field] = str(validated[field]).strip()
-            if validated[field] == "":
+        try:
+            value = data.get(field)
+            if value is not None:
+                validated[field] = str(value).strip()
+                if validated[field] == "":
+                    validated[field] = None
+            else:
                 validated[field] = None
+        except (AttributeError, TypeError):
+            validated[field] = None
 
     # 数値フィールド
     for field in ["count", "total"]:
@@ -268,7 +289,7 @@ def validate_extraction_result(data: Dict) -> Dict:
                 validated[field] = int(float(value))
             else:
                 validated[field] = None
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, AttributeError):
             validated[field] = None
 
     # Phase 6A: 合計欄の左右値は実装未対応 → empty arrays で返す
@@ -284,7 +305,7 @@ def validate_extraction_result(data: Dict) -> Dict:
                 validated[field] = float(value)
             else:
                 validated[field] = None
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, AttributeError):
             validated[field] = None
 
     return validated
@@ -307,6 +328,27 @@ def match_with_csv(extraction_results: List[Dict], csv_data) -> List[Dict]:
     csv_columns = {col.lower(): col for col in csv_data.columns}
 
     for extracted in extraction_results:
+        # 防御処理: extracted が str/その他の型である場合
+        if not isinstance(extracted, dict):
+            result = {
+                "filename": None,
+                "date": None,
+                "store": None,
+                "name": None,
+                "data_no": None,
+                "tab_no": None,
+                "extracted_count": None,
+                "csv_count": None,
+                "status": "要確認",
+                "reason": f"抽出結果の型エラー: {type(extracted).__name__} (文字列: {str(extracted)[:100]})",
+                "extracted": extracted,
+                "csv_record": None,
+                "diffs": [],
+                "pdf_preview": None,
+            }
+            matching_results.append(result)
+            continue
+
         if "error" in extracted:
             # 抽出エラーの場合は要確認
             result = {
