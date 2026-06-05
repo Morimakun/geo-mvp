@@ -1,0 +1,16 @@
+﻿region,item,total,success,null,uncertain,error,raw_rate,unique_values,pages_with_value,pages_with_null,blank_status,effective_correct,effective_rate
+basic_info_header,staff_name,30,30,0,0,0,100.0%,27,30,0,VALUE_PRESENT,30.0,100.0%
+basic_info_header,store_name,30,30,0,0,0,100.0%,21,30,0,VALUE_PRESENT,30.0,100.0%
+basic_info_footer,data_no,30,24,6,0,0,80.0%,23,24,6,VALUE_PRESENT,24.0,80.0%
+basic_info_footer,tablet_no,30,29,1,0,0,96.7%,20,29,1,VALUE_PRESENT,29.0,96.7%
+case_items,AI,30,25,5,0,0,83.3%,12,25,5,VALUE_PRESENT,25.0,83.3%
+case_items,AU,30,24,6,0,0,80.0%,4,24,6,VALUE_PRESENT,24.0,80.0%
+case_items,AV,30,21,9,0,0,70.0%,3,21,9,VALUE_PRESENT,21.0,70.0%
+case_items,AY,30,16,14,0,0,53.3%,4,16,14,VALUE_PRESENT,16.0,53.3%
+case_items,AZ,30,15,15,0,0,50.0%,3,15,15,VALUE_PRESENT,15.0,50.0%
+existing_support,HH,30,1,29,0,0,3.3%,1,1,29,LIKELY_BLANK,29.0,96.7%
+existing_support,HI,30,4,26,0,0,13.3%,1,4,26,UNCERTAIN,,N/A
+existing_support,HJ,30,1,29,0,0,3.3%,1,1,29,LIKELY_BLANK,29.0,96.7%
+new_options,GS,30,11,19,0,0,36.7%,3,11,19,VALUE_PRESENT,11.0,36.7%
+new_options,GT,30,1,28,1,0,3.3%,1,1,29,LIKELY_BLANK,29.0,96.7%
+new_options,GU,30,7,23,0,0,23.3%,3,7,23,VALUE_PRESENT,7.0,23.3%
