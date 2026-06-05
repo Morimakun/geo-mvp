@@ -445,7 +445,7 @@ def is_retryable_error(exception: Exception) -> bool:
 def extract_with_vision_api(image_bytes: bytes, prompt: str, region_name: str = None, image_width: int = None, image_height: int = None) -> dict:
     """Extract details using Vision API and save raw response"""
 
-    model_name = "claude-sonnet-4-20250514"
+    model_name = "claude-sonnet-4-6"
 
     try:
         image_base64 = base64.b64encode(image_bytes).decode("utf-8")
@@ -533,7 +533,7 @@ def extract_with_vision_api(image_bytes: bytes, prompt: str, region_name: str = 
 def test_api_connectivity() -> bool:
     """Test basic API connectivity with text-only message"""
 
-    model_name = "claude-sonnet-4-20250514"
+    model_name = "claude-sonnet-4-6"
 
     try:
         print("[API Connectivity Test] Sending text-only message...")
@@ -611,7 +611,7 @@ def test_phase6b1_regions(mode: str = "full"):
 
     pdf_path = "tests/fixtures/geo_pdf_reconciliation/20260529130020168.pdf"
     page_no = 0
-    model_name = "claude-sonnet-4-20250514"
+    model_name = "claude-sonnet-4-6"
 
     # Display preflight information
     print("\n[Preflight Check]")
