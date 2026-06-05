@@ -139,7 +139,22 @@ class Phase1ReconciliationEngine:
                 review_reasons
             )
 
-        # Step 4: 各候補行のスコアを計算
+        # Step 4: Phase 3 - confirmed項目のPDF値とCSV値を比較
+        best_csv_row = csv_match_result['best_match']
+        comparison_result = self._compare_fields(
+            pdf_record,
+            best_csv_row,
+            csv_match_result
+        )
+
+        # Step 5: Phase 3 - ステータス判定
+        phase3_status = self._determine_phase3_status(
+            csv_match_result,
+            comparison_result,
+            review_reasons
+        )
+
+        # Step 6: 既存ロジック互換のため、各候補行のスコアを計算
         candidates_with_scores = []
         for idx, csv_row in candidates_df.iterrows():
             score_result = self._calculate_score(
@@ -155,14 +170,8 @@ class Phase1ReconciliationEngine:
         candidates_with_scores.sort(key=lambda x: x['total_score'], reverse=True)
         best_match = candidates_with_scores[0]
 
-        # Step 5: ステータス判定（保守的に）
-        status = self._determine_status(
-            best_match,
-            len(candidates_with_scores),
-            pdf_record,
-            review_reasons,
-            warnings
-        )
+        # Step 7: 最終ステータス判定（Phase 3 を優先）
+        status = phase3_status
 
         return {
             'status': status,
@@ -182,7 +191,11 @@ class Phase1ReconciliationEngine:
             'staff_name': pdf_record.get('staff_name'),
             'tablet_no': pdf_record.get('tablet_no'),
             'data_no': pdf_record.get('data_no'),
-            'review_reasons': review_reasons
+            'review_reasons': review_reasons,
+            # Phase 3 新規項目
+            'field_comparisons': comparison_result['field_comparisons'],
+            'field_comparison_summary': comparison_result['summary'],
+            'phase3_status': phase3_status,
         }
 
     def _find_store_code(self, pdf_store_name: Optional[str], warnings: List[str]) -> Tuple[Optional[str], Optional[str], float]:
@@ -633,6 +646,330 @@ class Phase1ReconciliationEngine:
             return 280
 
         return None
+
+    def _normalize_numeric_value(self, value: Optional[object]) -> Optional[int]:
+        """数値を正規化（int に統一）
+
+        Args:
+            value: 入力値（int, float, str, None など）
+
+        Returns:
+            正規化済み数値、または None
+        """
+
+        if value is None:
+            return None
+
+        if isinstance(value, bool):
+            # bool は int の subclass なので先に check
+            return None
+
+        if isinstance(value, (int, float)):
+            try:
+                return int(value)
+            except (ValueError, TypeError):
+                return None
+
+        if isinstance(value, str):
+            # 文字列の場合、数値化を試みる
+            if not value or value.strip() == '':
+                return None
+
+            # カンマを削除
+            clean_str = str(value).replace(',', '').strip()
+
+            try:
+                return int(float(clean_str))
+            except (ValueError, TypeError):
+                return None
+
+        # pandas.NA, NaN, etc.
+        if pd.isna(value):
+            return None
+
+        return None
+
+    def _compare_fields(
+        self,
+        pdf_record: Dict,
+        csv_row: pd.Series,
+        csv_match_result: Dict
+    ) -> Dict:
+        """確定済み項目のPDF値とCSV値を比較
+
+        Args:
+            pdf_record: PDF抽出結果
+            csv_row: CSV行データ（Series）
+            csv_match_result: Phase 2 の結果
+
+        Returns:
+            {
+                'field_comparisons': [
+                    {
+                        'fax_item_name': str,
+                        'csv_column_code': str,
+                        'csv_column_name': str,
+                        'csv_column_number': int,
+                        'pdf_value': any,
+                        'csv_value': any,
+                        'pdf_value_status': 'confirmed' | 'uncertain' | 'null',
+                        'csv_value_status': 'confirmed' | 'null',
+                        'comparison_status': 'match' | 'mismatch' | 'skipped_*',
+                        'reason': str,
+                    },
+                    ...
+                ],
+                'summary': {
+                    'total_fields': int,
+                    'compared_fields': int,
+                    'matched_fields': int,
+                    'mismatched_fields': int,
+                    'skipped_fields': int,
+                    'match_rate': float,
+                    'needs_review_count': int,
+                }
+            }
+        """
+
+        field_comparisons = []
+        matched_count = 0
+        mismatched_count = 0
+        skipped_count = 0
+
+        pdf_mapped_values = pdf_record.get('mapped_values', {})
+
+        # self.confirmed_mapping から各項目を取得
+        for idx, mapping_row in self.confirmed_mapping.iterrows():
+            item_name = mapping_row.get('fax_item_name', '')
+            csv_column_code = mapping_row.get('csv_column_code', '')
+            csv_column_number = mapping_row.get('csv_column_number')
+
+            # Step 1: csv_column_number チェック
+            if pd.isna(csv_column_number):
+                field_comparisons.append({
+                    'fax_item_name': item_name,
+                    'csv_column_code': csv_column_code,
+                    'csv_column_name': mapping_row.get('csv_column_name', ''),
+                    'csv_column_number': None,
+                    'pdf_value': None,
+                    'csv_value': None,
+                    'pdf_value_status': 'null',
+                    'csv_value_status': 'null',
+                    'comparison_status': 'skipped_no_csv_column',
+                    'reason': 'CSV column number not found',
+                })
+                skipped_count += 1
+                continue
+
+            # Step 2: PDF値を取得
+            pdf_value = pdf_mapped_values.get(csv_column_code)
+            pdf_value_status = 'null'
+
+            if pdf_value is None:
+                pdf_value_status = 'null'
+            elif pdf_value == 'uncertain':
+                pdf_value_status = 'uncertain'
+            elif isinstance(pdf_value, str) and pdf_value in ['unreadable', 'uncertain']:
+                pdf_value_status = pdf_value
+            else:
+                pdf_value_status = 'confirmed'
+
+            # Step 3: PDF値の判定（比較対象か判定）
+            if pdf_value_status == 'null':
+                field_comparisons.append({
+                    'fax_item_name': item_name,
+                    'csv_column_code': csv_column_code,
+                    'csv_column_name': mapping_row.get('csv_column_name', ''),
+                    'csv_column_number': int(csv_column_number) if not pd.isna(csv_column_number) else None,
+                    'pdf_value': None,
+                    'csv_value': None,
+                    'pdf_value_status': 'null',
+                    'csv_value_status': 'null',
+                    'comparison_status': 'skipped_pdf_null',
+                    'reason': 'PDF value is null',
+                })
+                skipped_count += 1
+                continue
+
+            if pdf_value_status == 'uncertain':
+                field_comparisons.append({
+                    'fax_item_name': item_name,
+                    'csv_column_code': csv_column_code,
+                    'csv_column_name': mapping_row.get('csv_column_name', ''),
+                    'csv_column_number': int(csv_column_number) if not pd.isna(csv_column_number) else None,
+                    'pdf_value': pdf_value,
+                    'csv_value': None,
+                    'pdf_value_status': 'uncertain',
+                    'csv_value_status': 'null',
+                    'comparison_status': 'skipped_pdf_uncertain',
+                    'reason': 'PDF value is uncertain (tally mark途中形)',
+                })
+                skipped_count += 1
+                continue
+
+            # Step 4: CSV値を取得（1-indexed → 0-indexed）
+            try:
+                csv_col_idx = int(csv_column_number) - 1
+
+                if csv_col_idx >= len(csv_row) or csv_col_idx < 0:
+                    field_comparisons.append({
+                        'fax_item_name': item_name,
+                        'csv_column_code': csv_column_code,
+                        'csv_column_name': mapping_row.get('csv_column_name', ''),
+                        'csv_column_number': int(csv_column_number),
+                        'pdf_value': pdf_value,
+                        'csv_value': None,
+                        'pdf_value_status': pdf_value_status,
+                        'csv_value_status': 'null',
+                        'comparison_status': 'skipped_csv_null',
+                        'reason': f'CSV column index {csv_col_idx} out of range',
+                    })
+                    skipped_count += 1
+                    continue
+
+                csv_value = csv_row.iloc[csv_col_idx]
+
+            except (ValueError, TypeError, IndexError):
+                field_comparisons.append({
+                    'fax_item_name': item_name,
+                    'csv_column_code': csv_column_code,
+                    'csv_column_name': mapping_row.get('csv_column_name', ''),
+                    'csv_column_number': int(csv_column_number) if not pd.isna(csv_column_number) else None,
+                    'pdf_value': pdf_value,
+                    'csv_value': None,
+                    'pdf_value_status': pdf_value_status,
+                    'csv_value_status': 'null',
+                    'comparison_status': 'skipped_csv_null',
+                    'reason': 'CSV column access error',
+                })
+                skipped_count += 1
+                continue
+
+            # Step 5: CSV値の判定
+            csv_value_status = 'confirmed'
+            if csv_value is None or pd.isna(csv_value) or csv_value == '':
+                csv_value_status = 'null'
+
+            # Step 6: 数値正規化と比較
+            pdf_normalized = self._normalize_numeric_value(pdf_value)
+            csv_normalized = self._normalize_numeric_value(csv_value)
+
+            # Step 7: 値が比較可能かチェック
+            if pdf_normalized is None:
+                field_comparisons.append({
+                    'fax_item_name': item_name,
+                    'csv_column_code': csv_column_code,
+                    'csv_column_name': mapping_row.get('csv_column_name', ''),
+                    'csv_column_number': int(csv_column_number),
+                    'pdf_value': pdf_value,
+                    'csv_value': csv_value,
+                    'pdf_value_status': pdf_value_status,
+                    'csv_value_status': csv_value_status,
+                    'comparison_status': 'skipped_pdf_null',
+                    'reason': 'PDF value cannot be normalized to numeric',
+                })
+                skipped_count += 1
+                continue
+
+            if csv_normalized is None:
+                field_comparisons.append({
+                    'fax_item_name': item_name,
+                    'csv_column_code': csv_column_code,
+                    'csv_column_name': mapping_row.get('csv_column_name', ''),
+                    'csv_column_number': int(csv_column_number),
+                    'pdf_value': pdf_value,
+                    'csv_value': csv_value,
+                    'pdf_value_status': pdf_value_status,
+                    'csv_value_status': csv_value_status,
+                    'comparison_status': 'skipped_csv_null',
+                    'reason': 'CSV value cannot be normalized to numeric',
+                })
+                skipped_count += 1
+                continue
+
+            # Step 8: 比較
+            if pdf_normalized == csv_normalized:
+                comparison_status = 'match'
+                matched_count += 1
+                reason = ''
+            else:
+                comparison_status = 'mismatch'
+                mismatched_count += 1
+                reason = f'PDF={pdf_normalized}, CSV={csv_normalized}'
+
+            field_comparisons.append({
+                'fax_item_name': item_name,
+                'csv_column_code': csv_column_code,
+                'csv_column_name': mapping_row.get('csv_column_name', ''),
+                'csv_column_number': int(csv_column_number),
+                'pdf_value': pdf_value,
+                'csv_value': csv_value,
+                'pdf_value_status': pdf_value_status,
+                'csv_value_status': csv_value_status,
+                'comparison_status': comparison_status,
+                'reason': reason,
+            })
+
+        # Summary を計算
+        total_fields = len(self.confirmed_mapping)
+        compared_fields = matched_count + mismatched_count
+        match_rate = matched_count / compared_fields if compared_fields > 0 else 0.0
+
+        summary = {
+            'total_fields': total_fields,
+            'compared_fields': compared_fields,
+            'matched_fields': matched_count,
+            'mismatched_fields': mismatched_count,
+            'skipped_fields': skipped_count,
+            'match_rate': match_rate,
+            'needs_review_count': mismatched_count,
+        }
+
+        return {
+            'field_comparisons': field_comparisons,
+            'summary': summary
+        }
+
+    def _determine_phase3_status(
+        self,
+        csv_match_result: Dict,
+        comparison_result: Dict,
+        review_reasons: List[str]
+    ) -> str:
+        """Phase 3 の最終ステータスを判定
+
+        Returns: 'match' | 'mismatch' | 'review'
+        """
+
+        # Phase 2 の候補状況確認
+        if csv_match_result['match_status'] == 'no_csv_candidate':
+            review_reasons.append("No CSV candidates found (Phase 2)")
+            return 'review'
+
+        if csv_match_result['match_status'] == 'multiple_csv_candidates':
+            review_reasons.append(f"Multiple CSV candidates ({csv_match_result['csv_candidate_count']} rows)")
+            return 'review'
+
+        # Phase 3 の比較結果確認
+        summary = comparison_result['summary']
+
+        # 比較対象項目がない場合
+        if summary['compared_fields'] == 0:
+            review_reasons.append(f"No comparable fields ({summary['skipped_fields']} skipped)")
+            return 'review'
+
+        # 不一致がない場合→ match
+        if summary['mismatched_fields'] == 0 and summary['compared_fields'] > 0:
+            return 'match'
+
+        # 不一致がある場合→ mismatch
+        if summary['mismatched_fields'] > 0:
+            review_reasons.append(f"{summary['mismatched_fields']} mismatched fields")
+            return 'mismatch'
+
+        # デフォルト
+        review_reasons.append("Insufficient data for reconciliation")
+        return 'review'
 
 
 # ===== ヘルパー関数 =====
