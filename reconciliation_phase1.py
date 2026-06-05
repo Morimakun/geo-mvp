@@ -16,6 +16,8 @@ Phase 1 最小照合ロジック
 import pandas as pd
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
+import re
+import unicodedata
 
 
 class Phase1ReconciliationEngine:
@@ -116,13 +118,14 @@ class Phase1ReconciliationEngine:
             warnings
         )
 
-        # Step 2: CSV候補行を抽出（店舗コードで）
-        candidates_df = self._find_csv_candidates(
+        # Step 2: CSV候補行を抽出（日付 + 店舗コードで）
+        csv_match_result = self._find_csv_candidates(
             store_code,
             csv_target,
             target_date,
             review_reasons
         )
+        candidates_df = csv_match_result['candidates_df']
 
         # Step 3: 候補行が見つからない場合
         if candidates_df.empty:
@@ -130,7 +133,8 @@ class Phase1ReconciliationEngine:
                 pdf_record,
                 store_code,
                 store_name_normalized,
-                "No CSV candidates found",
+                csv_match_result['match_status'],
+                csv_match_result.get('normalized_date'),
                 warnings,
                 review_reasons
             )
@@ -210,37 +214,104 @@ class Phase1ReconciliationEngine:
         csv_target: pd.DataFrame,
         target_date: str,
         review_reasons: List[str]
-    ) -> pd.DataFrame:
-        """CSV候補行を抽出"""
+    ) -> Dict:
+        """CSV候補行を抽出（日付 + 店舗コード で検索）
 
+        Returns: {
+            'match_status': 'candidate_found' | 'no_csv_candidate' | 'multiple_csv_candidates',
+            'csv_candidate_count': int,
+            'candidates_df': DataFrame,
+            'best_match': pd.Series or None,
+            'normalized_date': str,
+            'date_normalized_status': 'success' | 'failed'
+        }
+        """
+        result = {
+            'match_status': 'no_csv_candidate',
+            'csv_candidate_count': 0,
+            'candidates_df': pd.DataFrame(),
+            'best_match': None,
+            'normalized_date': None,
+            'date_normalized_status': 'failed'
+        }
+
+        # Step 1: store_code チェック
         if not store_code:
             review_reasons.append("Store code could not be determined from PDF")
-            return pd.DataFrame()
+            return result
 
-        # CSV列281「法人・店舗(取扱コード)」で検索
-        # 列名は環境に応じて異なる可能性あり
-        store_col = None
-        for col in csv_target.columns:
-            if 'コード' in str(col) or '取扱' in str(col) or col == 281 or col == '法人・店舗(取扱コード)':
-                store_col = col
-                break
+        # Step 2: 日付を正規化
+        normalized_date, date_status = self._normalize_date(target_date)
+        result['normalized_date'] = normalized_date
+        result['date_normalized_status'] = date_status
 
-        if store_col is None:
-            # デフォルトで列281を使用
-            if 281 - 1 < len(csv_target.columns):
-                store_col = csv_target.columns[280]  # 0-indexed
+        if date_status == 'failed':
+            review_reasons.append(f"Failed to normalize PDF date: {target_date}")
+            return result
 
-        if store_col is None:
+        # Step 3: CSV 日付列を検出
+        date_col = self._detect_date_column(csv_target)
+        if date_col is None:
+            review_reasons.append("Date column not found in CSV")
+            return result
+
+        # Step 4: CSV 店舗コード列を検出
+        store_col_idx = self._detect_store_code_column_index(csv_target)
+        if store_col_idx is None:
             review_reasons.append("Store code column not found in CSV")
-            return pd.DataFrame()
+            return result
 
-        # 店舗コードで候補を絞る
-        candidates = csv_target[csv_target.iloc[:, 280] == store_code]
+        # Step 5: 日付で絞り込み
+        try:
+            # CSV 日付を正規化して比較
+            csv_target_copy = csv_target.copy()
+            csv_target_copy['normalized_csv_date'] = csv_target_copy[date_col].apply(
+                lambda x: self._normalize_date(x)[0]
+            )
 
-        if len(candidates) > 1:
-            review_reasons.append(f"Multiple CSV candidates found ({len(candidates)} rows)")
+            date_filtered = csv_target_copy[csv_target_copy['normalized_csv_date'] == normalized_date]
 
-        return candidates
+            if date_filtered.empty:
+                review_reasons.append(f"No CSV candidates found for date: {target_date}")
+                return result
+        except Exception as e:
+            review_reasons.append(f"Error filtering by date: {str(e)}")
+            return result
+
+        # Step 6: 店舗コードで絞り込み
+        try:
+            store_filtered = date_filtered[
+                date_filtered.iloc[:, store_col_idx] == store_code
+            ]
+
+            if store_filtered.empty:
+                review_reasons.append(f"No CSV candidates found for store_code: {store_code} and date: {target_date}")
+                return result
+
+            # 正規化列を削除して返す
+            candidates_df = store_filtered.drop(columns=['normalized_csv_date'])
+
+        except Exception as e:
+            review_reasons.append(f"Error filtering by store_code: {str(e)}")
+            return result
+
+        # Step 7: 候補数で分類
+        candidate_count = len(candidates_df)
+
+        if candidate_count == 1:
+            result['match_status'] = 'candidate_found'
+            result['csv_candidate_count'] = 1
+            result['candidates_df'] = candidates_df
+            result['best_match'] = candidates_df.iloc[0]
+
+        elif candidate_count > 1:
+            result['match_status'] = 'multiple_csv_candidates'
+            result['csv_candidate_count'] = candidate_count
+            result['candidates_df'] = candidates_df
+            # 複数候補の場合は複数行を保持
+            review_reasons.append(f"Multiple CSV candidates found ({candidate_count} rows) for store_code={store_code} and date={target_date}")
+
+        return result
 
     def _calculate_score(
         self,
@@ -396,7 +467,8 @@ class Phase1ReconciliationEngine:
         pdf_record: Dict,
         store_code: Optional[str],
         store_name: Optional[str],
-        reason: str,
+        match_status: str,
+        pdf_date: Optional[str],
         warnings: List[str],
         review_reasons: List[str]
     ) -> Dict:
@@ -420,14 +492,21 @@ class Phase1ReconciliationEngine:
             'staff_name': pdf_record.get('staff_name'),
             'tablet_no': pdf_record.get('tablet_no'),
             'data_no': pdf_record.get('data_no'),
-            'review_reasons': review_reasons + [reason]
+            'pdf_page_number': pdf_record.get('page_no'),
+            'pdf_date': pdf_date,
+            'pdf_store_name': pdf_record.get('store_name'),
+            'mapped_store_code': store_code,
+            'store_code_mapping_status': 'exact_match' if store_code else 'not_found',
+            'match_status': match_status,
+            'csv_candidate_count': 0,
+            'csv_candidate_rows': [],
+            'review_reasons': review_reasons
         }
 
     def _normalize_text(self, text: str) -> str:
         """テキスト正規化"""
         if not text:
             return ""
-        import unicodedata
         # 全角→半角
         text = unicodedata.normalize('NFKC', str(text))
         # 空白削除
@@ -435,6 +514,125 @@ class Phase1ReconciliationEngine:
         # 大文字小文字統一
         text = text.upper()
         return text
+
+    def _normalize_date(self, date_input: Optional[str]) -> Tuple[Optional[str], str]:
+        """日付を YYYY/MM/DD に正規化
+
+        対応形式:
+        - 2026/05/17
+        - 2026-05-17
+        - 2026年5月17日
+        - pandas Timestamp / datetime
+
+        Returns: (normalized_date: str, status: 'success' | 'failed')
+            normalized_date は YYYY/MM/DD 形式、失敗時は None
+        """
+
+        if date_input is None:
+            return None, 'failed'
+
+        # pandas Timestamp または datetime の場合
+        if isinstance(date_input, pd.Timestamp):
+            try:
+                return f"{date_input.year:04d}/{date_input.month:02d}/{date_input.day:02d}", 'success'
+            except:
+                return None, 'failed'
+
+        if isinstance(date_input, datetime):
+            try:
+                return f"{date_input.year:04d}/{date_input.month:02d}/{date_input.day:02d}", 'success'
+            except:
+                return None, 'failed'
+
+        # 文字列の場合
+        date_str = str(date_input).strip()
+
+        if not date_str:
+            return None, 'failed'
+
+        # パターン1: YYYY/MM/DD （既に正規化済み）
+        match = re.match(r'(\d{4})/(\d{1,2})/(\d{1,2})', date_str)
+        if match:
+            try:
+                year, month, day = int(match.group(1)), int(match.group(2)), int(match.group(3))
+                return f"{year:04d}/{month:02d}/{day:02d}", 'success'
+            except:
+                return None, 'failed'
+
+        # パターン2: YYYY-MM-DD
+        match = re.match(r'(\d{4})-(\d{1,2})-(\d{1,2})', date_str)
+        if match:
+            try:
+                year, month, day = int(match.group(1)), int(match.group(2)), int(match.group(3))
+                return f"{year:04d}/{month:02d}/{day:02d}", 'success'
+            except:
+                return None, 'failed'
+
+        # パターン3: YYYY年M月D日 または YYYY年MM月DD日
+        match = re.match(r'(\d{4})年(\d{1,2})月(\d{1,2})日', date_str)
+        if match:
+            try:
+                year, month, day = int(match.group(1)), int(match.group(2)), int(match.group(3))
+                return f"{year:04d}/{month:02d}/{day:02d}", 'success'
+            except:
+                return None, 'failed'
+
+        # パターン4: MM/DD/YYYY （米国形式）
+        match = re.match(r'(\d{1,2})/(\d{1,2})/(\d{4})', date_str)
+        if match:
+            try:
+                month, day, year = int(match.group(1)), int(match.group(2)), int(match.group(3))
+                if 1 <= month <= 12 and 1 <= day <= 31:
+                    return f"{year:04d}/{month:02d}/{day:02d}", 'success'
+            except:
+                pass
+
+        # パターン5: YYYYMMDD （区切りなし）
+        match = re.match(r'(\d{4})(\d{2})(\d{2})', date_str)
+        if match:
+            try:
+                year, month, day = int(match.group(1)), int(match.group(2)), int(match.group(3))
+                if 1 <= month <= 12 and 1 <= day <= 31:
+                    return f"{year:04d}/{month:02d}/{day:02d}", 'success'
+            except:
+                pass
+
+        # いずれにも該当しない
+        return None, 'failed'
+
+    def _detect_date_column(self, csv_target: pd.DataFrame) -> Optional[str]:
+        """CSV 日付列を検出"""
+
+        # パターン1: 列名に「営業日」「日付」を含む
+        for col in csv_target.columns:
+            col_str = str(col).lower()
+            if '営業日' in str(col) or '日付' in str(col):
+                return col
+
+        # パターン2: 列 A（最初の列）を試す
+        if len(csv_target.columns) > 0:
+            return csv_target.columns[0]
+
+        return None
+
+    def _detect_store_code_column_index(self, csv_target: pd.DataFrame) -> Optional[int]:
+        """CSV 店舗コード列のインデックスを検出（0-indexed）"""
+
+        # パターン1: 列名に「取扱」「コード」を含む
+        for idx, col in enumerate(csv_target.columns):
+            col_str = str(col)
+            if '取扱' in col_str and 'コード' in col_str:
+                return idx
+
+        # パターン2: 列 JU（281番目、0-indexed: 280）を試す
+        if len(csv_target.columns) > 280:
+            return 280
+
+        # パターン3: 列 281（1-indexed）の場合
+        if len(csv_target.columns) >= 281:
+            return 280
+
+        return None
 
 
 # ===== ヘルパー関数 =====
