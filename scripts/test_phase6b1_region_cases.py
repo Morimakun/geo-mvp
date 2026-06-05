@@ -680,8 +680,39 @@ def test_phase6b1_regions(mode: str = "full"):
     print("=" * 80)
 
     pdf_path = "tests/fixtures/geo_pdf_reconciliation/20260529130020168.pdf"
-    page_no = 0
     model_name = "claude-sonnet-4-6"
+
+    # Test multiple pages: page 0 (blank case) and page 1 (value-present case)
+    test_pages = [0, 1]
+
+    # Define expected values for both pages
+    page_expected_values = {
+        0: {
+            "new_options_small": {
+                "GS": "blank",      # Empty on page 0
+                "GT": "blank",      # Empty on page 0
+                "GU": "blank"       # Empty on page 0
+            },
+            "case_items_small": {
+                "AU": "unreadable",  # Handwritten "下" character
+                "AV": 0,             # Dash "—" interpreted as 0
+                "AY": "blank",       # Not visible
+                "AZ": "blank",       # Not visible
+                "AI": 5              # Handwritten number 5
+            }
+        },
+        1: {
+            # Page 1: Based on visual inspection, has values in case_items area
+            # Will be filled after API extraction
+            "case_items_small": {
+                "AU": None,  # Will be determined after extraction
+                "AV": None,
+                "AY": None,
+                "AZ": None,
+                "AI": None
+            }
+        }
+    }
 
     # Display preflight information
     print("\n[Preflight Check]")
@@ -697,6 +728,7 @@ def test_phase6b1_regions(mode: str = "full"):
     print(f"  Number of regions: {num_regions}")
 
     print(f"  Mode: {mode}")
+    print(f"  Test pages: {test_pages}")
 
     # Check file
     print(f"\n[Step 1] Checking PDF file")
@@ -716,100 +748,90 @@ def test_phase6b1_regions(mode: str = "full"):
 
     print(f"\n[Step 3] Running region-based extraction tests")
 
-    # Define expected values for page 0 (based on actual handwritten content observation)
-    # Format: {item_code: expected_value or status}
-    # Status values: "blank" (帳票上で空欄), "unreadable" (手書き文字等で読取困難)
-    expected_values = {
-        "new_options_small": {
-            "GS": "blank",      # Empty on page 0
-            "GT": "blank",      # Empty on page 0
-            "GU": "blank"       # Empty on page 0
-        },
-        "case_items_small": {
-            "AU": "unreadable",  # Handwritten "下" character (unreadable)
-            "AV": 0,             # Dash "—" interpreted as 0
-            "AY": "blank",       # Not visible
-            "AZ": "blank",       # Not visible
-            "AI": 5              # Handwritten number 5 visible
-        }
-    }
-
-    # Run tests for each region
+    # Run tests for each page and region
     all_results = {}
 
-    for region_key, region_config in REGIONS.items():
-        print(f"\n[Test] Region: {region_key}")
-        print(f"  Description: {region_config['description']}")
-        print(f"  Bounds: {region_config['bounds']}")
-        print(f"  Zoom: {region_config['zoom']}x")
-        print(f"  Items: {len(region_config['items'])}")
+    for page_no in test_pages:
+        print(f"\n[Page {page_no}] Testing regions on page {page_no}")
+        print("=" * 80)
 
-        try:
-            # Extract region
-            region_data = extract_region_from_pdf(
-                pdf_path,
-                page_no,
-                region_config['bounds'],
-                region_config['zoom'],
-                region_name=region_key
-            )
-            image_bytes = region_data['image_bytes']
+        for region_key, region_config in REGIONS.items():
+                print(f"\n  [Test] Region: {region_key}")
+                print(f"    Description: {region_config['description']}")
+                print(f"    Bounds: {region_config['bounds']}")
+                print(f"    Zoom: {region_config['zoom']}x")
+                print(f"    Items: {len(region_config['items'])}")
 
-            # Log region metadata
-            print(f"  Image extracted: {region_data['image_size_kb']:.1f} KB")
-            print(f"  Pixel dimensions: {region_data['pixel_width']}x{region_data['pixel_height']}")
-            print(f"  Saved to: {region_data['saved_path']}")
+                try:
+                    # Extract region
+                    region_data = extract_region_from_pdf(
+                        pdf_path,
+                        page_no,
+                        region_config['bounds'],
+                        region_config['zoom'],
+                        region_name=f"page{page_no}_{region_key}"
+                    )
+                    image_bytes = region_data['image_bytes']
 
-            # Call Vision API (with region_name for raw response saving)
-            extracted = extract_with_vision_api(
-                image_bytes,
-                region_config['prompt'],
-                region_name=region_key,
-                image_width=region_data['pixel_width'],
-                image_height=region_data['pixel_height']
-            )
+                    # Log region metadata
+                    print(f"    Image extracted: {region_data['image_size_kb']:.1f} KB")
+                    print(f"    Pixel dimensions: {region_data['pixel_width']}x{region_data['pixel_height']}")
+                    print(f"    Saved to: {region_data['saved_path']}")
 
-            # Analyze with expected values if available
-            region_expected = expected_values.get(region_key) if region_key in expected_values else None
-            analysis = analyze_results(
-                region_key,
-                region_config['items'],
-                extracted,
-                expected_values=region_expected
-            )
+                    # Call Vision API (with region_name for raw response saving)
+                    extracted = extract_with_vision_api(
+                        image_bytes,
+                        region_config['prompt'],
+                        region_name=f"page{page_no}_{region_key}",
+                        image_width=region_data['pixel_width'],
+                        image_height=region_data['pixel_height']
+                    )
 
-            all_results[region_key] = {
-                "config": region_config,
-                "analysis": analysis,
-                "region_metadata": {
-                    "bounds": region_data['bounds'],
-                    "zoom": region_data['zoom'],
-                    "image_size_kb": region_data['image_size_kb'],
-                    "pixel_width": region_data['pixel_width'],
-                    "pixel_height": region_data['pixel_height'],
-                    "saved_path": region_data['saved_path']
-                }
-            }
+                    # Analyze with expected values if available
+                    region_expected = page_expected_values.get(page_no, {}).get(region_key) if page_no in page_expected_values else None
+                    analysis = analyze_results(
+                        region_key,
+                        region_config['items'],
+                        extracted,
+                        expected_values=region_expected
+                    )
 
-            # Display results
-            print(f"  Success rate: {analysis['success_rate'] * 100:.1f}% ({analysis['success_count']}/{analysis['expected_items']})")
-            print(f"  Unreadable: {analysis['null_count']} items")
-            if analysis['unreadable_items']:
-                print(f"    Items: {', '.join(analysis['unreadable_items'][:5])}")
+                    result_key = f"page{page_no}_{region_key}"
+                    all_results[result_key] = {
+                        "page": page_no,
+                        "region": region_key,
+                        "config": region_config,
+                        "analysis": analysis,
+                        "region_metadata": {
+                            "bounds": region_data['bounds'],
+                            "zoom": region_data['zoom'],
+                            "image_size_kb": region_data['image_size_kb'],
+                            "pixel_width": region_data['pixel_width'],
+                            "pixel_height": region_data['pixel_height'],
+                            "saved_path": region_data['saved_path']
+                        }
+                    }
 
-            # Display detailed item results if expected values were used
-            if analysis.get('item_results'):
-                print(f"  Item-by-item evaluation:")
-                for item_result in analysis['item_results']:
-                    result_str = item_result['result'].replace('✓', '[OK]').replace('✗', '[NG]')
-                    print(f"    {item_result['item']}: expected={item_result['expected']}, actual={item_result['actual']} -> {result_str}")
+                    # Display results
+                    print(f"    Success rate: {analysis['success_rate'] * 100:.1f}% ({analysis['success_count']}/{analysis['expected_items']})")
+                    print(f"    Unreadable: {analysis['null_count']} items")
+                    if analysis['unreadable_items']:
+                        print(f"      Items: {', '.join(analysis['unreadable_items'][:5])}")
 
-            if analysis['warnings']:
-                print(f"  Warnings: {analysis['warnings']}")
+                    # Display detailed item results if expected values were used
+                    if analysis.get('item_results'):
+                        print(f"    Item-by-item evaluation:")
+                        for item_result in analysis['item_results']:
+                            result_str = item_result['result'].replace('✓', '[OK]').replace('✗', '[NG]')
+                            print(f"      {item_result['item']}: expected={item_result['expected']}, actual={item_result['actual']} -> {result_str}")
 
-        except Exception as e:
-            print(f"  ERROR: {e}")
-            all_results[region_key] = {"error": str(e)}
+                    if analysis['warnings']:
+                        print(f"    Warnings: {analysis['warnings']}")
+
+                except Exception as e:
+                    print(f"    ERROR: {e}")
+                    result_key = f"page{page_no}_{region_key}"
+                    all_results[result_key] = {"error": str(e)}
 
     # Summary
     print(f"\n" + "=" * 80)
