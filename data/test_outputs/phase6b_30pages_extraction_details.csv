@@ -1,0 +1,451 @@
+﻿page,region,item,value,status,raw
+0,basic_info_header,store_name,小倉,success,
+0,basic_info_header,staff_name,原田,success,
+0,basic_info_footer,data_no,00157846,success,
+0,basic_info_footer,tablet_no,2408-5317,success,
+0,case_items,AU,5,success,
+0,case_items,AV,0,success,
+0,case_items,AY,,null,
+0,case_items,AZ,,null,
+0,case_items,AI,5,success,
+0,existing_support,HH,0,success,
+0,existing_support,HI,40,success,
+0,existing_support,HJ,0,success,
+0,new_options,GS,,null,
+0,new_options,GT,,null,
+0,new_options,GU,,null,
+1,basic_info_header,store_name,イオンモール大日,success,
+1,basic_info_header,staff_name,"209""",success,
+1,basic_info_footer,data_no,00157858,success,
+1,basic_info_footer,tablet_no,2404-5012,success,
+1,case_items,AU,0,success,
+1,case_items,AV,0,success,
+1,case_items,AY,,null,
+1,case_items,AZ,,null,
+1,case_items,AI,0,success,
+1,existing_support,HH,0,success,
+1,existing_support,HI,40,success,
+1,existing_support,HJ,0,success,
+1,new_options,GS,,null,
+1,new_options,GT,,null,
+1,new_options,GU,,null,
+2,basic_info_header,store_name,高石,success,
+2,basic_info_header,staff_name,宮木少平,success,
+2,basic_info_footer,data_no,00157852,success,
+2,basic_info_footer,tablet_no,2404-5001,success,
+2,case_items,AU,0,success,
+2,case_items,AV,3,success,
+2,case_items,AY,0,success,
+2,case_items,AZ,0,success,
+2,case_items,AI,3,success,
+2,existing_support,HH,0,success,
+2,existing_support,HI,40,success,
+2,existing_support,HJ,0,success,
+2,new_options,GS,,null,
+2,new_options,GT,,null,
+2,new_options,GU,,null,
+3,basic_info_header,store_name,枚方,success,
+3,basic_info_header,staff_name,竹内優関,success,
+3,basic_info_footer,data_no,00157856,success,
+3,basic_info_footer,tablet_no,2408-5435,success,
+3,case_items,AU,0,success,
+3,case_items,AV,0,success,
+3,case_items,AY,1,success,
+3,case_items,AZ,0,success,
+3,case_items,AI,,null,
+3,existing_support,HH,0,success,
+3,existing_support,HI,40,success,
+3,existing_support,HJ,0,success,
+3,new_options,GS,,null,
+3,new_options,GT,,null,
+3,new_options,GU,,null,
+4,basic_info_header,store_name,イオンモール鶴見緑地,success,
+4,basic_info_header,staff_name,川又,success,
+4,basic_info_footer,data_no,15 7816,success,
+4,basic_info_footer,tablet_no,2208-5010,success,
+4,case_items,AU,0,success,
+4,case_items,AV,0,success,
+4,case_items,AY,0,success,
+4,case_items,AZ,0,success,
+4,case_items,AI,24,success,
+4,existing_support,HH,0,success,
+4,existing_support,HI,40,success,
+4,existing_support,HJ,0,success,
+4,new_options,GS,,null,
+4,new_options,GT,,null,
+4,new_options,GU,,null,
+5,basic_info_header,store_name,イオンモール鶴見緑地,success,
+5,basic_info_header,staff_name,川又,success,
+5,basic_info_footer,data_no,,null,
+5,basic_info_footer,tablet_no,2208-5010,success,
+5,case_items,AU,0,success,
+5,case_items,AV,0,success,
+5,case_items,AY,3,success,
+5,case_items,AZ,0,success,
+5,case_items,AI,3,success,
+5,existing_support,HH,0,success,
+5,existing_support,HI,40,success,
+5,existing_support,HJ,0,success,
+5,new_options,GS,,null,
+5,new_options,GT,,null,
+5,new_options,GU,,null,
+6,basic_info_header,store_name,イオンモール堺北花田,success,
+6,basic_info_header,staff_name,中嶋,success,
+6,basic_info_footer,data_no,00157857,success,
+6,basic_info_footer,tablet_no,2X08-5380,success,
+6,case_items,AU,1,success,
+6,case_items,AV,,null,
+6,case_items,AY,0,success,
+6,case_items,AZ,,null,
+6,case_items,AI,3,success,
+6,existing_support,HH,0,success,
+6,existing_support,HI,40,success,
+6,existing_support,HJ,0,success,
+6,new_options,GS,,null,
+6,new_options,GT,,null,
+6,new_options,GU,,null,
+7,basic_info_header,store_name,JR神戸北,success,
+7,basic_info_header,staff_name,新田,success,
+7,basic_info_footer,data_no,00157834,success,
+7,basic_info_footer,tablet_no,2404-5001,success,
+7,case_items,AU,0,success,
+7,case_items,AV,,null,
+7,case_items,AY,,null,
+7,case_items,AZ,,null,
+7,case_items,AI,1,success,
+7,existing_support,HH,0,success,
+7,existing_support,HI,40,success,
+7,existing_support,HJ,0,success,
+7,new_options,GS,,null,
+7,new_options,GT,,null,
+7,new_options,GU,,null,
+8,basic_info_header,store_name,イオンモール神戸北,success,
+8,basic_info_header,staff_name,森田真司,success,
+8,basic_info_footer,data_no,,null,
+8,basic_info_footer,tablet_no,2408-5391,success,
+8,case_items,AU,1,success,
+8,case_items,AV,,null,
+8,case_items,AY,,null,
+8,case_items,AZ,,null,
+8,case_items,AI,2,success,
+8,existing_support,HH,0,success,
+8,existing_support,HI,40,success,
+8,existing_support,HJ,0,success,
+8,new_options,GS,,null,
+8,new_options,GT,,null,
+8,new_options,GU,,null,
+9,basic_info_header,store_name,イオンモール大日,success,
+9,basic_info_header,staff_name,209,success,
+9,basic_info_footer,data_no,00157858,success,
+9,basic_info_footer,tablet_no,2404-5012,success,
+9,case_items,AU,0,success,
+9,case_items,AV,0,success,
+9,case_items,AY,0,success,
+9,case_items,AZ,0,success,
+9,case_items,AI,0,success,
+9,existing_support,HH,0,success,
+9,existing_support,HI,40,success,
+9,existing_support,HJ,0,success,
+9,new_options,GS,,null,
+9,new_options,GT,,null,
+9,new_options,GU,,null,
+10,basic_info_header,store_name,深江橋,success,
+10,basic_info_header,staff_name,尾崎将人,success,
+10,basic_info_footer,data_no,,null,
+10,basic_info_footer,tablet_no,,null,
+10,case_items,AU,0,success,
+10,case_items,AV,0,success,
+10,case_items,AY,,null,
+10,case_items,AZ,,null,
+10,case_items,AI,20,success,
+10,existing_support,HH,0,success,
+10,existing_support,HI,40,success,
+10,existing_support,HJ,0,success,
+10,new_options,GS,,null,
+10,new_options,GT,,null,
+10,new_options,GU,,null,
+11,basic_info_header,store_name,広畑,success,
+11,basic_info_header,staff_name,多田 和弘,success,
+11,basic_info_footer,data_no,00157881,success,
+11,basic_info_footer,tablet_no,2208-S002,success,
+11,case_items,AU,,null,
+11,case_items,AV,,null,
+11,case_items,AY,,null,
+11,case_items,AZ,,null,
+11,case_items,AI,0,success,
+11,existing_support,HH,0,success,
+11,existing_support,HI,40,success,
+11,existing_support,HJ,0,success,
+11,new_options,GS,,null,
+11,new_options,GT,,null,
+11,new_options,GU,,null,
+12,basic_info_header,store_name,ニトリモール枚方,success,
+12,basic_info_header,staff_name,竹内優育,success,
+12,basic_info_footer,data_no,00157880,success,
+12,basic_info_footer,tablet_no,2408-5435,success,
+12,case_items,AU,0,success,
+12,case_items,AV,1,success,
+12,case_items,AY,0,success,
+12,case_items,AZ,0,success,
+12,case_items,AI,,null,
+12,existing_support,HH,0,success,
+12,existing_support,HI,40,success,
+12,existing_support,HJ,0,success,
+12,new_options,GS,,null,
+12,new_options,GT,,null,
+12,new_options,GU,,null,
+13,basic_info_header,store_name,イオンモール神戸北,success,
+13,basic_info_header,staff_name,森田真司,success,
+13,basic_info_footer,data_no,00157866,success,
+13,basic_info_footer,tablet_no,2408-5391,success,
+13,case_items,AU,0,success,
+13,case_items,AV,1,success,
+13,case_items,AY,0,success,
+13,case_items,AZ,0,success,
+13,case_items,AI,34,success,
+13,existing_support,HH,0,success,
+13,existing_support,HI,40,success,
+13,existing_support,HJ,0,success,
+13,new_options,GS,,null,
+13,new_options,GT,,null,
+13,new_options,GU,,null,
+14,basic_info_header,store_name,イオンモール大日,success,
+14,basic_info_header,staff_name,すみだ,success,
+14,basic_info_footer,data_no,157105,success,
+14,basic_info_footer,tablet_no,2404-5012,success,
+14,case_items,AU,,null,
+14,case_items,AV,,null,
+14,case_items,AY,1,success,
+14,case_items,AZ,1,success,
+14,case_items,AI,4,success,
+14,existing_support,HH,0,success,
+14,existing_support,HI,40,success,
+14,existing_support,HJ,0,success,
+14,new_options,GS,,null,
+14,new_options,GT,,null,
+14,new_options,GU,,null,
+15,basic_info_header,store_name,熊取,success,
+15,basic_info_header,staff_name,小山功,success,
+15,basic_info_footer,data_no,00157923,success,
+15,basic_info_footer,tablet_no,2404-5008,success,
+15,case_items,AU,0,success,
+15,case_items,AV,0,success,
+15,case_items,AY,4,success,
+15,case_items,AZ,5,success,
+15,case_items,AI,9,success,
+15,existing_support,HH,0,success,
+15,existing_support,HI,40,success,
+15,existing_support,HJ,0,success,
+15,new_options,GS,,null,
+15,new_options,GT,,null,
+15,new_options,GU,,null,
+16,basic_info_header,store_name,イオンモール神戸北,success,
+16,basic_info_header,staff_name,森田 真司,success,
+16,basic_info_footer,data_no,00157936,success,
+16,basic_info_footer,tablet_no,2408-5391,success,
+16,case_items,AU,0,success,
+16,case_items,AV,3,success,
+16,case_items,AY,0,success,
+16,case_items,AZ,0,success,
+16,case_items,AI,3,success,
+16,existing_support,HH,0,success,
+16,existing_support,HI,40,success,
+16,existing_support,HJ,0,success,
+16,new_options,GS,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+16,new_options,GT,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+16,new_options,GU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+17,basic_info_header,store_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+17,basic_info_header,staff_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+17,basic_info_footer,data_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+17,basic_info_footer,tablet_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+17,case_items,AU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+17,case_items,AV,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+17,case_items,AY,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+17,case_items,AZ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+17,case_items,AI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+17,existing_support,HH,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+17,existing_support,HI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+17,existing_support,HJ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+17,new_options,GS,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+17,new_options,GT,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+17,new_options,GU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+18,basic_info_header,store_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+18,basic_info_header,staff_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+18,basic_info_footer,data_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+18,basic_info_footer,tablet_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+18,case_items,AU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+18,case_items,AV,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+18,case_items,AY,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+18,case_items,AZ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+18,case_items,AI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+18,existing_support,HH,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+18,existing_support,HI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+18,existing_support,HJ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+18,new_options,GS,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+18,new_options,GT,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+18,new_options,GU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+19,basic_info_header,store_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+19,basic_info_header,staff_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+19,basic_info_footer,data_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+19,basic_info_footer,tablet_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+19,case_items,AU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+19,case_items,AV,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+19,case_items,AY,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+19,case_items,AZ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+19,case_items,AI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+19,existing_support,HH,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+19,existing_support,HI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+19,existing_support,HJ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+19,new_options,GS,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+19,new_options,GT,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+19,new_options,GU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+20,basic_info_header,store_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+20,basic_info_header,staff_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+20,basic_info_footer,data_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+20,basic_info_footer,tablet_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+20,case_items,AU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+20,case_items,AV,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+20,case_items,AY,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+20,case_items,AZ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+20,case_items,AI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+20,existing_support,HH,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+20,existing_support,HI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+20,existing_support,HJ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+20,new_options,GS,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+20,new_options,GT,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+20,new_options,GU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+21,basic_info_header,store_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+21,basic_info_header,staff_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+21,basic_info_footer,data_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+21,basic_info_footer,tablet_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+21,case_items,AU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+21,case_items,AV,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+21,case_items,AY,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+21,case_items,AZ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+21,case_items,AI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+21,existing_support,HH,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+21,existing_support,HI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+21,existing_support,HJ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+21,new_options,GS,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+21,new_options,GT,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+21,new_options,GU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+22,basic_info_header,store_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+22,basic_info_header,staff_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+22,basic_info_footer,data_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+22,basic_info_footer,tablet_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+22,case_items,AU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+22,case_items,AV,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+22,case_items,AY,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+22,case_items,AZ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+22,case_items,AI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+22,existing_support,HH,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+22,existing_support,HI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+22,existing_support,HJ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+22,new_options,GS,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+22,new_options,GT,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+22,new_options,GU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+23,basic_info_header,store_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+23,basic_info_header,staff_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+23,basic_info_footer,data_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+23,basic_info_footer,tablet_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+23,case_items,AU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+23,case_items,AV,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+23,case_items,AY,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+23,case_items,AZ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+23,case_items,AI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+23,existing_support,HH,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+23,existing_support,HI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+23,existing_support,HJ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+23,new_options,GS,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+23,new_options,GT,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+23,new_options,GU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+24,basic_info_header,store_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+24,basic_info_header,staff_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+24,basic_info_footer,data_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+24,basic_info_footer,tablet_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+24,case_items,AU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+24,case_items,AV,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+24,case_items,AY,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+24,case_items,AZ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+24,case_items,AI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+24,existing_support,HH,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+24,existing_support,HI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+24,existing_support,HJ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+24,new_options,GS,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+24,new_options,GT,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+24,new_options,GU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+25,basic_info_header,store_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+25,basic_info_header,staff_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+25,basic_info_footer,data_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+25,basic_info_footer,tablet_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+25,case_items,AU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+25,case_items,AV,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+25,case_items,AY,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+25,case_items,AZ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+25,case_items,AI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+25,existing_support,HH,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+25,existing_support,HI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+25,existing_support,HJ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+25,new_options,GS,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+25,new_options,GT,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+25,new_options,GU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+26,basic_info_header,store_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+26,basic_info_header,staff_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+26,basic_info_footer,data_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+26,basic_info_footer,tablet_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+26,case_items,AU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+26,case_items,AV,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+26,case_items,AY,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+26,case_items,AZ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+26,case_items,AI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+26,existing_support,HH,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+26,existing_support,HI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+26,existing_support,HJ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+26,new_options,GS,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+26,new_options,GT,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+26,new_options,GU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+27,basic_info_header,store_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+27,basic_info_header,staff_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+27,basic_info_footer,data_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+27,basic_info_footer,tablet_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+27,case_items,AU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+27,case_items,AV,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+27,case_items,AY,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+27,case_items,AZ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+27,case_items,AI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+27,existing_support,HH,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+27,existing_support,HI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+27,existing_support,HJ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+27,new_options,GS,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+27,new_options,GT,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+27,new_options,GU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+28,basic_info_header,store_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+28,basic_info_header,staff_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+28,basic_info_footer,data_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+28,basic_info_footer,tablet_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+28,case_items,AU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+28,case_items,AV,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+28,case_items,AY,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+28,case_items,AZ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+28,case_items,AI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+28,existing_support,HH,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+28,existing_support,HI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+28,existing_support,HJ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+28,new_options,GS,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+28,new_options,GT,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+28,new_options,GU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+29,basic_info_header,store_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+29,basic_info_header,staff_name,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+29,basic_info_footer,data_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+29,basic_info_footer,tablet_no,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+29,case_items,AU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+29,case_items,AV,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+29,case_items,AY,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+29,case_items,AZ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+29,case_items,AI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+29,existing_support,HH,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+29,existing_support,HI,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+29,existing_support,HJ,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+29,new_options,GS,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+29,new_options,GT,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"
+29,new_options,GU,,error,"Error code: 400 - {'type': 'error', 'error': {'typ"

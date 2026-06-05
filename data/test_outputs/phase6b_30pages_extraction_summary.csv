@@ -1,0 +1,6 @@
+﻿region,items_per_page,total_items,success,null,uncertain,error,success_rate
+basic_info_header,2,60,34,0,0,13,56.7
+basic_info_footer,2,60,30,4,0,13,50.0
+case_items,5,150,63,22,0,13,42.0
+existing_support,3,90,51,0,0,13,56.7
+new_options,3,90,0,48,0,14,0.0
