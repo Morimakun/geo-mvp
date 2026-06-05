@@ -682,16 +682,16 @@ def test_phase6b1_regions(mode: str = "full"):
     pdf_path = "tests/fixtures/geo_pdf_reconciliation/20260529130020168.pdf"
     model_name = "claude-sonnet-4-6"
 
-    # Test multiple pages: page 0 (blank case) and page 1 (value-present case)
-    test_pages = [0, 1]
+    # Test multiple pages: page 0, 3, 7 for new_options validation
+    test_pages = [0, 3, 7]
 
     # Define expected values for both pages
     page_expected_values = {
         0: {
             "new_options_small": {
-                "GS": "blank",      # Empty on page 0
-                "GT": "blank",      # Empty on page 0
-                "GU": "blank"       # Empty on page 0
+                "GS": 1,            # eo光電話: 漢数字「一」
+                "GT": None,         # 地デジBS: 空欄
+                "GU": 1             # CS: 漢数字「一」
             },
             "case_items_small": {
                 "AU": "unreadable",  # Handwritten "下" character
@@ -701,15 +701,20 @@ def test_phase6b1_regions(mode: str = "full"):
                 "AI": 5              # Handwritten number 5
             }
         },
-        1: {
-            # Page 1: Based on visual inspection, has values in case_items area
-            # Will be filled after API extraction
-            "case_items_small": {
-                "AU": None,  # Will be determined after extraction
-                "AV": None,
-                "AY": None,
-                "AZ": None,
-                "AI": None
+        3: {
+            # Page 3: Based on visual inspection, has values in new_options area
+            "new_options_small": {
+                "GS": 1,            # eo光電話: 「T」のような手書き = 1（推定）
+                "GT": 1,            # 地デジBS: 「T」のような手書き = 1（推定）
+                "GU": 1             # CS: 「一」のような手書き = 1
+            }
+        },
+        7: {
+            # Page 7: Based on visual inspection, has limited values in new_options area
+            "new_options_small": {
+                "GS": None,         # eo光電話: 空欄に見える
+                "GT": None,         # 地デジBS: 空欄
+                "GU": None          # CS: 空欄
             }
         }
     }
