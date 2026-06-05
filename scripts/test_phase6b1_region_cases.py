@@ -568,25 +568,94 @@ def test_api_connectivity() -> bool:
         return False
 
 
-def analyze_results(region_name: str, expected_items: list, extracted_data: dict) -> dict:
-    """Analyze extraction results"""
+def analyze_results(region_name: str, expected_items: list, extracted_data: dict, expected_values: dict = None) -> dict:
+    """Analyze extraction results with optional expected value validation
+
+    Args:
+        region_name: Name of region being tested
+        expected_items: List of item codes to extract
+        extracted_data: Dict of extracted values
+        expected_values: Dict mapping item codes to expected values or status
+                        Values can be: actual value, None (for null), or string status like "blank", "unreadable"
+
+    Returns:
+        Analysis dict with success counts based on evaluation criteria
+    """
 
     success_count = 0
     null_count = 0
     unreadable_items = []
     warnings = []
+    item_results = []
 
     for item in expected_items:
         value = extracted_data.get(item)
+        expected = expected_values.get(item) if expected_values else None
 
-        if value is None:
-            null_count += 1
-            unreadable_items.append(item)
-        elif value == "" or value == "":
-            null_count += 1
-            unreadable_items.append(item)
+        # Determine if value is null
+        is_null = value is None or value == ""
+
+        # Evaluate based on expected value
+        if expected_values and item in expected_values:
+            expected_status = expected_values[item]
+
+            # Expected blank/empty → null is success
+            if expected_status == "blank" and is_null:
+                success_count += 1
+                item_results.append({
+                    "item": item,
+                    "expected": "blank",
+                    "actual": "null",
+                    "result": "[OK] success"
+                })
+            # Expected unreadable → null is acceptable
+            elif expected_status == "unreadable" and is_null:
+                success_count += 1
+                item_results.append({
+                    "item": item,
+                    "expected": "unreadable",
+                    "actual": "null",
+                    "result": "[OK] acceptable"
+                })
+            # Expected value → must extract correctly
+            elif isinstance(expected_status, (int, float, str)) and expected_status != "blank" and expected_status != "unreadable":
+                if value == expected_status:
+                    success_count += 1
+                    item_results.append({
+                        "item": item,
+                        "expected": expected_status,
+                        "actual": value,
+                        "result": "[OK] success"
+                    })
+                elif is_null:
+                    unreadable_items.append(item)
+                    item_results.append({
+                        "item": item,
+                        "expected": expected_status,
+                        "actual": "null",
+                        "result": "[NG] failed (expected value)"
+                    })
+                else:
+                    item_results.append({
+                        "item": item,
+                        "expected": expected_status,
+                        "actual": value,
+                        "result": "[NG] mismatch"
+                    })
+            else:
+                # No specific expectation
+                if is_null:
+                    null_count += 1
+                    unreadable_items.append(item)
+                else:
+                    success_count += 1
         else:
-            success_count += 1
+            # No expected value provided — use original logic
+            if is_null:
+                null_count += 1
+                unreadable_items.append(item)
+            else:
+                success_count += 1
 
     success_rate = success_count / len(expected_items) if expected_items else 0
 
@@ -598,7 +667,8 @@ def analyze_results(region_name: str, expected_items: list, extracted_data: dict
         "success_rate": success_rate,
         "unreadable_items": unreadable_items,
         "warnings": warnings,
-        "extracted_data": extracted_data
+        "extracted_data": extracted_data,
+        "item_results": item_results if expected_values else []
     }
 
 
@@ -646,6 +716,24 @@ def test_phase6b1_regions(mode: str = "full"):
 
     print(f"\n[Step 3] Running region-based extraction tests")
 
+    # Define expected values for page 0 (based on actual handwritten content observation)
+    # Format: {item_code: expected_value or status}
+    # Status values: "blank" (帳票上で空欄), "unreadable" (手書き文字等で読取困難)
+    expected_values = {
+        "new_options_small": {
+            "GS": "blank",      # Empty on page 0
+            "GT": "blank",      # Empty on page 0
+            "GU": "blank"       # Empty on page 0
+        },
+        "case_items_small": {
+            "AU": "unreadable",  # Handwritten "下" character (unreadable)
+            "AV": 0,             # Dash "—" interpreted as 0
+            "AY": "blank",       # Not visible
+            "AZ": "blank",       # Not visible
+            "AI": 5              # Handwritten number 5 visible
+        }
+    }
+
     # Run tests for each region
     all_results = {}
 
@@ -681,11 +769,13 @@ def test_phase6b1_regions(mode: str = "full"):
                 image_height=region_data['pixel_height']
             )
 
-            # Analyze
+            # Analyze with expected values if available
+            region_expected = expected_values.get(region_key) if region_key in expected_values else None
             analysis = analyze_results(
                 region_key,
                 region_config['items'],
-                extracted
+                extracted,
+                expected_values=region_expected
             )
 
             all_results[region_key] = {
@@ -706,6 +796,14 @@ def test_phase6b1_regions(mode: str = "full"):
             print(f"  Unreadable: {analysis['null_count']} items")
             if analysis['unreadable_items']:
                 print(f"    Items: {', '.join(analysis['unreadable_items'][:5])}")
+
+            # Display detailed item results if expected values were used
+            if analysis.get('item_results'):
+                print(f"  Item-by-item evaluation:")
+                for item_result in analysis['item_results']:
+                    result_str = item_result['result'].replace('✓', '[OK]').replace('✗', '[NG]')
+                    print(f"    {item_result['item']}: expected={item_result['expected']}, actual={item_result['actual']} -> {result_str}")
+
             if analysis['warnings']:
                 print(f"  Warnings: {analysis['warnings']}")
 
