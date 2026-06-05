@@ -137,25 +137,46 @@ Return ONLY this JSON:
     },
 
     "new_options": {
-        "bounds": (18, 50, 38, 62),
+        "bounds": (18, 50, 38, 62),  # Bounds confirmed correct via visual analysis
         "zoom": 4,
         "items": ["GS", "GT", "GU"],
-        "prompt": """You are looking at the new options section of a Japanese daily report FAX form.
+        "prompt": """あなたは日報FAX帳票の【新規オプション等】の領域を見ています。
 
-Read the handwritten numbers for these numbered items:
-- "1. eo Phone" -> GS
-- "2. Digital BS" -> GT
-- "3. CS" -> GU
+この表には番号付きの項目が並んでいます。上から順に：
+- 「1. eo光電話」の数値 → GS として返す
+- 「2. 地デジBS」の数値 → GT として返す
+- 「3. CS」の数値 → GU として返す
 
-If the mark is unclear (e.g. could be a tally mark or line), return null.
-Only return a number if you are confident.
+【読み取り方法】:
 
-Return ONLY this JSON format:
+この帳票の数値欄には複数の記入形式があります：
+
+1. **アラビア数字** (1, 2, 3, など)
+   → そのまま数値として返してください
+
+2. **正の字カウント** (完成形「正」で5カウント)
+   - 明確な横線1本「一」のような形 → 1
+   - 完成した「正」の字 → 5
+   - 途中形で画数が**確実に判断できる場合**のみ → 2, 3, 4
+
+3. **判断が難しい場合** (T字形・罫線と重なる・書き癖がある)
+   → 無理に数値化せず null で返し、理由を warnings に記載してください
+
+【重要な注意】:
+- 数値が明確でない場合は、null を優先してください
+- T字形・複数本の短い線・罫線と重なる形は「確実に2」と断定しないでください
+- 「こう見える可能性がある」という推測ではなく「確実に見える」と判断できる場合だけ数値を返してください
+- 空欄は null です
+
+必ず以下のJSON形式で返してください：
 {
-  "GS": number or null,
-  "GT": number or null,
-  "GU": number or null
-}"""
+  "GS": 数値またはnull,
+  "GT": 数値またはnull,
+  "GU": 数値またはnull
+}
+
+見つからない項目は 0 ではなく null で返してください。
+"""
     },
 }
 

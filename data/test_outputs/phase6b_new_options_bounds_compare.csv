@@ -1,0 +1,43 @@
+﻿page_number,bounds_name,bounds,zoom,prompt_name,GS,GT,GU,null_count,has_value,warnings,error,notes
+0,current_38_62,"(18, 50, 38, 62)",4,english_simple,,,,3,False,,,Current (original Phase 6B1)
+0,current_38_62,"(18, 50, 38, 62)",4,japanese_detailed,1.0,,1.0,1,True,"['GT（地デジBS）の欄は空欄と判断しました。', 'GS（eo光電話）およびGU（CS）は横線1本（正の字の第1画）として読み取り、それぞれ1としました。罫線との混同の可能性がわずかにあるため注意",,Current (original Phase 6B1)
+0,wider_35_70,"(18, 50, 35, 70)",4,english_simple,,,,3,False,,,Candidate A: wider right
+0,wider_35_70,"(18, 50, 35, 70)",4,japanese_detailed,1.0,,1.0,1,True,"['GT（2. 地デジBS）の数値欄は空欄と判断しました。', 'GS（1. eo光電話）およびGU（3. CS）は横線1本（一）と読み取り、1と判断しましたが、罫線との重なりの可能性があるため注意が",,Candidate A: wider right
+0,much_wider_30_75,"(15, 55, 30, 75)",3,english_simple,,,,3,False,,,"Candidate C: much wider, lower zoom"
+0,much_wider_30_75,"(15, 55, 30, 75)",3,japanese_detailed,1.0,,1.0,1,True,"['GS(1. eo光電話): 横線1本のような記入が確認できますが、罫線との重なりがあり断定に若干の不確実性があります。', 'GT(2. 地デジBS): 空欄と判断しnullとしました。']",,"Candidate C: much wider, lower zoom"
+1,current_38_62,"(18, 50, 38, 62)",4,english_simple,,,,3,False,,,Current (original Phase 6B1)
+1,current_38_62,"(18, 50, 38, 62)",4,japanese_detailed,,,,3,False,"['GS (1. eo光電話): 数値欄が空欄または判読不能なため null を返します', 'GT (2. 地デジBS): 数値欄が空欄または判読不能なため null を返します', 'GU (3.",,Current (original Phase 6B1)
+1,wider_35_70,"(18, 50, 35, 70)",4,english_simple,,,,3,False,,,Candidate A: wider right
+1,wider_35_70,"(18, 50, 35, 70)",4,japanese_detailed,,,,3,False,"['1. eo光電話（GS）: 数値欄が空欄または判別不能なため null', '2. 地デジBS（GT）: 数値欄が空欄または判別不能なため null', '3. CS（GU）: 数値欄が空欄または",,Candidate A: wider right
+1,much_wider_30_75,"(15, 55, 30, 75)",3,english_simple,,,,3,False,,,"Candidate C: much wider, lower zoom"
+1,much_wider_30_75,"(15, 55, 30, 75)",3,japanese_detailed,,,,3,False,"['GS (1. eo光電話): 数値欄が空欄または判読不能のためnullとしました', 'GT (2. 地デジBS): 数値欄が空欄または判読不能のためnullとしました', 'GU (3. CS)",,"Candidate C: much wider, lower zoom"
+3,current_38_62,"(18, 50, 38, 62)",4,english_simple,,,,3,False,,,Current (original Phase 6B1)
+3,current_38_62,"(18, 50, 38, 62)",4,japanese_detailed,,,,3,False,"['GS(eo光電話): T字形の記載が見られるが、正の字途中形か罫線との重なりか確実に判別できないためnull', 'GT(地デジBS): 空欄に見えるためnull', 'GU(CS): 横線状の記",,Current (original Phase 6B1)
+3,wider_35_70,"(18, 50, 35, 70)",4,english_simple,,,,3,False,,,Candidate A: wider right
+3,wider_35_70,"(18, 50, 35, 70)",4,japanese_detailed,,,,3,False,"['GS（eo光電話）: T字形の記入が見られるが、罫線との重なりや書き癖の可能性があり、正の字カウントとして確実に判断できないためnullとしました。', 'GT（地デジBS）: 数値欄が空白または",,Candidate A: wider right
+3,much_wider_30_75,"(15, 55, 30, 75)",3,english_simple,,,,3,False,,,"Candidate C: much wider, lower zoom"
+3,much_wider_30_75,"(15, 55, 30, 75)",3,japanese_detailed,,,,3,False,"['GS（1. eo光電話）: 数値欄に『T』字形の記入が見られるが、罫線との重なりがあり正の字の途中形（1画）か罫線か確実な判断ができないため null とした。', 'GT（2. 地デジBS）: ",,"Candidate C: much wider, lower zoom"
+7,current_38_62,"(18, 50, 38, 62)",4,english_simple,,,,3,False,,,Current (original Phase 6B1)
+7,current_38_62,"(18, 50, 38, 62)",4,japanese_detailed,,,,3,False,['画像の解像度が低く、各項目の数値欄が不鮮明なため、GS（1. eo光電話）、GT（2. 地デジBS）、GU（3. CS）いずれも確実な数値判断ができません。空欄の可能性もありますが、断定できないた,,Current (original Phase 6B1)
+7,wider_35_70,"(18, 50, 35, 70)",4,english_simple,,,,3,False,,,Candidate A: wider right
+7,wider_35_70,"(18, 50, 35, 70)",4,japanese_detailed,,,,3,False,"['1. eo光電話（GS）：数値欄に明確な記入が確認できないため null', '2. 地デジBS（GT）：数値欄に明確な記入が確認できないため null', '3. CS（GU）：数値欄に明確な記",,Candidate A: wider right
+7,much_wider_30_75,"(15, 55, 30, 75)",3,english_simple,,,,3,False,,,"Candidate C: much wider, lower zoom"
+7,much_wider_30_75,"(15, 55, 30, 75)",3,japanese_detailed,,,,3,False,"['GS（1. eo光電話）: 数値欄が不鮮明で確実な判断ができないためnull', 'GT（2. 地デジBS）: 数値欄が不鮮明で確実な判断ができないためnull', 'GU（3. CS）: 数値欄",,"Candidate C: much wider, lower zoom"
+10,current_38_62,"(18, 50, 38, 62)",4,english_simple,,,,3,False,,,Current (original Phase 6B1)
+10,current_38_62,"(18, 50, 38, 62)",4,japanese_detailed,,,,3,False,"['1. eo光電話（GS）: 数値欄が空欄または判読不能のためnullを返します', '2. 地デジBS（GT）: 数値欄が空欄または判読不能のためnullを返します', '3. CS（GU）: 数",,Current (original Phase 6B1)
+10,wider_35_70,"(18, 50, 35, 70)",4,english_simple,,,,3,False,,,Candidate A: wider right
+10,wider_35_70,"(18, 50, 35, 70)",4,japanese_detailed,,,,3,False,"['1. eo光電話（GS）: 数値欄に明確な記入が確認できません。空欄と判断しnullとしました。', '2. 地デジBS（GT）: 数値欄に明確な記入が確認できません。空欄と判断しnullとしまし",,Candidate A: wider right
+10,much_wider_30_75,"(15, 55, 30, 75)",3,english_simple,,,,3,False,,,"Candidate C: much wider, lower zoom"
+10,much_wider_30_75,"(15, 55, 30, 75)",3,japanese_detailed,,,,3,False,"['1. eo光電話 (GS): 数値欄が空欄または判読不能のため null', '2. 地デジBS (GT): 数値欄が空欄または判読不能のため null', '3. CS (GU): 数値欄が空欄",,"Candidate C: much wider, lower zoom"
+12,current_38_62,"(18, 50, 38, 62)",4,english_simple,,,,3,False,,,Current (original Phase 6B1)
+12,current_38_62,"(18, 50, 38, 62)",4,japanese_detailed,,,,3,False,"['GS (1. eo光電話): 数値欄が空欄または判読不能なため null を返します', 'GT (2. 地デジBS): 数値欄が空欄または判読不能なため null を返します', 'GU (3.",,Current (original Phase 6B1)
+12,wider_35_70,"(18, 50, 35, 70)",4,english_simple,,,,3,False,,,Candidate A: wider right
+12,wider_35_70,"(18, 50, 35, 70)",4,japanese_detailed,,,,3,False,"['GS（1. eo光電話）: 数値欄が空欄または判読不可能なため null を返します。', 'GT（2. 地デジBS）: 数値欄が空欄または判読不可能なため null を返します。', 'GU（3",,Candidate A: wider right
+12,much_wider_30_75,"(15, 55, 30, 75)",3,english_simple,,,,3,False,,,"Candidate C: much wider, lower zoom"
+12,much_wider_30_75,"(15, 55, 30, 75)",3,japanese_detailed,,,,3,False,"['GS (1. eo光電話): 数値欄が不明瞭で確実な判断ができないためnullとしました。', 'GT (2. 地デジBS): 数値欄が不明瞭で確実な判断ができないためnullとしました。', '",,"Candidate C: much wider, lower zoom"
+15,current_38_62,"(18, 50, 38, 62)",4,english_simple,,,,3,False,,,Current (original Phase 6B1)
+15,current_38_62,"(18, 50, 38, 62)",4,japanese_detailed,,,,3,False,"['画像の解像度が低く、1. eo光電話(GS)の数値欄が明確に判読できません', '画像の解像度が低く、2. 地デジBS(GT)の数値欄が明確に判読できません', '画像の解像度が低く、3. CS(",,Current (original Phase 6B1)
+15,wider_35_70,"(18, 50, 35, 70)",4,english_simple,,,,3,False,,,Candidate A: wider right
+15,wider_35_70,"(18, 50, 35, 70)",4,japanese_detailed,,,,3,False,"['1. eo光電話（GS）: 数値欄が空欄または判別不能のため null', '2. 地デジBS（GT）: 数値欄が空欄または判別不能のため null', '3. CS（GU）: 数値欄が空欄または",,Candidate A: wider right
+15,much_wider_30_75,"(15, 55, 30, 75)",3,english_simple,,,,3,False,,,"Candidate C: much wider, lower zoom"
+15,much_wider_30_75,"(15, 55, 30, 75)",3,japanese_detailed,,,,3,False,"['1. eo光電話（GS）: 数値欄が不明瞭で確実な読み取りができないため null', '2. 地デジBS（GT）: 数値欄が不明瞭で確実な読み取りができないため null', '3. CS（GU",,"Candidate C: much wider, lower zoom"
