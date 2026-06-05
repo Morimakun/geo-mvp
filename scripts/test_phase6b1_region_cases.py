@@ -328,28 +328,26 @@ REGIONS_SMALL = {
 - 「2. 地デジBS」の数値 → GT として返す
 - 「3. CS」の数値 → GU として返す
 
-【重要】: 正の字カウントと数値の区別
-
-この帳票では、数値欄に以下の2種類の記入があります：
-
-1. **アラビア数字**: 1, 2, 3, ... など
-
-2. **正の字カウント**: 完成形で5カウント（正）
-   - 「一」のような横線1本 → 1カウント
-   - 横線 + 縦線（T字のような形）→ 2カウント
-   - さらに線が増えた形 → 3カウント、4カウント
-   - 「正」の完成形 → 5カウント
-
 【読み取り方法】:
-手書きの記号が見えた場合：
-- 横線だけ（「一」）なら → 1
-- 横線 + 縦線のように見えても、それが正の字の途中形なら → 見えている画数をカウント
-- T字に見えるから「1」と決めつけない
-- 正の字として何カウント分か判断してください
-- 形が不明確・判読不可の場合は → null（理由を warnings に記載）
 
-【空欄】:
-- 何も記入されていない → null
+この帳票の数値欄には複数の記入形式があります：
+
+1. **アラビア数字** (1, 2, 3, など)
+   → そのまま数値として返してください
+
+2. **正の字カウント** (完成形「正」で5カウント)
+   - 明確な横線1本「一」のような形 → 1
+   - 完成した「正」の字 → 5
+   - 途中形で画数が**確実に判断できる場合**のみ → 2, 3, 4
+
+3. **判断が難しい場合** (T字形・罫線と重なる・書き癖がある)
+   → 無理に数値化せず null で返し、理由を warnings に記載してください
+
+【重要な注意】:
+- 数値が明確でない場合は、null を優先してください
+- T字形・複数本の短い線・罫線と重なる形は「確実に2」と断定しないでください
+- 「こう見える可能性がある」という推測ではなく「確実に見える」と判断できる場合だけ数値を返してください
+- 空欄は null です
 
 必ず以下のJSON形式で返してください：
 {
@@ -720,9 +718,9 @@ def test_phase6b1_regions(mode: str = "full"):
     page_expected_values = {
         0: {
             "new_options_small": {
-                "GS": 1,            # eo光電話: 漢数字「一」
+                "GS": 1,            # eo光電話: 明確な横線1本「一」→ 1
                 "GT": None,         # 地デジBS: 空欄
-                "GU": 1             # CS: 漢数字「一」
+                "GU": 1             # CS: 明確な横線1本「一」→ 1
             },
             "case_items_small": {
                 "AU": "unreadable",  # Handwritten "下" character
@@ -734,18 +732,19 @@ def test_phase6b1_regions(mode: str = "full"):
         },
         3: {
             # Page 3: Based on visual inspection, has values in new_options area
-            # Note: "T"-like marks may be tally mark strokes (正の字), not necessarily "1"
+            # Note: Handwritten marks may be ambiguous (tally strokes vs other marks)
             "new_options_small": {
-                "GS": 1,            # eo光電話: 「一」のような形 = 1カウント
-                "GT": "uncertain",  # 地デジBS: 「T」のような形 = 正の字の2カウント可能性
-                                     # AI が null+理由、または2を返せば acceptable
-                "GU": 1             # CS: 「一」のような形 = 1カウント
+                "GS": "uncertain",  # eo光電話: 形状が判断困難（1か2か？）
+                                     # null でも1でも2でも acceptable
+                "GT": "uncertain",  # 地デジBS: 形状が判断困難
+                                     # null でも数値でも acceptable
+                "GU": 1             # CS: 明確な横線1本「一」→ 1
             }
         },
         7: {
             # Page 7: Based on visual inspection, has limited values in new_options area
             "new_options_small": {
-                "GS": None,         # eo光電話: 空欄に見える
+                "GS": None,         # eo光電話: 空欄
                 "GT": None,         # 地デジBS: 空欄
                 "GU": None          # CS: 空欄
             }
