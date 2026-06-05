@@ -1,0 +1,42 @@
+[
+  {
+    "page": 0,
+    "GS_expected": "1",
+    "GS_actual": 1,
+    "GT_expected": "None",
+    "GT_actual": null,
+    "GU_expected": "1",
+    "GU_actual": 1,
+    "note": "GS=1 (horizontal line), GU=1 (horizontal line)"
+  },
+  {
+    "page": 3,
+    "GS_expected": "2",
+    "GS_actual": 2,
+    "GT_expected": "None",
+    "GT_actual": null,
+    "GU_expected": "None",
+    "GU_actual": 1,
+    "note": "GS=2 (T-shape = tally 2画目)"
+  },
+  {
+    "page": 7,
+    "GS_expected": "uncertain_or_null",
+    "GS_actual": null,
+    "GT_expected": "None",
+    "GT_actual": null,
+    "GU_expected": "None",
+    "GU_actual": null,
+    "note": "GS has 0-like mark, not tally"
+  },
+  {
+    "page": 12,
+    "GS_expected": "None",
+    "GS_actual": null,
+    "GT_expected": "None",
+    "GT_actual": null,
+    "GU_expected": "None",
+    "GU_actual": null,
+    "note": "All empty"
+  }
+]
