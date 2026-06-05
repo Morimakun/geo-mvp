@@ -102,7 +102,7 @@ Return ONLY this JSON format:
     },
 
     "existing_support": {
-        "bounds": (12, 22, 75, 100),
+        "bounds": (12, 22, 65, 100),  # OPTIMIZED: Balanced view of template values + handwritten cells
         "zoom": 3,
         "items": ["HH", "HI", "HJ"],
         "prompt": """You are looking at the existing support section of a Japanese daily report FAX form.
