@@ -1,0 +1,6 @@
+page_number,pdf_date,pdf_store_name,mapped_store_code,csv_candidate_count,match_status,compared_fields,matched_fields,mismatched_fields,skipped_fields,final_status,review_reasons
+1,2026/05/17,小倉,AU1K0024112,183,unknown,4,2,2,179,mismatch,2 mismatched fields
+2,2026/05/17,小倉,AU1K0024112,183,unknown,4,2,2,179,mismatch,2 mismatched fields
+3,2026/05/17,小倉,AU1K0024112,183,unknown,4,2,2,179,mismatch,2 mismatched fields
+4,2026/05/17,小倉,AU1K0024112,183,unknown,4,2,2,179,mismatch,2 mismatched fields
+5,2026/05/17,小倉,AU1K0024112,183,unknown,4,2,2,179,mismatch,2 mismatched fields
