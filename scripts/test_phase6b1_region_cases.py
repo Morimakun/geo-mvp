@@ -26,10 +26,15 @@ from pathlib import Path
 
 # Load environment variables from .env
 from dotenv import load_dotenv
-load_dotenv(override=True)
+from pathlib import Path
+
+# Load from project root
+env_path = Path(__file__).parent.parent / ".env"
+load_dotenv(dotenv_path=env_path, override=True)
 
 # Check API key
-if not os.getenv("ANTHROPIC_API_KEY"):
+api_key = os.getenv("ANTHROPIC_API_KEY", "").strip()
+if not api_key:
     raise RuntimeError(
         "ANTHROPIC_API_KEY が未設定です。\n"
         "以下のいずれかで設定してください：\n"
@@ -42,7 +47,7 @@ from PIL import Image
 from anthropic import Anthropic
 from io import BytesIO
 
-client = Anthropic()
+client = Anthropic(api_key=api_key)
 
 # Output directory for crop images
 OUTPUT_DIR = Path("data/test_outputs/phase6b1_regions")
