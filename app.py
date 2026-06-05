@@ -1919,6 +1919,85 @@ def run_phase1_reconciliation():
         key="download_phase1_reconciliation_detail"
     )
 
+    # ===== Phase 4b: 照合結果確認UI（Phase 1-4a統合） =====
+    st.markdown("---")
+    st.markdown("## 📊 照合結果確認UI（Phase 4b）")
+    st.markdown("Phase 1〜4a の照合結果を確認・検証します")
+
+    from helpers.result_display import (
+        format_page_summary_table,
+        format_candidate_scores_table,
+        format_field_comparison_table,
+        generate_download_csv,
+    )
+
+    # [1] ページサマリー表示
+    st.markdown("### [1] ページ単位の照合結果一覧")
+
+    summary_df = format_page_summary_table(all_results)
+    if not summary_df.empty:
+        st.dataframe(summary_df, use_container_width=True, hide_index=True)
+
+        # [2] 詳細表示（選択式）
+        st.markdown("### [2] 詳細表示")
+
+        if len(summary_df) > 0:
+            page_options = summary_df['Page'].tolist()
+            selected_page = st.selectbox("詳細を表示するページを選択", options=page_options, key="page_detail_selector")
+
+            if selected_page is not None:
+                # 選択したページの結果を取得
+                selected_result = all_results[selected_page - 1]
+
+                col1, col2 = st.columns(2, gap="large")
+
+                with col1:
+                    st.markdown("#### PDF基本情報")
+                    st.write(f"**ページ**: {selected_result.get('page_no', 'N/A')}")
+                    st.write(f"**営業日**: {selected_result.get('pdf_date', 'N/A')}")
+                    st.write(f"**店舗名**: {selected_result.get('pdf_store_name', 'N/A')}")
+                    st.write(f"**取扱コード**: {selected_result.get('store_code', 'N/A')}")
+                    st.write(f"**スタッフ**: {selected_result.get('staff_name', 'N/A')}")
+
+                with col2:
+                    st.markdown("#### CSV照合結果")
+                    st.write(f"**ステータス**: {selected_result.get('status', 'N/A')}")
+                    st.write(f"**CSV候補**: {selected_result.get('csv_candidate_count', 0)} 件")
+                    field_summary = selected_result.get('field_comparison_summary', {})
+                    st.write(f"**比較対象**: {field_summary.get('compared_fields', 0)} / {field_summary.get('total_fields', 0)} 項目")
+
+                # [複数候補表示]
+                candidate_scores = selected_result.get('candidate_scores', [])
+                if candidate_scores and len(candidate_scores) > 0:
+                    st.markdown("#### 複数CSV候補（Phase 4a）")
+                    candidate_df = format_candidate_scores_table(candidate_scores)
+                    if candidate_df is not None:
+                        st.dataframe(candidate_df, use_container_width=True, hide_index=True)
+
+                # [フィールド比較詳細]
+                st.markdown("#### フィールド比較詳細（Phase 3）")
+                field_comparisons = selected_result.get('field_comparisons', [])
+                if field_comparisons:
+                    field_df = format_field_comparison_table(field_comparisons)
+                    if field_df is not None:
+                        st.dataframe(field_df, use_container_width=True, hide_index=True)
+
+        # [3] ダウンロード機能
+        st.markdown("### [3] 確認用CSVダウンロード")
+
+        csv_bytes, csv_filename = generate_download_csv(all_results)
+
+        st.download_button(
+            label="📥 確認用CSV をダウンロード",
+            data=csv_bytes,
+            file_name=csv_filename,
+            mime="text/csv",
+            use_container_width=True,
+            key="download_phase4b_csv"
+        )
+    else:
+        st.warning("⚠️ 照合結果がありません")
+
 
 # ===== フッター =====
 st.markdown("""
