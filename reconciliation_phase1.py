@@ -205,6 +205,10 @@ class Phase1ReconciliationEngine:
         status = phase3_status
 
         return {
+            # Phase 4b UI用
+            'page_no': pdf_record.get('page_no', 0),
+            'pdf_date': target_date,
+            # 基本情報
             'status': status,
             'csv_record_idx': int(best_match['csv_idx']),
             'candidates': candidates_with_scores[:3],  # 上位3件のみ
@@ -219,6 +223,7 @@ class Phase1ReconciliationEngine:
             'warnings': warnings,
             'store_code': store_code,
             'store_name': store_name_normalized,
+            'pdf_store_name': pdf_record.get('store_name'),
             'staff_name': pdf_record.get('staff_name'),
             'tablet_no': pdf_record.get('tablet_no'),
             'data_no': pdf_record.get('data_no'),
