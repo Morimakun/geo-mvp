@@ -102,17 +102,33 @@ Return ONLY this JSON format:
     },
 
     "existing_support": {
-        "bounds": (12, 22, 58, 100),
+        "bounds": (12, 22, 75, 100),
         "zoom": 3,
         "items": ["HH", "HI", "HJ"],
         "prompt": """You are looking at the existing support section of a Japanese daily report FAX form.
 
-Read the handwritten numbers for these numbered items:
-- "1. Net addition" -> HH
-- "2. Phone addition" -> HI
-- "3. TV addition" -> HJ
+CRITICAL: This section has a TABLE where:
+- Left: Item labels (e.g., "1. ネット追加", "2. 電話追加", "3. テレビ追加")
+- Middle: TEMPLATE PRINTED NUMBERS (like "40", "15") - IGNORE THESE
+- Right: HANDWRITTEN ENTRY CELLS where users wrote actual numbers
 
-Return ONLY this JSON format:
+You may see printed template numbers in the middle column. IGNORE them completely.
+Read ONLY the HANDWRITTEN numbers in the right-side entry cells.
+
+Extract these 3 items:
+- HH: Handwritten value for "1. Net addition (ネット追加)"
+- HI: Handwritten value for "2. Phone addition (電話追加)"
+- HJ: Handwritten value for "3. TV addition (テレビ追加)"
+
+Rules:
+- Ignore ALL printed/template numbers (like "40", "15", etc.)
+- Empty cells = null
+- Unclear marks = null
+- Tally marks (正の字): count complete marks as 5
+- Dashes (—): treat as 0
+- Only return numbers that are clearly HANDWRITTEN
+
+Return ONLY this JSON:
 {
   "HH": number or null,
   "HI": number or null,
