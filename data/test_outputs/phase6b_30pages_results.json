@@ -1,0 +1,3658 @@
+{
+  "summary": [
+    {
+      "region": "basic_info_header",
+      "items_per_page": 2,
+      "total_items": 60,
+      "success": 60,
+      "null": 0,
+      "uncertain": 0,
+      "error": 0,
+      "success_rate": 100.0
+    },
+    {
+      "region": "basic_info_footer",
+      "items_per_page": 2,
+      "total_items": 60,
+      "success": 53,
+      "null": 7,
+      "uncertain": 0,
+      "error": 0,
+      "success_rate": 88.3
+    },
+    {
+      "region": "case_items",
+      "items_per_page": 5,
+      "total_items": 150,
+      "success": 101,
+      "null": 49,
+      "uncertain": 0,
+      "error": 0,
+      "success_rate": 67.3
+    },
+    {
+      "region": "existing_support",
+      "items_per_page": 3,
+      "total_items": 90,
+      "success": 6,
+      "null": 84,
+      "uncertain": 0,
+      "error": 0,
+      "success_rate": 6.7
+    },
+    {
+      "region": "new_options",
+      "items_per_page": 3,
+      "total_items": 90,
+      "success": 19,
+      "null": 70,
+      "uncertain": 1,
+      "error": 0,
+      "success_rate": 21.1
+    }
+  ],
+  "details": [
+    {
+      "page": 0,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "小倉",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 0,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "原田",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 0,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157846",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 0,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2408-5317",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 0,
+      "region": "case_items",
+      "item": "AU",
+      "value": 5,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 0,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 0,
+      "region": "case_items",
+      "item": "AY",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 0,
+      "region": "case_items",
+      "item": "AZ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 0,
+      "region": "case_items",
+      "item": "AI",
+      "value": 5,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 0,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 0,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 0,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 0,
+      "region": "new_options",
+      "item": "GS",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 0,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 0,
+      "region": "new_options",
+      "item": "GU",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 1,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "イオンモール大日",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 1,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "209",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 1,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157858",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 1,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2404-5012",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 1,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 1,
+      "region": "case_items",
+      "item": "AV",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 1,
+      "region": "case_items",
+      "item": "AY",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 1,
+      "region": "case_items",
+      "item": "AZ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 1,
+      "region": "case_items",
+      "item": "AI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 1,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 1,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 1,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 1,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 1,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 1,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 2,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "高石",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 2,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "宮木少平",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 2,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157852",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 2,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2404-5001",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 2,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 2,
+      "region": "case_items",
+      "item": "AV",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 2,
+      "region": "case_items",
+      "item": "AY",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 2,
+      "region": "case_items",
+      "item": "AZ",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 2,
+      "region": "case_items",
+      "item": "AI",
+      "value": 3,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 2,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 2,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 2,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 2,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 2,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 2,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 3,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "ニトリモール枚方",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 3,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "竹内優閑",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 3,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157856",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 3,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2408-5435",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 3,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 3,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 3,
+      "region": "case_items",
+      "item": "AY",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 3,
+      "region": "case_items",
+      "item": "AZ",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 3,
+      "region": "case_items",
+      "item": "AI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 3,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 3,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 3,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 3,
+      "region": "new_options",
+      "item": "GS",
+      "value": 2,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 3,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 3,
+      "region": "new_options",
+      "item": "GU",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 4,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "イオンモール鶴見緑地",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 4,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "川又",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 4,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "15 7816",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 4,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2208-5010",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 4,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 4,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 4,
+      "region": "case_items",
+      "item": "AY",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 4,
+      "region": "case_items",
+      "item": "AZ",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 4,
+      "region": "case_items",
+      "item": "AI",
+      "value": 24,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 4,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 4,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 4,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 4,
+      "region": "new_options",
+      "item": "GS",
+      "value": 2,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 4,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 4,
+      "region": "new_options",
+      "item": "GU",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 5,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "イオンモール鶴見緑地",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 5,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "川又",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 5,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 5,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2208-5010",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 5,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 5,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 5,
+      "region": "case_items",
+      "item": "AY",
+      "value": 3,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 5,
+      "region": "case_items",
+      "item": "AZ",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 5,
+      "region": "case_items",
+      "item": "AI",
+      "value": 3,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 5,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 5,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 5,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 5,
+      "region": "new_options",
+      "item": "GS",
+      "value": 2,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 5,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 5,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 6,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "イオンモール堺北花田",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 6,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "中嶋",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 6,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157857",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 6,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2X08-5380",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 6,
+      "region": "case_items",
+      "item": "AU",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 6,
+      "region": "case_items",
+      "item": "AV",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 6,
+      "region": "case_items",
+      "item": "AY",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 6,
+      "region": "case_items",
+      "item": "AZ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 6,
+      "region": "case_items",
+      "item": "AI",
+      "value": 3,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 6,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 6,
+      "region": "existing_support",
+      "item": "HI",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 6,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 6,
+      "region": "new_options",
+      "item": "GS",
+      "value": 2,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 6,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 6,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 7,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "JR神戸北",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 7,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "新田",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 7,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157834",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 7,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2404-5001",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 7,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 7,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 7,
+      "region": "case_items",
+      "item": "AY",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 7,
+      "region": "case_items",
+      "item": "AZ",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 7,
+      "region": "case_items",
+      "item": "AI",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 7,
+      "region": "existing_support",
+      "item": "HH",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 7,
+      "region": "existing_support",
+      "item": "HI",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 7,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 7,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 7,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 7,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 8,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "イオンモール神戸北",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 8,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "森田真司",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 8,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 8,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2408-5391",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 8,
+      "region": "case_items",
+      "item": "AU",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 8,
+      "region": "case_items",
+      "item": "AV",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 8,
+      "region": "case_items",
+      "item": "AY",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 8,
+      "region": "case_items",
+      "item": "AZ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 8,
+      "region": "case_items",
+      "item": "AI",
+      "value": 2,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 8,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 8,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 8,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 8,
+      "region": "new_options",
+      "item": "GS",
+      "value": 5,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 8,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 8,
+      "region": "new_options",
+      "item": "GU",
+      "value": 5,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 9,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "イオンモール大日",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 9,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "209",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 9,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157858",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 9,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2404-5012",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 9,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 9,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 9,
+      "region": "case_items",
+      "item": "AY",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 9,
+      "region": "case_items",
+      "item": "AZ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 9,
+      "region": "case_items",
+      "item": "AI",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 9,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 9,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 9,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 9,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 9,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 9,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 10,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "深江橋",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 10,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "尾崎将人",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 10,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 10,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 10,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 10,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 10,
+      "region": "case_items",
+      "item": "AY",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 10,
+      "region": "case_items",
+      "item": "AZ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 10,
+      "region": "case_items",
+      "item": "AI",
+      "value": 20,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 10,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 10,
+      "region": "existing_support",
+      "item": "HI",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 10,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 10,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 10,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 10,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 11,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "広畑",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 11,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "多田 和弘",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 11,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157881",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 11,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2208-S002",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 11,
+      "region": "case_items",
+      "item": "AU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 11,
+      "region": "case_items",
+      "item": "AV",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 11,
+      "region": "case_items",
+      "item": "AY",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 11,
+      "region": "case_items",
+      "item": "AZ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 11,
+      "region": "case_items",
+      "item": "AI",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 11,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 11,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 11,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 11,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 11,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 11,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 12,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "ニトリモール枚方",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 12,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "竹内優貴",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 12,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157880",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 12,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2408-5435",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 12,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 12,
+      "region": "case_items",
+      "item": "AV",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 12,
+      "region": "case_items",
+      "item": "AY",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 12,
+      "region": "case_items",
+      "item": "AZ",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 12,
+      "region": "case_items",
+      "item": "AI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 12,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 12,
+      "region": "existing_support",
+      "item": "HI",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 12,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 12,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 12,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 12,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 13,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "イオンモール神戸北",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 13,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "森田 真司",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 13,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157866",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 13,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2408-5391",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 13,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 13,
+      "region": "case_items",
+      "item": "AV",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 13,
+      "region": "case_items",
+      "item": "AY",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 13,
+      "region": "case_items",
+      "item": "AZ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 13,
+      "region": "case_items",
+      "item": "AI",
+      "value": 3,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 13,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 13,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 13,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 13,
+      "region": "new_options",
+      "item": "GS",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 13,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 13,
+      "region": "new_options",
+      "item": "GU",
+      "value": 2,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 14,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "イオンモール大日",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 14,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "すむす",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 14,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "157105",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 14,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2404-5012",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 14,
+      "region": "case_items",
+      "item": "AU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 14,
+      "region": "case_items",
+      "item": "AV",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 14,
+      "region": "case_items",
+      "item": "AY",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 14,
+      "region": "case_items",
+      "item": "AZ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 14,
+      "region": "case_items",
+      "item": "AI",
+      "value": 4,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 14,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 14,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 14,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 14,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 14,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 14,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 15,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "熊取",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 15,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "小山功",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 15,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157923",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 15,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2404-5008",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 15,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 15,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 15,
+      "region": "case_items",
+      "item": "AY",
+      "value": 4,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 15,
+      "region": "case_items",
+      "item": "AZ",
+      "value": 5,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 15,
+      "region": "case_items",
+      "item": "AI",
+      "value": 9,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 15,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 15,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 15,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 15,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 15,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 15,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 16,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "イオンモール神戸北",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 16,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "森田 真司",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 16,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157936",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 16,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2408-5391",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 16,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 16,
+      "region": "case_items",
+      "item": "AV",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 16,
+      "region": "case_items",
+      "item": "AY",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 16,
+      "region": "case_items",
+      "item": "AZ",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 16,
+      "region": "case_items",
+      "item": "AI",
+      "value": 3,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 16,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 16,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 16,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 16,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 16,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 16,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 17,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "くずはモール",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 17,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "たなて",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 17,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00159928",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 17,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2408-5419",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 17,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 17,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 17,
+      "region": "case_items",
+      "item": "AY",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 17,
+      "region": "case_items",
+      "item": "AZ",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 17,
+      "region": "case_items",
+      "item": "AI",
+      "value": 2,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 17,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 17,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 17,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 17,
+      "region": "new_options",
+      "item": "GS",
+      "value": 2,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 17,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 17,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 18,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "小倉",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 18,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "尾田",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 18,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157924",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 18,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2408-5317",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 18,
+      "region": "case_items",
+      "item": "AU",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 18,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 18,
+      "region": "case_items",
+      "item": "AY",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 18,
+      "region": "case_items",
+      "item": "AZ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 18,
+      "region": "case_items",
+      "item": "AI",
+      "value": 8,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 18,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 18,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 18,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 18,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 18,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 18,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 19,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "魚住",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 19,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "明石",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 19,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157897",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 19,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2408-5334",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 19,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 19,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 19,
+      "region": "case_items",
+      "item": "AY",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 19,
+      "region": "case_items",
+      "item": "AZ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 19,
+      "region": "case_items",
+      "item": "AI",
+      "value": 6,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 19,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 19,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 19,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 19,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 19,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 19,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 20,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "明石大久保",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 20,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "池崎 荒治",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 20,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 20,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2408-5408",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 20,
+      "region": "case_items",
+      "item": "AU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 20,
+      "region": "case_items",
+      "item": "AV",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 20,
+      "region": "case_items",
+      "item": "AY",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 20,
+      "region": "case_items",
+      "item": "AZ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 20,
+      "region": "case_items",
+      "item": "AI",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 20,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 20,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 20,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 20,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 20,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 20,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 21,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "ららぽーとEXPOCITY",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 21,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "尾上等＝千駄",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 21,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157908",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 21,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2404-5020",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 21,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 21,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 21,
+      "region": "case_items",
+      "item": "AY",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 21,
+      "region": "case_items",
+      "item": "AZ",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 21,
+      "region": "case_items",
+      "item": "AI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 21,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 21,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 21,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 21,
+      "region": "new_options",
+      "item": "GS",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 21,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 21,
+      "region": "new_options",
+      "item": "GU",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 22,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "羽曳野伊賀",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 22,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "小田",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 22,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157906",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 22,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "240f-5364",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 22,
+      "region": "case_items",
+      "item": "AU",
+      "value": 2,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 22,
+      "region": "case_items",
+      "item": "AV",
+      "value": 2,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 22,
+      "region": "case_items",
+      "item": "AY",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 22,
+      "region": "case_items",
+      "item": "AZ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 22,
+      "region": "case_items",
+      "item": "AI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 22,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 22,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 22,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 22,
+      "region": "new_options",
+      "item": "GS",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 22,
+      "region": "new_options",
+      "item": "GT",
+      "value": 2,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 22,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 23,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "六甲道",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 23,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "田野春史",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 23,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "15789 2",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 23,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "240.4-5019",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 23,
+      "region": "case_items",
+      "item": "AU",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 23,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 23,
+      "region": "case_items",
+      "item": "AY",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 23,
+      "region": "case_items",
+      "item": "AZ",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 23,
+      "region": "case_items",
+      "item": "AI",
+      "value": 7,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 23,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 23,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 23,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 23,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 23,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 23,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 24,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "高砂明姫",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 24,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "香西",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 24,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 24,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2404-5014",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 24,
+      "region": "case_items",
+      "item": "AU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 24,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 24,
+      "region": "case_items",
+      "item": "AY",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 24,
+      "region": "case_items",
+      "item": "AZ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 24,
+      "region": "case_items",
+      "item": "AI",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 24,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 24,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 24,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 24,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 24,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 24,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 25,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "尼崎下坂部",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 25,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "福村",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 25,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "15767",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 25,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2404-5339",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 25,
+      "region": "case_items",
+      "item": "AU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 25,
+      "region": "case_items",
+      "item": "AV",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 25,
+      "region": "case_items",
+      "item": "AY",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 25,
+      "region": "case_items",
+      "item": "AZ",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 25,
+      "region": "case_items",
+      "item": "AI",
+      "value": 6,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 25,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 25,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 25,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 25,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 25,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 25,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 26,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "羽曳野伊賀",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 26,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "入田",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 26,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157966",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 26,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2408-5364",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 26,
+      "region": "case_items",
+      "item": "AU",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 26,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 26,
+      "region": "case_items",
+      "item": "AY",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 26,
+      "region": "case_items",
+      "item": "AZ",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 26,
+      "region": "case_items",
+      "item": "AI",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 26,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 26,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 26,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 26,
+      "region": "new_options",
+      "item": "GS",
+      "value": 2,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 26,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 26,
+      "region": "new_options",
+      "item": "GU",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 27,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "宝殿",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 27,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "木口",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 27,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157960",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 27,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2404-5017",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 27,
+      "region": "case_items",
+      "item": "AU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 27,
+      "region": "case_items",
+      "item": "AV",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 27,
+      "region": "case_items",
+      "item": "AY",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 27,
+      "region": "case_items",
+      "item": "AZ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 27,
+      "region": "case_items",
+      "item": "AI",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 27,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 27,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 27,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 27,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 27,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 27,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 28,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "松井山手",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 28,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "ユキ",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 28,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 28,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2208-5004",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 28,
+      "region": "case_items",
+      "item": "AU",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 28,
+      "region": "case_items",
+      "item": "AV",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 28,
+      "region": "case_items",
+      "item": "AY",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 28,
+      "region": "case_items",
+      "item": "AZ",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 28,
+      "region": "case_items",
+      "item": "AI",
+      "value": 2,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 28,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 28,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 28,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 28,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 28,
+      "region": "new_options",
+      "item": "GT",
+      "value": "uncertain",
+      "status": "uncertain",
+      "raw": ""
+    },
+    {
+      "page": 28,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 29,
+      "region": "basic_info_header",
+      "item": "store_name",
+      "value": "JR神戸北",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 29,
+      "region": "basic_info_header",
+      "item": "staff_name",
+      "value": "赤い",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 29,
+      "region": "basic_info_footer",
+      "item": "data_no",
+      "value": "00157939",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 29,
+      "region": "basic_info_footer",
+      "item": "tablet_no",
+      "value": "2404-5001",
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 29,
+      "region": "case_items",
+      "item": "AU",
+      "value": 1,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 29,
+      "region": "case_items",
+      "item": "AV",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 29,
+      "region": "case_items",
+      "item": "AY",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 29,
+      "region": "case_items",
+      "item": "AZ",
+      "value": 0,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 29,
+      "region": "case_items",
+      "item": "AI",
+      "value": 2,
+      "status": "success",
+      "raw": ""
+    },
+    {
+      "page": 29,
+      "region": "existing_support",
+      "item": "HH",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 29,
+      "region": "existing_support",
+      "item": "HI",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 29,
+      "region": "existing_support",
+      "item": "HJ",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 29,
+      "region": "new_options",
+      "item": "GS",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 29,
+      "region": "new_options",
+      "item": "GT",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    },
+    {
+      "page": 29,
+      "region": "new_options",
+      "item": "GU",
+      "value": null,
+      "status": "null",
+      "raw": ""
+    }
+  ],
+  "total_pages": 30,
+  "overall_success_rate": 53.1
+}
