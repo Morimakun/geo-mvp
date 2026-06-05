@@ -196,6 +196,8 @@ class Phase1ReconciliationEngine:
             'field_comparisons': comparison_result['field_comparisons'],
             'field_comparison_summary': comparison_result['summary'],
             'phase3_status': phase3_status,
+            'match_status': csv_match_result.get('match_status'),  # Phase 2 の候補状況
+            'csv_candidate_count': csv_match_result.get('csv_candidate_count'),
         }
 
     def _find_store_code(self, pdf_store_name: Optional[str], warnings: List[str]) -> Tuple[Optional[str], Optional[str], float]:

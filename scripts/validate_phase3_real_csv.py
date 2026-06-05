@@ -155,7 +155,7 @@ def run_validation():
                 'pdf_date': target_date,
                 'pdf_store_name': pdf_record.get('store_name'),
                 'mapped_store_code': result.get('store_code'),
-                'csv_candidate_count': result.get('field_comparison_summary', {}).get('total_fields', 0),
+                'csv_candidate_count': result.get('csv_candidate_count'),  # Phase 2 の候補数
                 'match_status': result.get('match_status', 'unknown'),
                 'compared_fields': result.get('field_comparison_summary', {}).get('compared_fields', 0),
                 'matched_fields': result.get('field_comparison_summary', {}).get('matched_fields', 0),

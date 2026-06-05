@@ -500,6 +500,34 @@ class TestPhase3StatusDetermination(unittest.TestCase):
         self.assertTrue(any('multiple' in r.lower() for r in review_reasons))
         print(f"[OK] Review status (multiple candidates): {result}")
 
+    def test_multiple_csv_candidates_with_mismatch_should_still_review(self):
+        """複数CSV候補がある場合、field_comparisonで不一致があっても review になること"""
+        csv_match_result = {
+            'match_status': 'multiple_csv_candidates',
+            'csv_candidate_count': 2
+        }
+        comparison_result = {
+            'summary': {
+                'total_fields': 10,
+                'compared_fields': 10,
+                'matched_fields': 8,
+                'mismatched_fields': 2,  # 不一致あり
+                'skipped_fields': 0,
+                'match_rate': 0.8,
+            }
+        }
+        review_reasons = []
+
+        result = self.engine._determine_phase3_status(csv_match_result, comparison_result, review_reasons)
+
+        # 重要: 複数候補がある場合は、不一致があっても mismatch ではなく review になるべき
+        self.assertEqual(result, 'review',
+                        "Multiple CSV candidates should stay in review status, not mismatch")
+        self.assertTrue(any('multiple' in r.lower() for r in review_reasons),
+                       "review_reasons should mention multiple candidates")
+
+        print(f"[OK] Multiple CSV candidates with mismatch correctly returns review: {result}")
+
 
 if __name__ == '__main__':
     # テスト実行（詳細出力）
