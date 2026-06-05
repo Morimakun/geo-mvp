@@ -59,6 +59,13 @@ class Phase1ReconciliationEngine:
 
         self.confirmed_mapping = confirmed
 
+        # Phase 4a: 重要項目の定義
+        self.important_items = {
+            'AU', 'DL', 'AV', 'DM',        # 案件
+            'AI', 'CZ',                    # 集計合計
+            'HH', 'HI', 'HJ', 'IG', 'IH'   # 主要サービス
+        }
+
     def reconcile_pdf_with_csv(
         self,
         pdf_record: Dict,
@@ -154,7 +161,30 @@ class Phase1ReconciliationEngine:
             review_reasons
         )
 
-        # Step 6: 既存ロジック互換のため、各候補行のスコアを計算
+        # Step 6: Phase 4a - 複数候補の場合のみスコアリングを実行
+        candidate_scores = []
+
+        if csv_match_result['match_status'] == 'multiple_csv_candidates' and len(candidates_df) > 1:
+            # 各候補に対してスコアリングを実行
+            for candidate_idx, csv_row in candidates_df.iterrows():
+                # Phase 3 フィールド比較を再実行
+                candidate_comparison = self._compare_fields(
+                    pdf_record,
+                    csv_row,
+                    csv_match_result
+                )
+
+                # Phase 4a スコア計算
+                candidate_score = self._calculate_candidate_score(
+                    candidate_comparison['field_comparisons'],
+                    candidate_idx
+                )
+                candidate_scores.append(candidate_score)
+
+            # スコアで順位付け
+            candidate_scores = self._rank_csv_candidates(candidate_scores)
+
+        # Step 7: 既存ロジック互換のため、各候補行のスコアを計算（古いスコアリング）
         candidates_with_scores = []
         for idx, csv_row in candidates_df.iterrows():
             score_result = self._calculate_score(
@@ -170,7 +200,8 @@ class Phase1ReconciliationEngine:
         candidates_with_scores.sort(key=lambda x: x['total_score'], reverse=True)
         best_match = candidates_with_scores[0]
 
-        # Step 7: 最終ステータス判定（Phase 3 を優先）
+        # Step 8: 最終ステータス判定（Phase 3 を優先）
+        # 複数候補の場合は必ず review
         status = phase3_status
 
         return {
@@ -198,6 +229,8 @@ class Phase1ReconciliationEngine:
             'phase3_status': phase3_status,
             'match_status': csv_match_result.get('match_status'),  # Phase 2 の候補状況
             'csv_candidate_count': csv_match_result.get('csv_candidate_count'),
+            # Phase 4a 新規項目
+            'candidate_scores': candidate_scores,
         }
 
     def _find_store_code(self, pdf_store_name: Optional[str], warnings: List[str]) -> Tuple[Optional[str], Optional[str], float]:
@@ -972,6 +1005,188 @@ class Phase1ReconciliationEngine:
         # デフォルト
         review_reasons.append("Insufficient data for reconciliation")
         return 'review'
+
+    # ===== Phase 4a: 複数CSV候補のスコアリング =====
+
+    def _calculate_candidate_score(
+        self,
+        field_comparisons: List[Dict],
+        candidate_idx: int
+    ) -> Dict:
+        """候補ごとのスコアを計算
+
+        Args:
+            field_comparisons: Phase 3 の比較結果
+            candidate_idx: CSV候補のインデックス
+
+        Returns:
+            {
+                'candidate_index': int,
+                'score': float,
+                'match_rate': float,
+                'matched_fields': int,
+                'mismatched_fields': int,
+                'skipped_fields': int,
+                'confidence': 'very_low' | 'low' | 'medium' | 'high',
+                'important_items_match': int,
+                'important_items_diff': int,
+            }
+        """
+
+        base_score = 0
+        matched_count = 0
+        mismatched_count = 0
+        skipped_count = 0
+        important_match = 0
+        important_diff = 0
+
+        # 各項目のスコアを計算
+        for field_comp in field_comparisons:
+            comparison_status = field_comp.get('comparison_status')
+            csv_column_code = field_comp.get('csv_column_code', '')
+
+            # スキップされた項目はスコア加算なし
+            if comparison_status.startswith('skipped_'):
+                skipped_count += 1
+                continue
+
+            # 一致・不一致で加点
+            is_important = csv_column_code in self.important_items
+
+            if comparison_status == 'match':
+                matched_count += 1
+                if is_important:
+                    base_score += 5
+                    important_match += 1
+                else:
+                    base_score += 2
+            elif comparison_status == 'mismatch':
+                mismatched_count += 1
+                if is_important:
+                    base_score -= 10
+                    important_diff += 1
+                else:
+                    base_score -= 3
+
+        # Confidence を計算
+        compared_fields = matched_count + mismatched_count
+        confidence = self._calculate_candidate_confidence(compared_fields)
+        confidence_multiplier = {
+            'very_low': 0.3,
+            'low': 0.6,
+            'medium': 0.9,
+            'high': 1.0
+        }.get(confidence, 1.0)
+
+        # 最終スコア（最小値は0）
+        final_score = max(0, base_score * confidence_multiplier)
+
+        # Match rate を計算
+        match_rate = matched_count / compared_fields if compared_fields > 0 else 0.0
+
+        return {
+            'candidate_index': candidate_idx,
+            'score': final_score,
+            'match_rate': match_rate,
+            'matched_fields': matched_count,
+            'mismatched_fields': mismatched_count,
+            'skipped_fields': skipped_count,
+            'confidence': confidence,
+            'important_items_match': important_match,
+            'important_items_diff': important_diff,
+            'compared_fields': compared_fields,  # 内部用
+        }
+
+    def _calculate_candidate_confidence(self, compared_fields: int) -> str:
+        """比較対象項目数から信頼度を計算
+
+        Args:
+            compared_fields: 比較対象の項目数
+
+        Returns:
+            'very_low' | 'low' | 'medium' | 'high'
+        """
+
+        if compared_fields == 0:
+            return 'very_low'
+        elif compared_fields < 5:
+            return 'low'
+        elif compared_fields < 15:
+            return 'medium'
+        else:
+            return 'high'
+
+    def _rank_csv_candidates(self, candidate_scores: List[Dict]) -> List[Dict]:
+        """複数候補をスコアで順位付け
+
+        Args:
+            candidate_scores: 候補スコアのリスト
+
+        Returns:
+            順位付けされた候補スコアのリスト（recommendation 付き）
+        """
+
+        # スコアで降順ソート
+        ranked = sorted(candidate_scores, key=lambda x: x['score'], reverse=True)
+
+        # 順位を付ける
+        for rank, candidate in enumerate(ranked, start=1):
+            candidate['score_rank'] = rank
+
+            # スコア差を計算
+            if rank == len(ranked):
+                candidate['score_gap_to_next'] = 0
+            else:
+                candidate['score_gap_to_next'] = candidate['score'] - ranked[rank]['score']
+
+        # Recommendation を決定
+        for candidate in ranked:
+            recommendation = self._determine_candidate_recommendation(
+                candidate,
+                ranked[0] if ranked else None
+            )
+            candidate['recommendation'] = recommendation
+
+        return ranked
+
+    def _determine_candidate_recommendation(
+        self,
+        candidate: Dict,
+        best_candidate: Optional[Dict]
+    ) -> str:
+        """推奨候補を判定
+
+        Args:
+            candidate: 対象候補
+            best_candidate: 最高スコア候補
+
+        Returns:
+            'best_match' | 'recommended' | 'ambiguous' | 'low_confidence'
+        """
+
+        # 信頼度が very_low の場合は低信頼
+        if candidate['confidence'] == 'very_low':
+            return 'low_confidence'
+
+        # 比較対象が少ない場合は低信頼
+        if candidate['compared_fields'] < 5:
+            return 'low_confidence'
+
+        # 自分が1位の場合
+        if candidate['score_rank'] == 1:
+            # スコア差を確認
+            if candidate['score_gap_to_next'] > 100:
+                # スコア差が大きい場合
+                return 'best_match'
+            elif candidate['score_gap_to_next'] > 50:
+                # スコア差がある程度ある場合
+                return 'recommended'
+            else:
+                # スコア差が僅差の場合
+                return 'ambiguous'
+
+        # 2位以下
+        return 'ambiguous'
 
 
 # ===== ヘルパー関数 =====
