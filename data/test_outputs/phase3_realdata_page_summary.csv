@@ -1,0 +1,6 @@
+page_number,pdf_date,pdf_store_name,mapped_store_code,csv_candidate_count,match_status,compared_fields,matched_fields,mismatched_fields,skipped_fields,final_status,review_reasons
+1,2026/06/05,小倉,AU1K0024112,183,unknown,0,0,0,183,review,Multiple CSV candidates found (5 rows) for store_code=AU1K0024112 and date=2026/06/05 | Multiple CSV candidates (5 rows)
+2,2026/06/05,小倉,AU1K0024112,183,unknown,0,0,0,183,review,Multiple CSV candidates found (5 rows) for store_code=AU1K0024112 and date=2026/06/05 | Multiple CSV candidates (5 rows)
+3,2026/06/05,小倉,AU1K0024112,183,unknown,0,0,0,183,review,Multiple CSV candidates found (5 rows) for store_code=AU1K0024112 and date=2026/06/05 | Multiple CSV candidates (5 rows)
+4,2026/06/05,小倉,AU1K0024112,183,unknown,0,0,0,183,review,Multiple CSV candidates found (5 rows) for store_code=AU1K0024112 and date=2026/06/05 | Multiple CSV candidates (5 rows)
+5,2026/06/05,小倉,AU1K0024112,183,unknown,0,0,0,183,review,Multiple CSV candidates found (5 rows) for store_code=AU1K0024112 and date=2026/06/05 | Multiple CSV candidates (5 rows)
