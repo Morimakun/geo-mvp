@@ -206,23 +206,72 @@ au案件既存（複数コード対応）:
     }
 }
 
-# Small test regions (少数項目テスト用)
+# Small test regions V2 (少数項目テスト用 - bounds/prompt修正版)
+# V1 → V2 変更点:
+#   basic_info: (0,20,0,100) → ヘッダ(0,12) + フッタ(78,95) に分離
+#   case_items_small: (18,36,5,35) → (12,20,0,45) に上方移動
+#   existing_support_small: (18,50,75,95) → (12,22,58,100) に左方拡張
+#   new_options_small: prompt修正 (CSV列コード→帳票上の表示名で指示)
 REGIONS_SMALL = {
-    "basic_info": REGIONS["basic_info"],  # Same as before
+    "basic_info_header": {
+        "bounds": (0, 14, 0, 100),  # V2: ヘッダ部分のみ（店舗名・氏名）。12→14%に拡張
+        "zoom": 2,
+        "description": "Header: store_name, staff_name",
+        "items": ["store_name", "staff_name"],
+        "prompt": """あなたは日報FAX帳票のヘッダー領域を見ています。以下の2項目を抽出してください。
+
+【基本情報（ヘッダー）】
+- store_name: 店舗名（テキスト。「小倉」「久留米」など）
+- staff_name: 報告者の名前（テキスト。手書きの氏名）
+
+必ず以下のJSON形式で返してください：
+{
+  "store_name": "...",
+  "staff_name": "..."
+}
+
+見つからない項目は null で返してください。
+"""
+    },
+
+    "basic_info_footer": {
+        "bounds": (73, 95, 35, 100),  # V2: ページ下部（日報データNo, タブレットNo）。75→73%でラベル含む
+        "zoom": 3,
+        "description": "Footer: data_no, tablet_no",
+        "items": ["data_no", "tablet_no"],
+        "prompt": """あなたは日報FAX帳票のページ下部を見ています。以下の2項目を抽出してください。
+
+【基本情報（フッター）】
+- data_no: 「日報データNo.」の横に書かれた数字（8桁程度の英数字）
+- tablet_no: 「タブレットNo.」の横に書かれた数字（ハイフン区切りの英数字）
+
+必ず以下のJSON形式で返してください：
+{
+  "data_no": "数字またはnull",
+  "tablet_no": "数字またはnull"
+}
+
+見つからない項目は null で返してください。
+"""
+    },
 
     "case_items_small": {
-        "bounds": (18, 36, 5, 35),  # Same bounds as case_items
+        "bounds": (12, 24, 0, 45),  # V2: 上方移動+下方拡張。合計行を含める。20→24%
         "zoom": 3,
-        "description": "Small test: AU, AV, AY, AZ, AI",
+        "description": "Small test: AU, AV, AY, AZ, AI (案件欄)",
         "items": ["AU", "AV", "AY", "AZ", "AI"],
-        "prompt": """あなたは日報FAX帳票の案件欄を見ています。以下の5項目について数値を抽出してください。
+        "prompt": """あなたは日報FAX帳票の【案件】欄を見ています。
 
-【案件欄（少数項目テスト）】
-- AU: au案件新規紹介数（数値）
-- AV: au案件既存紹介数（数値）
-- AY: その他案件新規紹介数（数値）
-- AZ: その他案件既存紹介数（数値）
-- AI: 案件合計（数値）
+この表には以下のような行があります：
+- 1行目「au案件新規」→ 紹介数の数値を AU として返す
+- 2行目「au案件既存」→ 紹介数の数値を AV として返す
+- 5行目「その他案件新規」→ 紹介数の数値を AY として返す
+- 6行目「その他案件既存」→ 紹介数の数値を AZ として返す
+- 合計行 → 紹介数の合計を AI として返す
+
+各行の「紹介」列にある手書き数字を読み取ってください。
+手書きで「下」「正」等の文字がある場合はそのまま null としてください。
+「—」は 0 として扱ってください。
 
 必ず以下のJSON形式で返してください：
 {
@@ -238,16 +287,18 @@ REGIONS_SMALL = {
     },
 
     "existing_support_small": {
-        "bounds": (18, 50, 75, 95),  # Top part only (HH, HI, HJ)
-        "zoom": 4,
-        "description": "Small test: HH, HI, HJ (network/phone/TV additions)",
+        "bounds": (12, 22, 58, 100),  # V2: 左方拡張。項目名を含める
+        "zoom": 3,
+        "description": "Small test: HH, HI, HJ (ネット追加/電話追加/テレビ追加)",
         "items": ["HH", "HI", "HJ"],
-        "prompt": """あなたは日報FAX帳票の既存対応欄（上部）を見ています。以下の3項目について数値を抽出してください。
+        "prompt": """あなたは日報FAX帳票の【既存対応】欄の上部を見ています。
 
-【既存対応欄（上部、少数項目テスト）】
-- HH: ネット追加(HT/Mz/MT)（数値）
-- HI: ネット追加(auスマート)（数値）
-- HJ: テレビ追加（数値）
+この表には番号付きの項目が並んでいます。上から順に：
+- 「1. ネット追加」の数値 → HH として返す
+- 「2. 電話追加」の数値 → HI として返す
+- 「3. テレビ追加」の数値 → HJ として返す
+
+各行の右側にある手書き数字を読み取ってください。
 
 必ず以下のJSON形式で返してください：
 {
@@ -261,16 +312,19 @@ REGIONS_SMALL = {
     },
 
     "new_options_small": {
-        "bounds": (18, 50, 38, 62),  # Same bounds as new_options
+        "bounds": (18, 50, 38, 62),  # bounds据え置き（画像は正しく写っていた）
         "zoom": 4,
-        "description": "Small test: GS, GT, GU",
+        "description": "Small test: GS, GT, GU (eo光電話/地デジBS/CS)",
         "items": ["GS", "GT", "GU"],
-        "prompt": """あなたは日報FAX帳票の新規オプション等の領域を見ています。以下の3項目について数値を抽出してください。
+        "prompt": """あなたは日報FAX帳票の【新規オプション等】の領域を見ています。
 
-【新規オプション等（少数項目テスト）】
-- GS: eo光電話（HT/MZ/MT）（数値）
-- GT: eo光電話の別コード（数値）
-- GU: auデジタルサービス（HT/MZ/MT）（数値）
+この表には番号付きの項目が並んでいます。上から順に：
+- 「1. eo光電話」の数値 → GS として返す
+- 「2. 地デジBS」の数値 → GT として返す
+- 「3. CS」の数値 → GU として返す
+
+各行の右側にある手書き数字を読み取ってください。
+数字が書かれていない（空欄）場合は null としてください。
 
 必ず以下のJSON形式で返してください：
 {
@@ -543,7 +597,7 @@ def analyze_results(region_name: str, expected_items: list, extracted_data: dict
     }
 
 
-def test_phase6b1_regions():
+def test_phase6b1_regions(mode: str = "full"):
     """Test Phase 6B-1: region-based extraction"""
 
     print("=" * 80)
@@ -567,8 +621,6 @@ def test_phase6b1_regions():
     num_regions = len(REGIONS)
     print(f"  Number of regions: {num_regions}")
 
-    # Determine mode (small/full)
-    mode = "small" if "small" in [k for k in REGIONS.keys()] and any("small" in k for k in REGIONS.keys()) else "full"
     print(f"  Mode: {mode}")
 
     # Check file
@@ -693,11 +745,10 @@ def test_phase6b1_regions():
 def test_phase6b1_small():
     """Test Phase 6B-1 with small number of items"""
     # Run test with REGIONS_SMALL instead of REGIONS
-    import copy
     original_regions = globals()['REGIONS']
     globals()['REGIONS'] = REGIONS_SMALL
 
-    success = test_phase6b1_regions()
+    success = test_phase6b1_regions(mode="small")
 
     globals()['REGIONS'] = original_regions
     return success
