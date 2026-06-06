@@ -1,0 +1,31 @@
+﻿page_number,pdf_store_name,mapped_store_code,store_name,staff_name,data_no,tablet_no,status,match_status,csv_candidate_count,match_count,diff_count,unreadable_count,score,review_reasons,warnings,total_fields,compared_fields,matched_fields,mismatched_fields,match_rate
+0,小倉,AU1K0024112,ａｕショップ　小倉,原田,00157846,2408-5317,mismatch,candidate_found,1,3,1,179,185.0,1 mismatched fields,,183,4,3,1,0.75
+1,イオンモール大日,AU1KC490237,ａｕショップ　イオンモール大日,"209""",00157858,2404-5012,mismatch,candidate_found,1,3,2,178,180.0,2 mismatched fields,,183,5,3,2,0.6
+2,高石,AU1KC310021,ａｕショップ　高石,宮木少平,00157852,2404-5011,mismatch,candidate_found,1,1,1,181,165.0,1 mismatched fields,,183,2,1,1,0.5
+3,ニトリモール枚方,AU1KW740165,ａｕショップ　ニトリモール枚方,竹内優間,00157856,2408-5435,mismatch,candidate_found,1,2,1,180,175.0,1 mismatched fields,,183,3,2,1,0.6666666666666666
+4,イオンモール鶴見緑地,AU1KB830227,ａｕショップ　イオンモール鶴見緑地,川又,15782/6,2208-5010,review,multiple_csv_candidates,2,3,2,178,180.0,Multiple CSV candidates found (2 rows) for store_code=AU1KB830227 and date=2026/05/17; Multiple CSV candidates (2 rows),,183,0,0,0,0.0
+5,イオンモール鶴見緑地,AU1KB830227,ａｕショップ　イオンモール鶴見緑地,川又,,2208-5010,review,multiple_csv_candidates,2,7,0,176,230.0,Multiple CSV candidates found (2 rows) for store_code=AU1KB830227 and date=2026/05/17; Multiple CSV candidates (2 rows),,183,0,0,0,0.0
+6,イオンモール堺北花田,AU1KB830201,ａｕショップ　イオンモール堺北花田,中嶋,00157857,2X08-5380,mismatch,candidate_found,1,3,2,178,180.0,2 mismatched fields,,183,5,3,2,0.6
+7,JR神戸北,AU1KC400020,ａｕショップ　ＪＲ神戸北,新田,00157834,2404-5001,mismatch,candidate_found,1,3,1,179,185.0,1 mismatched fields,,183,4,3,1,0.75
+8,イオンモール神戸北,AU1K4050139,ａｕショップ　イオンモール神戸北,森田 真司,,2408-5391,mismatch,candidate_found,1,0,2,181,150.0,2 mismatched fields,,183,2,0,2,0.0
+9,イオンモール大日,AU1KC490237,ａｕショップ　イオンモール大日,209,00157858,2404-5012,mismatch,candidate_found,1,1,2,180,160.0,2 mismatched fields,,183,3,1,2,0.3333333333333333
+10,深江橋,AU1K0024104,ａｕショップ　深江橋,尾崎将人,,,mismatch,candidate_found,1,2,2,179,172.0,2 mismatched fields,,183,4,2,2,0.5
+11,広畑,AU1KC400079,ａｕショップ　広畑,多田 和弘,00157881,2208-S002,mismatch,candidate_found,1,0,1,182,155.0,1 mismatched fields,,183,1,0,1,0.0
+12,枚方,AU1KW740165,ａｕショップ　ニトリモール枚方,竹内優貴,00157880,2408-5435,mismatch,candidate_found,1,1,1,181,165.0,1 mismatched fields,,183,2,1,1,0.5
+13,イオンモール神戸北,AU1K4050139,ａｕショップ　イオンモール神戸北,森田 真司,00157866,2408-5391,mismatch,candidate_found,1,2,2,179,170.0,2 mismatched fields,,183,4,2,2,0.5
+14,イオンモール大日,AU1KC490237,ａｕショップ　イオンモール大日,すみだ,157105,2404-5012,mismatch,candidate_found,1,2,3,178,165.0,3 mismatched fields,,183,5,2,3,0.4
+15,熊取,AU1KC310039,ａｕショップ　熊取,小山 功,00157923,2404-5008,mismatch,candidate_found,1,1,2,180,160.0,2 mismatched fields,,183,3,1,2,0.3333333333333333
+16,イオンモール神戸北,AU1K4050139,ａｕショップ　イオンモール神戸北,森田 真司,00157936,2408-5391,mismatch,candidate_found,1,2,1,180,175.0,1 mismatched fields,,183,3,2,1,0.6666666666666666
+17,,,,,00159928,2408-5419,review,no_csv_candidate,0,0,0,0,0.0,Store code could not be determined from PDF,Store name not readable from PDF,0,0,0,0,0.0
+18,小倉,AU1K0024112,ａｕショップ　小倉,原田,00157924,2408-5317,mismatch,candidate_found,1,0,2,181,150.0,2 mismatched fields,,183,2,0,2,0.0
+19,魚住,AU1KC490278,ａｕショップ　魚住,明石,00157897,2408-5334,mismatch,candidate_found,1,1,2,180,160.0,2 mismatched fields,,183,3,1,2,0.3333333333333333
+20,明石大久保,AU1KC400012,ａｕショップ　明石大久保,池崎 蒼治,,2408-5408,mismatch,candidate_found,1,4,1,178,195.0,1 mismatched fields,,183,5,4,1,0.8
+21,ららぽーとEXPOCITY,AU1K4050055,ａｕショップ　ららぽーとＥＸＰＯＣＩＴＹ,尾上ヨシ＝千智,00157908,2404-5020,mismatch,candidate_found,1,3,2,178,180.0,2 mismatched fields,,183,5,3,2,0.6
+22,羽曳野伊賀,AU1K4150749,ａｕショップ　羽曳野伊賀,入江,00157906,240f-5364,mismatch,candidate_found,1,1,1,181,165.0,1 mismatched fields,,183,2,1,1,0.5
+23,六甲道,AU1K3430050,ａｕショップ　ＪＲ六甲道,田野泰史,15789 2,240.4-5019,mismatch,candidate_found,1,1,1,181,165.0,1 mismatched fields,,183,2,1,1,0.5
+24,高砂明姫,AU1K4280454,ａｕショップ　高砂明姫,香西,,2404-5014,match,candidate_found,1,2,0,181,180.0,,,183,2,2,0,1.0
+25,尼崎下坂部,AU1K0620331,ａｕＳｔｙｌｅ　尼崎下坂部,福村,15767,2404-5339,mismatch,candidate_found,1,2,2,179,170.0,2 mismatched fields,,183,4,2,2,0.5
+26,羽曳野伊賀,AU1K4150749,ａｕショップ　羽曳野伊賀,入江,00157966,2408-5364,mismatch,candidate_found,1,1,1,181,165.0,1 mismatched fields,,183,2,1,1,0.5
+27,宝殿,AU1KC400038,ａｕショップ　宝殿,木口,00157960,2404-5017,mismatch,candidate_found,1,2,1,180,175.0,1 mismatched fields,,183,3,2,1,0.6666666666666666
+28,松井山手,AU1K0620604,ａｕＳｔｙｌｅ　松井山手,ブレ,,2208-5004,mismatch,candidate_found,1,2,3,178,165.0,3 mismatched fields,,183,5,2,3,0.4
+29,JR神戸北,AU1KC400020,ａｕショップ　ＪＲ神戸北,赤い,00157939,2404-5001,mismatch,candidate_found,1,4,1,178,195.0,1 mismatched fields,,183,5,4,1,0.8
