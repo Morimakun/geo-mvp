@@ -1,0 +1,2 @@
+﻿file_path,page_count,file_size_bytes,file_size_mb,modified_time,used_by_scripts,notes
+tests/fixtures/geo_pdf_reconciliation/20260529130020168.pdf,30,3103524,2.96,2026-05-29T19:14:01.729324,"v3.py, v3_1.py, v4_rules.py, bounds_comparison, grid_guide",Single 30-page PDF used for all Phase 6B work
