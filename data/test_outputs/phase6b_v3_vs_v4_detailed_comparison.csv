@@ -1,0 +1,91 @@
+﻿page_number_v3,region_v3,item_v3,value_v3,status_v3,key,page_number_v4,region_v4,item_v4,value_v4,status_v4,change_type
+1,basic_info_footer,data_no,00157846,success,1_basic_info_footer_data_no,1,basic_info_footer,data_no,00157846,success,SAME
+1,basic_info_footer,tablet_no,2408-5317,success,1_basic_info_footer_tablet_no,1,basic_info_footer,tablet_no,2408-5317,success,SAME
+1,basic_info_header,staff_name,原田,success,1_basic_info_header_staff_name,1,basic_info_header,staff_name,原田,success,SAME
+1,basic_info_header,store_name,小倉,success,1_basic_info_header_store_name,1,basic_info_header,store_name,小倉,success,SAME
+1,case_items,AI,5,success,1_case_items_AI,1,case_items,AI,5,success,SAME
+1,case_items,AU,uncertain,uncertain,1_case_items_AU,1,case_items,AU,uncertain,uncertain,SAME
+1,case_items,AV,0,success,1_case_items_AV,1,case_items,AV,1,success,CHANGED
+1,case_items,AY,,,1_case_items_AY,1,case_items,AY,,,SAME
+1,case_items,AZ,,,1_case_items_AZ,1,case_items,AZ,,,SAME
+1,existing_support,HH,,,1_existing_support_HH,1,existing_support,HH,,,SAME
+1,existing_support,HI,,,1_existing_support_HI,1,existing_support,HI,,,SAME
+1,existing_support,HJ,,,1_existing_support_HJ,1,existing_support,HJ,,,SAME
+1,new_options,GS,1,success,1_new_options_GS,1,new_options,GS,,,DEGRADED (v3 val -> null)
+1,new_options,GT,,,1_new_options_GT,1,new_options,GT,,,SAME
+1,new_options,GU,1,success,1_new_options_GU,1,new_options,GU,,,DEGRADED (v3 val -> null)
+8,basic_info_footer,data_no,00157834,success,8_basic_info_footer_data_no,8,basic_info_footer,data_no,00157834,success,SAME
+8,basic_info_footer,tablet_no,2404-5001,success,8_basic_info_footer_tablet_no,8,basic_info_footer,tablet_no,2404-5001,success,SAME
+8,basic_info_header,staff_name,新田,success,8_basic_info_header_staff_name,8,basic_info_header,staff_name,新田,success,SAME
+8,basic_info_header,store_name,JR神戸北,success,8_basic_info_header_store_name,8,basic_info_header,store_name,JR神戸北,success,SAME
+8,case_items,AI,1,success,8_case_items_AI,8,case_items,AI,1,success,SAME
+8,case_items,AU,0,success,8_case_items_AU,8,case_items,AU,1,success,CHANGED
+8,case_items,AV,,,8_case_items_AV,8,case_items,AV,,,SAME
+8,case_items,AY,,,8_case_items_AY,8,case_items,AY,,,SAME
+8,case_items,AZ,,,8_case_items_AZ,8,case_items,AZ,,,SAME
+8,existing_support,HH,0,success,8_existing_support_HH,8,existing_support,HH,,,DEGRADED (v3 val -> null)
+8,existing_support,HI,,,8_existing_support_HI,8,existing_support,HI,,,SAME
+8,existing_support,HJ,0,success,8_existing_support_HJ,8,existing_support,HJ,,,DEGRADED (v3 val -> null)
+8,new_options,GS,,,8_new_options_GS,8,new_options,GS,,,SAME
+8,new_options,GT,,,8_new_options_GT,8,new_options,GT,uncertain,uncertain,UNCERTAIN (v3 val -> uncertain)
+8,new_options,GU,,,8_new_options_GU,8,new_options,GU,,,SAME
+9,basic_info_footer,data_no,,,9_basic_info_footer_data_no,9,basic_info_footer,data_no,,,SAME
+9,basic_info_footer,tablet_no,2408-5391,success,9_basic_info_footer_tablet_no,9,basic_info_footer,tablet_no,2408-5391,success,SAME
+9,basic_info_header,staff_name,森田 真司,success,9_basic_info_header_staff_name,9,basic_info_header,staff_name,森田 真司,success,SAME
+9,basic_info_header,store_name,イオンモール神戸北,success,9_basic_info_header_store_name,9,basic_info_header,store_name,イオンモール神戸北,success,SAME
+9,case_items,AI,2,success,9_case_items_AI,9,case_items,AI,uncertain,uncertain,UNCERTAIN (v3 val -> uncertain)
+9,case_items,AU,2,success,9_case_items_AU,9,case_items,AU,2,success,SAME
+9,case_items,AV,,,9_case_items_AV,9,case_items,AV,,,SAME
+9,case_items,AY,,,9_case_items_AY,9,case_items,AY,,,SAME
+9,case_items,AZ,,,9_case_items_AZ,9,case_items,AZ,,,SAME
+9,existing_support,HH,,,9_existing_support_HH,9,existing_support,HH,,,SAME
+9,existing_support,HI,,,9_existing_support_HI,9,existing_support,HI,,,SAME
+9,existing_support,HJ,,,9_existing_support_HJ,9,existing_support,HJ,,,SAME
+9,new_options,GS,uncertain,uncertain,9_new_options_GS,9,new_options,GS,,,DEGRADED (v3 val -> null)
+9,new_options,GT,,,9_new_options_GT,9,new_options,GT,,,SAME
+9,new_options,GU,uncertain,uncertain,9_new_options_GU,9,new_options,GU,,,DEGRADED (v3 val -> null)
+10,basic_info_footer,data_no,00157858,success,10_basic_info_footer_data_no,10,basic_info_footer,data_no,00157858,success,SAME
+10,basic_info_footer,tablet_no,2404-5012,success,10_basic_info_footer_tablet_no,10,basic_info_footer,tablet_no,2404-5012,success,SAME
+10,basic_info_header,staff_name,209,success,10_basic_info_header_staff_name,10,basic_info_header,staff_name,209,success,SAME
+10,basic_info_header,store_name,イオンモール大日,success,10_basic_info_header_store_name,10,basic_info_header,store_name,イオンモール大日,success,SAME
+10,case_items,AI,0,success,10_case_items_AI,10,case_items,AI,0,success,SAME
+10,case_items,AU,0,success,10_case_items_AU,10,case_items,AU,,,DEGRADED (v3 val -> null)
+10,case_items,AV,0,success,10_case_items_AV,10,case_items,AV,1,success,CHANGED
+10,case_items,AY,,,10_case_items_AY,10,case_items,AY,,,SAME
+10,case_items,AZ,,,10_case_items_AZ,10,case_items,AZ,,,SAME
+10,existing_support,HH,,,10_existing_support_HH,10,existing_support,HH,,,SAME
+10,existing_support,HI,,,10_existing_support_HI,10,existing_support,HI,,,SAME
+10,existing_support,HJ,,,10_existing_support_HJ,10,existing_support,HJ,,,SAME
+10,new_options,GS,,,10_new_options_GS,10,new_options,GS,,,SAME
+10,new_options,GT,,,10_new_options_GT,10,new_options,GT,,,SAME
+10,new_options,GU,,,10_new_options_GU,10,new_options,GU,,,SAME
+15,basic_info_footer,data_no,157105,success,15_basic_info_footer_data_no,15,basic_info_footer,data_no,157105,success,SAME
+15,basic_info_footer,tablet_no,2404-5012,success,15_basic_info_footer_tablet_no,15,basic_info_footer,tablet_no,2404-5012,success,SAME
+15,basic_info_header,staff_name,すみだ,success,15_basic_info_header_staff_name,15,basic_info_header,staff_name,すたすT,success,CHANGED
+15,basic_info_header,store_name,イオンモール大日,success,15_basic_info_header_store_name,15,basic_info_header,store_name,イオンモール大日,success,SAME
+15,case_items,AI,4,success,15_case_items_AI,15,case_items,AI,4,success,SAME
+15,case_items,AU,,,15_case_items_AU,15,case_items,AU,,,SAME
+15,case_items,AV,,,15_case_items_AV,15,case_items,AV,,,SAME
+15,case_items,AY,1,success,15_case_items_AY,15,case_items,AY,2,success,CHANGED
+15,case_items,AZ,1,success,15_case_items_AZ,15,case_items,AZ,2,success,CHANGED
+15,existing_support,HH,0,success,15_existing_support_HH,15,existing_support,HH,,,DEGRADED (v3 val -> null)
+15,existing_support,HI,,,15_existing_support_HI,15,existing_support,HI,,,SAME
+15,existing_support,HJ,0,success,15_existing_support_HJ,15,existing_support,HJ,,,DEGRADED (v3 val -> null)
+15,new_options,GS,,,15_new_options_GS,15,new_options,GS,,,SAME
+15,new_options,GT,,,15_new_options_GT,15,new_options,GT,,,SAME
+15,new_options,GU,,,15_new_options_GU,15,new_options,GU,,,SAME
+28,basic_info_footer,data_no,00157960,success,28_basic_info_footer_data_no,28,basic_info_footer,data_no,00157960,success,SAME
+28,basic_info_footer,tablet_no,2404-5017,success,28_basic_info_footer_tablet_no,28,basic_info_footer,tablet_no,2404-5017,success,SAME
+28,basic_info_header,staff_name,木口,success,28_basic_info_header_staff_name,28,basic_info_header,staff_name,木口,success,SAME
+28,basic_info_header,store_name,宝殿,success,28_basic_info_header_store_name,28,basic_info_header,store_name,宝殿,success,SAME
+28,case_items,AI,0,success,28_case_items_AI,28,case_items,AI,0,success,SAME
+28,case_items,AU,,,28_case_items_AU,28,case_items,AU,,,SAME
+28,case_items,AV,,,28_case_items_AV,28,case_items,AV,,,SAME
+28,case_items,AY,,,28_case_items_AY,28,case_items,AY,,,SAME
+28,case_items,AZ,,,28_case_items_AZ,28,case_items,AZ,,,SAME
+28,existing_support,HH,0,success,28_existing_support_HH,28,existing_support,HH,,,DEGRADED (v3 val -> null)
+28,existing_support,HI,,,28_existing_support_HI,28,existing_support,HI,,,SAME
+28,existing_support,HJ,0,success,28_existing_support_HJ,28,existing_support,HJ,,,DEGRADED (v3 val -> null)
+28,new_options,GS,,,28_new_options_GS,28,new_options,GS,,,SAME
+28,new_options,GT,,,28_new_options_GT,28,new_options,GT,,,SAME
+28,new_options,GU,,,28_new_options_GU,28,new_options,GU,,,SAME
