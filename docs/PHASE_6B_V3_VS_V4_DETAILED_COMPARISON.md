@@ -1,8 +1,16 @@
 # Phase 6B: v3 vs v4_rules 詳細比較レポート
 
 **作成日**: 2026-06-07  
+**正本 PDF**: `tests/fixtures/geo_pdf_reconciliation/20260529130020168.pdf`（30 ページ正本 PDF）  
 **対象**: 6 ページテスト（P1/P8/P9/P10/P15/P28）  
 **データ**: 90 項目の詳細比較
+
+---
+
+## 📌 使用 PDF
+
+本比較は Claude Code 側の 30 ページ正本 PDF に基づいています。
+詳細は `docs/PDF_REFERENCE_VALIDATION_RESULT.md` を参照。
 
 ---
 

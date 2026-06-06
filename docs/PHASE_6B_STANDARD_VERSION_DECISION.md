@@ -1,8 +1,22 @@
 # Phase 6B: v3 標準版決定・v3.1/v4_rules 不採用決定
 
 **決定日**: 2026-06-07  
-**正本 PDF**: `20260529130020168.pdf`（30 ページ）  
+**正本 PDF**: `tests/fixtures/geo_pdf_reconciliation/20260529130020168.pdf`（30 ページ正本 PDF）  
 **決定**: **v3 を標準版として確定。v3.1/v4_rules は不採用**
+
+---
+
+## 📌 正本 PDF について
+
+本プロジェクトの全検証・デモ・資料は、以下の 30 ページ正本 PDF に基づいています：
+
+| 項目 | 値 |
+|------|-----|
+| **パス** | `tests/fixtures/geo_pdf_reconciliation/20260529130020168.pdf` |
+| **ページ数** | 30 ページ |
+| **ファイルサイズ** | 3,103,524 bytes (2.96 MB) |
+
+詳細は `docs/PDF_REFERENCE_VALIDATION_RESULT.md` を参照。
 
 ---
 

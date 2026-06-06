@@ -1,8 +1,22 @@
 # Phase 6B: 次の精度向上計画（v3.2+ ロードマップ）
 
 **作成日**: 2026-06-07  
-**正本 PDF**: `20260529130020168.pdf`（30 ページ）  
+**正本 PDF**: `tests/fixtures/geo_pdf_reconciliation/20260529130020168.pdf`（30 ページ正本 PDF）  
 **方針**: Prompt 複雑化を避け、領域分割・bounds 調整・後処理で改善
+
+---
+
+## 📌 正本 PDF について
+
+本計画は以下の 30 ページ正本 PDF を基準として作成されています：
+
+| 項目 | 値 |
+|------|-----|
+| **パス** | `tests/fixtures/geo_pdf_reconciliation/20260529130020168.pdf` |
+| **ページ数** | 30 ページ |
+| **ファイルサイズ** | 3,103,524 bytes (2.96 MB) |
+
+詳細は `docs/PDF_REFERENCE_VALIDATION_RESULT.md` を参照。
 
 ---
 
