@@ -1,0 +1,67 @@
+pdf_page_number,page_index,field_code,field_name,current_pdf_value,csv_value,expected_rule,suspected_correct_value,reason,needs_human_confirm
+1,0,AU,au案件新規,uncertain,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,uncertain,正の字または手書き数字,YES
+1,0,AV,au案件既存,0,1.0,正の字（1-5）or 手書き数字 → null/uncertain は除外,0,正の字または手書き数字,YES
+1,0,AY,その他案件新規,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+1,0,AZ,その他案件既存,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+1,0,AI,案件合計,5,5.0,手書き数字（合計欄）→ 0も含まれる可能性,5,手書き数字,NO
+1,0,GS,eo光電話,1,1.0,正の字（新規オプション）,1,正の字,NO
+1,0,GT,地デジBS,null,null,正の字（新規オプション）,null（正しい）,正の字が書かれていない,NO
+1,0,GU,CS,1,1.0,正の字（新規オプション）,1,正の字,NO
+1,0,HH,ネット追加,null,null,手書き数字（既存対応）→ テンプレート値は除外,null（正しい）,記入欄が空欄,NO
+1,0,HI,電話追加,null,null,手書き数字（既存対応）→ テンプレート値は除外,null（正しい）,記入欄が空欄,NO
+1,0,HJ,テレビ追加,null,null,手書き数字（既存対応）→ テンプレート値は除外,null（正しい）,記入欄が空欄,NO
+8,7,AU,au案件新規,0,1.0,正の字（1-5）or 手書き数字 → null/uncertain は除外,0,正の字または手書き数字,YES
+8,7,AV,au案件既存,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+8,7,AY,その他案件新規,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+8,7,AZ,その他案件既存,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+8,7,AI,案件合計,1,1.0,手書き数字（合計欄）→ 0も含まれる可能性,1,手書き数字,NO
+8,7,GS,eo光電話,null,null,正の字（新規オプション）,null（P8は空欄のはず）,P8のGS/GUは空欄,YES
+8,7,GT,地デジBS,null,null,正の字（新規オプション）,null（正しい）,正の字が書かれていない,NO
+8,7,GU,CS,null,null,正の字（新規オプション）,null（P8は空欄のはず）,P8のGS/GUは空欄,YES
+8,7,HH,ネット追加,0,0.0,手書き数字（既存対応）→ テンプレート値は除外,0,手書き数字,NO
+8,7,HI,電話追加,null,null,手書き数字（既存対応）→ テンプレート値は除外,null（正しい）,記入欄が空欄,NO
+8,7,HJ,テレビ追加,0,0.0,手書き数字（既存対応）→ テンプレート値は除外,0,手書き数字,NO
+9,8,AU,au案件新規,2,1.0,正の字（1-5）or 手書き数字 → null/uncertain は除外,2,正の字または手書き数字,YES
+9,8,AV,au案件既存,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+9,8,AY,その他案件新規,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+9,8,AZ,その他案件既存,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+9,8,AI,案件合計,2,3.0,手書き数字（合計欄）→ 0も含まれる可能性,2,手書き数字,YES
+9,8,GS,eo光電話,uncertain,null,正の字（新規オプション）,uncertain,正の字,YES
+9,8,GT,地デジBS,null,null,正の字（新規オプション）,null（正しい）,正の字が書かれていない,NO
+9,8,GU,CS,uncertain,null,正の字（新規オプション）,uncertain,正の字,YES
+9,8,HH,ネット追加,null,null,手書き数字（既存対応）→ テンプレート値は除外,null（正しい）,記入欄が空欄,NO
+9,8,HI,電話追加,null,null,手書き数字（既存対応）→ テンプレート値は除外,null（正しい）,記入欄が空欄,NO
+9,8,HJ,テレビ追加,null,null,手書き数字（既存対応）→ テンプレート値は除外,null（正しい）,記入欄が空欄,NO
+10,9,AU,au案件新規,0,0.0,正の字（1-5）or 手書き数字 → null/uncertain は除外,0,正の字または手書き数字,NO
+10,9,AV,au案件既存,0,2.0,正の字（1-5）or 手書き数字 → null/uncertain は除外,0,正の字または手書き数字,YES
+10,9,AY,その他案件新規,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+10,9,AZ,その他案件既存,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+10,9,AI,案件合計,0,2.0,手書き数字（合計欄）→ 0も含まれる可能性,0,手書き数字,YES
+10,9,GS,eo光電話,null,null,正の字（新規オプション）,null（正しい）,正の字が書かれていない,NO
+10,9,GT,地デジBS,null,null,正の字（新規オプション）,null（正しい）,正の字が書かれていない,NO
+10,9,GU,CS,null,null,正の字（新規オプション）,null（正しい）,正の字が書かれていない,NO
+10,9,HH,ネット追加,null,null,手書き数字（既存対応）→ テンプレート値は除外,null（正しい）,記入欄が空欄,NO
+10,9,HI,電話追加,null,null,手書き数字（既存対応）→ テンプレート値は除外,null（正しい）,記入欄が空欄,NO
+10,9,HJ,テレビ追加,null,null,手書き数字（既存対応）→ テンプレート値は除外,null（正しい）,記入欄が空欄,NO
+15,14,AU,au案件新規,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+15,14,AV,au案件既存,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+15,14,AY,その他案件新規,1,0.0,正の字（1-5）or 手書き数字 → null/uncertain は除外,1,正の字または手書き数字,YES
+15,14,AZ,その他案件既存,1,0.0,正の字（1-5）or 手書き数字 → null/uncertain は除外,1,正の字または手書き数字,YES
+15,14,AI,案件合計,4,2.0,手書き数字（合計欄）→ 0も含まれる可能性,4,手書き数字,YES
+15,14,GS,eo光電話,null,null,正の字（新規オプション）,null（正しい）,正の字が書かれていない,NO
+15,14,GT,地デジBS,null,null,正の字（新規オプション）,null（正しい）,正の字が書かれていない,NO
+15,14,GU,CS,null,null,正の字（新規オプション）,null（正しい）,正の字が書かれていない,NO
+15,14,HH,ネット追加,0,0.0,手書き数字（既存対応）→ テンプレート値は除外,0,手書き数字,NO
+15,14,HI,電話追加,null,null,手書き数字（既存対応）→ テンプレート値は除外,null（正しい）,記入欄が空欄,NO
+15,14,HJ,テレビ追加,0,0.0,手書き数字（既存対応）→ テンプレート値は除外,0,手書き数字,NO
+28,27,AU,au案件新規,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+28,27,AV,au案件既存,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+28,27,AY,その他案件新規,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+28,27,AZ,その他案件既存,null,null,正の字（1-5）or 手書き数字 → null/uncertain は除外,null（正しい）,正の字が書かれていない,NO
+28,27,AI,案件合計,0,2.0,手書き数字（合計欄）→ 0も含まれる可能性,0,手書き数字,YES
+28,27,GS,eo光電話,null,null,正の字（新規オプション）,null（正しい）,正の字が書かれていない,NO
+28,27,GT,地デジBS,null,null,正の字（新規オプション）,null（正しい）,正の字が書かれていない,NO
+28,27,GU,CS,null,null,正の字（新規オプション）,null（正しい）,正の字が書かれていない,NO
+28,27,HH,ネット追加,0,0.0,手書き数字（既存対応）→ テンプレート値は除外,0,手書き数字,NO
+28,27,HI,電話追加,null,null,手書き数字（既存対応）→ テンプレート値は除外（テンプレート値40は除外）,null,手書き値,NO
+28,27,HJ,テレビ追加,0,0.0,手書き数字（既存対応）→ テンプレート値は除外,0,手書き数字,NO
