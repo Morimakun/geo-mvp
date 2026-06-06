@@ -1,0 +1,15 @@
+{
+  "target_date": "2026/05/17",
+  "store_code_conversion": {
+    "exact_match": 0,
+    "partial_match": 27,
+    "ambiguous_match": 0,
+    "not_found": 3
+  },
+  "csv_matching": {
+    "single_candidate": 25,
+    "multiple_candidates": 2,
+    "no_candidates": 3
+  },
+  "ready_for_comparison": 25
+}
