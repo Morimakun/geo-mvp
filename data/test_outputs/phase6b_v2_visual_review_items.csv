@@ -1,0 +1,57 @@
+page_number,field_code,fax_item_name,pdf_value,csv_value,suspected_cause,review_priority,notes
+0,AV,au案件既存,0,1,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 1. Check if blank or handwritten 0."
+6,AY,その他案件新規,0,1,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 1. Check if blank or handwritten 0."
+6,HI,電話追加,0,1,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 1. Check if blank or handwritten 0."
+7,AU,au案件新規,0,1,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 1. Check if blank or handwritten 0."
+8,GS,eo光電話,5,1,tally_overcount,HIGH,"Tally mark counted as 5, but CSV shows smaller value. Check if partial marks are visible."
+8,GU,CS（HT/Mzのみ）,5,1,tally_overcount,HIGH,"Tally mark counted as 5, but CSV shows smaller value. Check if partial marks are visible."
+9,AV,au案件既存,0,2,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 2. Check if blank or handwritten 0."
+10,AV,au案件既存,0,2,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 2. Check if blank or handwritten 0."
+12,AY,その他案件新規,0,3,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 3. Check if blank or handwritten 0."
+13,AU,au案件新規,0,1,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 1. Check if blank or handwritten 0."
+15,AU,au案件新規,0,2,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 2. Check if blank or handwritten 0."
+16,AU,au案件新規,0,1,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 1. Check if blank or handwritten 0."
+17,AY,その他案件新規,0,1,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 1. Check if blank or handwritten 0."
+18,AV,au案件既存,0,1,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 1. Check if blank or handwritten 0."
+19,AU,au案件新規,0,3,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 3. Check if blank or handwritten 0."
+19,AV,au案件既存,0,2,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 2. Check if blank or handwritten 0."
+21,AU,au案件新規,0,1,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 1. Check if blank or handwritten 0."
+21,AV,au案件既存,0,1,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 1. Check if blank or handwritten 0."
+21,AZ,その他案件既存,0,1,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 1. Check if blank or handwritten 0."
+26,AU,au案件新規,0,2,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 2. Check if blank or handwritten 0."
+26,AV,au案件既存,0,3,zero_vs_nonzero,HIGH,"PDF reads as 0 or blank, but CSV shows 3. Check if blank or handwritten 0."
+0,AU,au案件新規,5,4,off_by_one,MEDIUM,"Off-by-one OCR error: PDF=5, CSV=4. May be 1↔7, 0↔6, etc."
+6,AU,au案件新規,1,2,off_by_one,MEDIUM,"Off-by-one OCR error: PDF=1, CSV=2. May be 1↔7, 0↔6, etc."
+12,AV,au案件既存,1,0,off_by_one,MEDIUM,"Off-by-one OCR error: PDF=1, CSV=0. May be 1↔7, 0↔6, etc."
+13,AV,au案件既存,1,2,off_by_one,MEDIUM,"Off-by-one OCR error: PDF=1, CSV=2. May be 1↔7, 0↔6, etc."
+13,GU,CS（HT/Mzのみ）,2,1,unclear_tally,MEDIUM,Tally marks unclear. Inspect actual handwriting.
+16,AV,au案件既存,1,2,off_by_one,MEDIUM,"Off-by-one OCR error: PDF=1, CSV=2. May be 1↔7, 0↔6, etc."
+17,GS,eo光電話,2,1,unclear_tally,MEDIUM,Tally marks unclear. Inspect actual handwriting.
+21,GU,CS（HT/Mzのみ）,1,0,unclear_tally,MEDIUM,Tally marks unclear. Inspect actual handwriting.
+22,AV,au案件既存,2,3,off_by_one,MEDIUM,"Off-by-one OCR error: PDF=2, CSV=3. May be 1↔7, 0↔6, etc."
+22,GS,eo光電話,1,2,tally_undercount,MEDIUM,"Tally mark counted as 1-2, but CSV shows larger. Check for missed lines."
+22,GT,地デジBS（HT/Mzのみ）,2,0,unclear_tally,MEDIUM,Tally marks unclear. Inspect actual handwriting.
+26,GU,CS（HT/Mzのみ）,1,2,tally_undercount,MEDIUM,"Tally mark counted as 1-2, but CSV shows larger. Check for missed lines."
+28,AV,au案件既存,1,0,off_by_one,MEDIUM,"Off-by-one OCR error: PDF=1, CSV=0. May be 1↔7, 0↔6, etc."
+3,AY,その他案件新規,1,3,large_diff,LOW,Large difference (2). Likely real data diff or multiple misreadings.
+8,AI,合計（数字で記入）,2,3,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
+9,AI,合計（数字で記入）,0,2,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
+10,AI,合計（数字で記入）,20,2,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
+11,AI,合計（数字で記入）,0,2,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
+14,AI,合計（数字で記入）,4,2,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
+15,AY,その他案件新規,4,2,large_diff,LOW,Large difference (2). Likely real data diff or multiple misreadings.
+15,AZ,その他案件既存,5,7,large_diff,LOW,Large difference (2). Likely real data diff or multiple misreadings.
+15,AI,合計（数字で記入）,9,11,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
+17,AI,合計（数字で記入）,2,1,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
+18,AU,au案件新規,1,4,large_diff,LOW,Large difference (3). Likely real data diff or multiple misreadings.
+18,AI,合計（数字で記入）,8,5,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
+19,AI,合計（数字で記入）,6,5,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
+23,AI,合計（数字で記入）,7,1,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
+24,AI,合計（数字で記入）,0,1,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
+25,AZ,その他案件既存,1,3,large_diff,LOW,Large difference (2). Likely real data diff or multiple misreadings.
+25,AI,合計（数字で記入）,6,7,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
+26,AI,合計（数字で記入）,0,5,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
+27,AI,合計（数字で記入）,0,2,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
+28,AU,au案件新規,1,3,large_diff,LOW,Large difference (2). Likely real data diff or multiple misreadings.
+28,AI,合計（数字で記入）,2,3,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
+29,AI,合計（数字で記入）,2,1,sum_mismatch,LOW,Sum mismatch due to missing detail fields (Phase 6B only extracts 13/183 fields).
