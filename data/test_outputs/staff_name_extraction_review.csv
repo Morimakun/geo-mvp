@@ -1,0 +1,32 @@
+﻿pdf_page_number,page_index,raw_staff_name,failure_type,match_type,matched_staff_name
+1,0,原田,no_match,none,NONE
+2,1,"209""",numeric,none,NONE
+3,2,宮木少平,no_match,none,NONE
+4,3,竹内優間,no_match,none,NONE
+5,4,川又,no_match,none,NONE
+6,5,川又,no_match,none,NONE
+7,6,中嶋,no_match,none,NONE
+8,7,新田,no_match,none,NONE
+9,8,森田 真司,no_match,none,NONE
+10,9,209,numeric,none,NONE
+11,10,尾崎将人,exact_match,exact,尾崎将人
+12,11,多田 和弘,no_match,none,NONE
+13,12,竹内優貴,no_match,none,NONE
+14,13,森田 真司,no_match,none,NONE
+15,14,すみだ,no_match,none,NONE
+16,15,小山 功,no_match,none,NONE
+17,16,森田 真司,no_match,none,NONE
+18,17,たʊ22,no_match,none,NONE
+18,17,NULL,null,none,NONE
+19,18,原田,no_match,none,NONE
+20,19,明石,no_match,none,NONE
+21,20,池崎 蒼治,no_match,none,NONE
+22,21,尾上ヨシ＝千智,no_match,none,NONE
+23,22,入江,no_match,none,NONE
+24,23,田野泰史,no_match,none,NONE
+25,24,香西,no_match,none,NONE
+26,25,福村,no_match,none,NONE
+27,26,入江,no_match,none,NONE
+28,27,木口,no_match,none,NONE
+29,28,ブレ,no_match,none,NONE
+30,29,赤い,no_match,none,NONE
