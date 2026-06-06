@@ -1,0 +1,31 @@
+﻿page,store_name,store_code,staff_name,data_no,tablet_no,status,csv_candidates,match_count,diff_count,total_fields,compared_fields,matched_fields,mismatched_fields,match_rate,review_reasons
+0,小倉,AU1K0024112,原田,00157846,2408-5317,mismatch,1,3,2,183,5,3,2,0.6,2 mismatched fields
+1,イオンモール大日,AU1KC490237,209,00157858,2404-5012,match,1,1,0,183,1,1,0,1.0,
+2,高石,AU1KC310021,宮木少平,00157852,2404-5001,match,1,4,0,183,4,4,0,1.0,
+3,ニトリモール枚方,AU1KW740165,竹内優閑,00157856,2408-5435,mismatch,1,5,1,183,6,5,1,0.8333333333333334,1 mismatched fields
+4,イオンモール鶴見緑地,AU1KB830227,川又,15 7816,2208-5010,review,2,5,2,183,0,0,0,0.0,Multiple CSV candidates found (2 rows) for store_code=AU1KB830227 and date=2026/05/17; Multiple CSV candidates (2 rows)
+5,イオンモール鶴見緑地,AU1KB830227,川又,,2208-5010,review,2,6,0,183,0,0,0,0.0,Multiple CSV candidates found (2 rows) for store_code=AU1KB830227 and date=2026/05/17; Multiple CSV candidates (2 rows)
+6,イオンモール堺北花田,AU1KB830201,中嶋,00157857,2X08-5380,mismatch,1,2,3,183,5,2,3,0.4,3 mismatched fields
+7,JR神戸北,AU1KC400020,新田,00157834,2404-5001,mismatch,1,7,1,183,8,7,1,0.875,1 mismatched fields
+8,イオンモール神戸北,AU1K4050139,森田真司,,2408-5391,mismatch,1,1,3,183,4,1,3,0.25,3 mismatched fields
+9,イオンモール大日,AU1KC490237,209,00157858,2404-5012,mismatch,1,1,2,183,3,1,2,0.3333333333333333,2 mismatched fields
+10,深江橋,AU1K0024104,尾崎将人,,,mismatch,1,2,2,183,4,2,2,0.5,2 mismatched fields
+11,広畑,AU1KC400079,多田 和弘,00157881,2208-S002,mismatch,1,0,1,183,1,0,1,0.0,1 mismatched fields
+12,ニトリモール枚方,AU1KW740165,竹内優貴,00157880,2408-5435,mismatch,1,3,2,183,5,3,2,0.6,2 mismatched fields
+13,イオンモール神戸北,AU1K4050139,森田 真司,00157866,2408-5391,mismatch,1,2,3,183,5,2,3,0.4,3 mismatched fields
+14,イオンモール大日,AU1KC490237,すむす,157105,2404-5012,mismatch,1,0,1,183,1,0,1,0.0,1 mismatched fields
+15,熊取,AU1KC310039,小山功,00157923,2404-5008,mismatch,1,1,4,183,5,1,4,0.2,4 mismatched fields
+16,イオンモール神戸北,AU1K4050139,森田 真司,00157936,2408-5391,mismatch,1,3,2,183,5,3,2,0.6,2 mismatched fields
+17,くずはモール,AU1KC901225,たなて,00159928,2408-5419,mismatch,1,3,3,183,6,3,3,0.5,3 mismatched fields
+18,小倉,AU1K0024112,尾田,00157924,2408-5317,mismatch,1,0,3,183,3,0,3,0.0,3 mismatched fields
+19,魚住,AU1KC490278,明石,00157897,2408-5334,mismatch,1,0,3,183,3,0,3,0.0,3 mismatched fields
+20,明石大久保,AU1KC400012,池崎 荒治,,2408-5408,match,1,1,0,183,1,1,0,1.0,
+21,ららぽーとEXPOCITY,AU1K4050055,尾上等＝千駄,00157908,2404-5020,mismatch,1,2,4,183,6,2,4,0.3333333333333333,4 mismatched fields
+22,羽曳野伊賀,AU1K4150749,小田,00157906,240f-5364,mismatch,1,1,3,183,4,1,3,0.25,3 mismatched fields
+23,六甲道,AU1K3430050,田野春史,15789 2,240.4-5019,mismatch,1,4,1,183,5,4,1,0.8,1 mismatched fields
+24,高砂明姫,AU1K4280454,香西,,2404-5014,mismatch,1,1,1,183,2,1,1,0.5,1 mismatched fields
+25,尼崎下坂部,AU1K0620331,福村,15767,2404-5339,mismatch,1,1,2,183,3,1,2,0.3333333333333333,2 mismatched fields
+26,羽曳野伊賀,AU1K4150749,入田,00157966,2408-5364,mismatch,1,3,4,183,7,3,4,0.42857142857142855,4 mismatched fields
+27,宝殿,AU1KC400038,木口,00157960,2404-5017,mismatch,1,0,1,183,1,0,1,0.0,1 mismatched fields
+28,松井山手,AU1K0620604,ユキ,,2208-5004,mismatch,1,2,3,183,5,2,3,0.4,3 mismatched fields
+29,JR神戸北,AU1KC400020,赤い,00157939,2404-5001,mismatch,1,4,1,183,5,4,1,0.8,1 mismatched fields

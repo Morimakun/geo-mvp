@@ -691,7 +691,7 @@ class Phase1ReconciliationEngine:
         """数値を正規化（int に統一）
 
         Args:
-            value: 入力値（int, float, str, None など）
+            value: 入力値（int, float, str, None, numpy.int64, numpy.float64 など）
 
         Returns:
             正規化済み数値、または None
@@ -703,6 +703,13 @@ class Phase1ReconciliationEngine:
         if isinstance(value, bool):
             # bool は int の subclass なので先に check
             return None
+
+        # pandas.NA, NaN, etc. を先にチェック（numpy型より先）
+        try:
+            if pd.isna(value):
+                return None
+        except (TypeError, ValueError):
+            pass
 
         if isinstance(value, (int, float)):
             try:
@@ -723,8 +730,10 @@ class Phase1ReconciliationEngine:
             except (ValueError, TypeError):
                 return None
 
-        # pandas.NA, NaN, etc.
-        if pd.isna(value):
+        # numpy.int64, numpy.float64 等の数値型（Python 3.14+ で int/float の subclass ではない）
+        try:
+            return int(value)
+        except (ValueError, TypeError):
             return None
 
         return None
