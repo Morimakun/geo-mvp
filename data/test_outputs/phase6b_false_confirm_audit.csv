@@ -1,0 +1,13 @@
+﻿version,page_index,field_code,actual_fax,pdf_extracted,csv_value,decision,audit_category,real_discrepancy,note
+v3,0,AZ,5,,,SKIP,RECALL_GAP,True,正の字5本（目視）
+hybrid,0,AZ,5,5.0,,FLAG,TRUE_FLAG,True,正の字5本（目視）
+v3,5,AZ,30,,,SKIP,RECALL_GAP,True,集計値30=3本+0（目視）
+hybrid,5,AZ,30,30.0,,FLAG,TRUE_FLAG,True,集計値30=3本+0（目視）
+v3,7,AZ,,,,SKIP,CORRECT_SKIP,False,空欄（目視）
+hybrid,7,AZ,,0,,FLAG,FALSE_FLAG,False,空欄（目視）
+v3,9,AZ,unclear,,,SKIP,CORRECT_SKIP,False,不鮮明・正の字1-2推定（目視）
+hybrid,9,AZ,unclear,2.0,,FLAG,FALSE_FLAG,False,不鮮明・正の字1-2推定（目視）
+v3,14,AZ,1,1,0.0,FLAG,TRUE_FLAG,True,タリー約1本（目視）
+hybrid,14,AZ,1,1,0.0,FLAG,TRUE_FLAG,True,タリー約1本（目視）
+v3,28,HI,,40,0.0,FLAG,FALSE_FLAG,False,テンプレ印字40の誤読、実際は空欄（目視）
+hybrid,28,HI,,uncertain,0.0,FLAG,FALSE_FLAG,False,テンプレ印字40の誤読、実際は空欄（目視）

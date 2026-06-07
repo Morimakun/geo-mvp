@@ -1,0 +1,3 @@
+﻿version,auto_confirm,flag,reference_match,skip,active_compared,auto_confirm_rate_%,review_rate_%,reference_rate_%,work_reduction_est_%,false_confirm_verified,true_flag_verified,false_flag_verified,missed_verified,recall_gap_verified,review_capture_rate_%
+v3,37,66,12,5192,115,32.2,57.4,10.4,32.2,0,1,1,0,2,100.0
+hybrid,37,70,12,5188,119,31.1,58.8,10.1,31.1,0,3,3,0,0,100.0

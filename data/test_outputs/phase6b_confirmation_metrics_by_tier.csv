@@ -1,0 +1,11 @@
+﻿version,tier,tier_label,auto_confirm,flag,reference_match,skip,active,auto_confirm_rate,policy
+v3,A_printed,Tier A (印字数字: AI),7,18,0,4,25,28.0,自動確定可
+v3,B_existing,Tier B (既存対応 HH-IO),22,5,0,814,27,81.5,条件付き自動確定
+v3,B_newopt,"Tier B (新規オプション GS-HG, 正の字寄り)",8,14,0,413,22,36.4,条件付き自動確定(0/途中形/uncertainはreview)
+v3,C_tally,Tier C (正の字 AU/AV/AY/AZ),0,29,12,75,41,0.0,自動確定しない(参考一致のみ)
+v3,other,Other (内訳/その他欄),0,0,0,3886,0,0.0,デフォルト確定(印字欄)
+hybrid,A_printed,Tier A (印字数字: AI),7,18,0,4,25,28.0,自動確定可
+hybrid,B_existing,Tier B (既存対応 HH-IO),22,5,0,814,27,81.5,条件付き自動確定
+hybrid,B_newopt,"Tier B (新規オプション GS-HG, 正の字寄り)",8,14,0,413,22,36.4,条件付き自動確定(0/途中形/uncertainはreview)
+hybrid,C_tally,Tier C (正の字 AU/AV/AY/AZ),0,33,12,71,45,0.0,自動確定しない(参考一致のみ)
+hybrid,other,Other (内訳/その他欄),0,0,0,3886,0,0.0,デフォルト確定(印字欄)
