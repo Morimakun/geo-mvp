@@ -1,0 +1,6 @@
+page,store_name,v3_value,v21_value,user_interpretation,raw_response_summary,mentions_tally,mentions_unclear,mentions_blank,cell_identification_issue,normalization_issue,failure_category,recommended_fix
+24,六甲道,7,None,2,チェックマーク（レ点・斜め線）のような記号が2つ見える。正の字でもアラビア数字でも空欄でもない形状と判断。,Yes（否定的言及：正の字ではないと判断）,Yes（解像度・印刷品質により判定困難）,No,Yes（SBAirユーザー数の紹介行を読んでおり対象セルが不正確）,No（uncertain→None は正規化仕様通り）,A+C,プロンプト緩和＋セル指定強化。Visionは2つの記号を見ており user=2 に近い。
+14,イオンモール神戸北,34,None,3,画像の解像度が非常に低いと主張。テーブル構造は見えるがセル内容は判別不可。黒塗り部分あり。,No,Yes（解像度が非常に低い・かすれて見える）,Yes（空欄またはかすれ）,Yes（エリア外数の行を見ている可能性）,No,B+C,黒マスク領域が原因。crop範囲を狭めてAIセル単体+ラベルに。
+11,深江橋,20,None,2,★重要発見★ raw_textで「正の字が記入されているように見えます」「正（5画完成形）と読み取れる記号」と明言。しかし黒塗り部分が多く最終判定はuncertain。,Yes（肯定的言及：正の字が見えると明言）,Yes（黒塗りにより判定不能）,No,Yes（⑱未導入物件数の紹介欄を読んでいる）,No,A,★最重要★ Visionは正の字を見ている。プロンプト緩和で推定値を返させれば改善可能。
+12,広畑,0,blank,1,複数行を一括読み取り。全行をblankと判定。JSON配列で返却。,No,No,Yes（全行blank判定）,Yes（複数行を一括読みしており対象セルが特定できていない）,Yes（JSON配列の最初の要素だけを取得している）,C+D,crop範囲が広すぎ。AIセル単体cropに変更。または行指定をプロンプトに追加。
+28,宝殿,0,None,0,空欄の可能性が高いと明言しつつuncertainと返却。画像が非常に不鮮明と主張。,No,Yes（画像が非常に不鮮明）,Yes（空欄の可能性が高い）,Yes（複数行を一括確認している）,No（uncertain→Noneは正規化仕様通りだが空欄判定すべきだった）,A,プロンプト緩和。空欄可能性が高いならblankと返すよう指示追加。
