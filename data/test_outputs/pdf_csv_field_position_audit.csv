@@ -1,0 +1,11 @@
+csv_column_code,csv_column_number_master,spreadsheet_letter_calc,calc_matches_master,iloc_index_used,index_conversion,pdf_block,pdf_crop_region,right_block_contamination,verdict
+AI,35,26+9=35,yes,34,csv_column_number-1,left,case_items,no,correct
+AU,47,26+21=47,yes,46,csv_column_number-1,left,case_items,no,correct
+AV,48,26+22=48,yes,47,csv_column_number-1,left,case_items,no,correct
+AY,51,26+25=51,yes,50,csv_column_number-1,left,case_items,no,correct
+AZ,52,26+26=52,yes,51,csv_column_number-1,left,case_items,no,correct
+CZ,104,78+26=104,yes,103,csv_column_number-1,back,not_extracted_pdf,no,correct
+DL,116,104+12=116,yes,115,csv_column_number-1,back,not_extracted_pdf,no,correct
+DM,117,104+13=117,yes,116,csv_column_number-1,back,not_extracted_pdf,no,correct
+DP,120,104+16=120,yes,119,csv_column_number-1,back,not_extracted_pdf,no,correct
+DQ,121,104+17=121,yes,120,csv_column_number-1,back,not_extracted_pdf,no,correct
