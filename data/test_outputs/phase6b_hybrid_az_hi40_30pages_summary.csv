@@ -1,0 +1,17 @@
+﻿metric,value
+v3_match,49
+v3_mismatch,41
+v3_total_compared,90
+v3_match_rate,54.4%
+hybrid_match,49
+hybrid_mismatch,40
+hybrid_total_compared,89
+hybrid_match_rate,55.1%
+match_delta,0
+mismatch_delta,-1
+match_rate_delta_pt,+0.6
+az_v5_adopted,3
+az_v3_fallback,1
+az_v5_zero_kept,1
+az_v3_default,25
+hi40_reviewed,1
