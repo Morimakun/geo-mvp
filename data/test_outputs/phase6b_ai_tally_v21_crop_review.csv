@@ -1,0 +1,6 @@
+page_no,store_name,v3_value,user_interpretation,pattern_a_score,pattern_a_file,pattern_b_score,pattern_b_file,black_mask_percent,overall_score,readiness_judgment,risk_factor,recommended_pattern,vision_execution_priority
+14,イオンモール神戸北,34,3,3/5,P14_ai_highres.png,4/5,P14_ai_context_highres.png,50,3.5/5,✅ 実行推奨,黒マスク中の文字判別困難,Pattern B,2nd
+11,深江橋,20,2,3/5,P11_ai_highres.png,4/5,P11_ai_context_highres.png,50,3.5/5,✅ 実行推奨,黒マスク中の文字判別困難,Pattern B,3rd
+24,六甲道,7,2,4/5,P24_ai_highres.png,5/5,P24_ai_context_highres.png,25,4.5/5,✅ 実行推奨,最小限,Pattern B,1st
+12,広畑,0,1,3/5,P12_ai_highres.png,4/5,P12_ai_context_highres.png,50,3.5/5,✅ 実行推奨,黒マスク中の文字判別困難,Pattern B,4th
+28,宝殿,0,0,2/5,P28_ai_highres.png,3/5,P28_ai_context_highres.png,30,2.5/5,⚠️ 条件付き,空欄が多く判定が難しい可能性,Pattern B,5th
