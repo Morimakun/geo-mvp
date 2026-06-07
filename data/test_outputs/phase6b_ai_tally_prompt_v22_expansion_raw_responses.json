@@ -1,0 +1,90 @@
+{
+  "P2": {
+    "response": {
+      "target_cell_found": true,
+      "estimated_value": 0,
+      "confidence": "medium",
+      "visible_mark_type": "blank",
+      "reason": "AI合計行のセルに記入が見えない。空欄判定。PDF AI=0と一致",
+      "is_blank": true
+    },
+    "raw_text": "AI合計行（灰色/網掛けの合計行）のAI列を確認。セルに何も記入されていない。完全な空欄。PDF値=0と一致。"
+  },
+  "P9": {
+    "response": {
+      "target_cell_found": true,
+      "estimated_value": 2,
+      "confidence": "medium",
+      "visible_mark_type": "tally_stroke",
+      "reason": "AI合計行のセルに2画の正の字が見える。内訳AU=2と一致",
+      "is_blank": false
+    },
+    "raw_text": "AI合計行のAI列を確認。セルに2画相当の正の字が見える（横棒+縦棒）。PDF値=2と一致。内訳AU=2との整合性も確認。"
+  },
+  "P10": {
+    "response": {
+      "target_cell_found": true,
+      "estimated_value": 0,
+      "confidence": "medium",
+      "visible_mark_type": "blank",
+      "reason": "AI合計行のセルに記入が見えない。空欄判定。P2と同一店舗の別日データ",
+      "is_blank": true
+    },
+    "raw_text": "AI合計行のAI列を確認。セルに何も記入されていない。完全な空欄。PDF値=0と一致。P2と同一店舗（イオンモール大日）の別日。"
+  },
+  "P15": {
+    "response": {
+      "target_cell_found": true,
+      "estimated_value": 2,
+      "confidence": "low",
+      "visible_mark_type": "tally_stroke",
+      "reason": "AI合計行のセルに2画相当の正の字が見える。内訳AY+AZ=2と一致。ただしAU/AVが未抽出のため confidence=low",
+      "is_blank": false
+    },
+    "raw_text": "AI合計行のAI列を確認。セルに2画相当の正の字が見える。PDF AI=4との差異あり、CSV内訳=2と一致。AU/AV未抽出で複合的問題、confidence低下。"
+  },
+  "P16": {
+    "response": {
+      "target_cell_found": true,
+      "estimated_value": 2,
+      "confidence": "low",
+      "visible_mark_type": "tally_stroke",
+      "reason": "AI合計行のセルに2画の正の字が見える。内訳AU+AY=2と一致。AZ=uncertain領域の黒マスク影響により confidence=low",
+      "is_blank": false
+    },
+    "raw_text": "AI合計行のAI列を確認。セルに2画相当の正の字が見える。PDF AI=9との大きな差異あり。CSV AI=11、内訳AU+AY=2で推定値と一致。AZ=uncertainとマスク領域の影響で判定困難。"
+  },
+  "P20": {
+    "response": {
+      "target_cell_found": true,
+      "estimated_value": 4,
+      "confidence": "medium",
+      "visible_mark_type": "tally_stroke",
+      "reason": "AI合計行のセルに4画相当の正の字が見える（横棒+縦棒+中段横棒+左側縦棒）",
+      "is_blank": false
+    },
+    "raw_text": "AI合計行のAI列を確認。セルに4画相当の正の字が見える。PDF AI=6との差異。内訳AU+AV=4で部分一致。AY/AZ未抽出で完全検証不可だが、見えた痕跡から4画と判定。"
+  },
+  "P29": {
+    "response": {
+      "target_cell_found": true,
+      "estimated_value": 2,
+      "confidence": "medium",
+      "visible_mark_type": "tally_stroke",
+      "reason": "AI合計行のセルに2画の正の字が見える。内訳AU=2と一致",
+      "is_blank": false
+    },
+    "raw_text": "AI合計行のAI列を確認。セルに2画相当の正の字が見える（横棒+縦棒）。PDF値=2と一致。内訳AU=2との整合性も確認。P9と同様のパターン。"
+  },
+  "P30": {
+    "response": {
+      "target_cell_found": true,
+      "estimated_value": 1,
+      "confidence": "medium",
+      "visible_mark_type": "tally_stroke",
+      "reason": "AI合計行のセルに1画の正の字が見える（横棒のみ）。内訳AU=1と一致。OCR誤読説（1→2）を検証",
+      "is_blank": false
+    },
+    "raw_text": "AI合計行のAI列を確認。セルに1画相当の正の字が見える（横棒のみ）。内訳AU=1と一致。PDF AI=2と異なるため、「2」が誤読の可能性を検証。セルには明確に1画のみ。"
+  }
+}

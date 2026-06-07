@@ -1,0 +1,9 @@
+page_no,store_name,pdf_ai,csv_ai,difference,v22_estimated_value,confidence,target_cell_found,visible_mark_type,reason,match_pdf,match_csv,status
+2,イオンモール大日,0,2,+2,0,medium,Yes,blank,AI合計行のセルに記入が見えない。空欄判定,OK,NG,success
+9,イオンモール神戸北,2,3,+1,2,medium,Yes,tally_stroke,AI合計行のセルに2画の正の字が見える,OK,NG,success
+10,イオンモール大日,0,2,+2,0,medium,Yes,blank,AI合計行のセルに記入が見えない。空欄判定。P2と同一,OK,NG,success
+15,イオンモール大日,4,2,-2,2,low,Yes,tally_stroke,AI合計行のセルに2画相当の正の字が見える。AY/AZの内訳と一致,NG,OK,success
+16,熊取,9,11,+2,2,low,Yes,tally_stroke,AI合計行のセルに2画の正の字が見える。内訳AU+AY=2と一致。AZ=uncertain領域の影響,NG,OK,success
+20,魚住,6,5,-1,4,medium,Yes,tally_stroke,AI合計行のセルに4画相当の正の字が見える,NG,NG,success
+29,松井山手,2,3,+1,2,medium,Yes,tally_stroke,AI合計行のセルに2画の正の字が見える,OK,NG,success
+30,JR神戸北,2,1,-1,1,medium,Yes,tally_stroke,AI合計行のセルに1画の正の字が見える,NG,OK,success
