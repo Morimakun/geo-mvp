@@ -1,0 +1,12 @@
+﻿metric,value,note
+AZ v5 adopted,3,改善取り込み
+AZ v3 fallback,1,実績保護(P15型)
+AZ v5 zero kept,1,集計0部分として保持
+AZ v3 default,2,v5 null時
+AZ match (before→after),0→0,
+AZ mismatch (before→after),1→0,
+AZ review_required,1,手動確認推奨
+HI=40 detected,1,テンプレート誤読
+HI=40 review化,1,mismatch から除外
+v3 match_rate (baseline),54.4%,
+projected match_rate,55.7%,+1.2pt

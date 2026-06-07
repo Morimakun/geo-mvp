@@ -1,0 +1,9 @@
+﻿page_number,mapped_store_code,pdf_value,v5_value,csv_value,final_AZ,az_source,az_review_reason,comparison_status,new_status,rule_type,new_pdf_value,hi_review_reason
+0,AU1K0024112,,5.0,,5.0,v5,,skipped_pdf_null,skipped_csv_null,AZ_hybrid,,
+5,AU1KB830227,,30.0,,30.0,v5,,skipped_pdf_null,skipped_csv_null,AZ_hybrid,,
+7,AU1KC400020,,0.0,,0,v5_zero_kept,,skipped_pdf_null,skipped_csv_null,AZ_hybrid,,
+8,AU1K4050139,,,,,v3_default,,skipped_pdf_null,skipped_both_null,AZ_hybrid,,
+9,AU1KC490237,,2.0,,2.0,v5,,skipped_pdf_null,skipped_csv_null,AZ_hybrid,,
+14,AU1KC490237,1,0.0,0.0,1,v3_fallback,v5_zero_but_v3_has_value,mismatch,review_required,AZ_hybrid,,
+27,AU1KC400038,,,,,v3_default,,skipped_pdf_null,skipped_both_null,AZ_hybrid,,
+28,AU1K0620604,40,,0.0,,,,mismatch,skipped_pdf_uncertain,HI40_postprocess,uncertain,possible_template_40_misread
