@@ -1,0 +1,6 @@
+page_number,page_index,store_name,v3_value,user_visual_interpretation,v3_correct_match,expected_after_improvement
+14,13,イオンモール神戸北,34,3,✗,→ 3
+11,10,深江橋,20,2,✗,→ 2
+24,23,六甲道,7,2,✗,→ 2
+12,11,広畑,0,1,✗,→ 1
+28,27,宝殿,0,0,✓,✓ Already correct
