@@ -1,0 +1,11 @@
+fax_item_name,csv_column_code,csv_column_number,csv_column_name,is_sum_field,mapping_status,source_file,block,note
+au案件新規,AU,47,,false,confirmed,対応表.pdf,前半ブロック,案件4種の内訳①
+au案件新規,DL,116,,false,confirmed,対応表.pdf,後半ブロック,前半AUと同一項目名に2列紐付き
+au案件既存,AV,48,,false,confirmed,対応表.pdf,前半ブロック,案件4種の内訳②
+au案件既存,DM,117,,false,confirmed,対応表.pdf,後半ブロック,前半AVと同一項目名に2列紐付き
+その他案件新規,AY,51,,false,confirmed,対応表.pdf,前半ブロック,案件4種の内訳③
+その他案件新規,DP,120,,false,confirmed,対応表.pdf,後半ブロック,前半AYと同一項目名に2列紐付き
+その他案件既存,AZ,52,,false,confirmed,対応表.pdf,前半ブロック,案件4種の内訳④
+その他案件既存,DQ,121,,false,confirmed,対応表.pdf,後半ブロック,前半AZと同一項目名に2列紐付き
+合計（数字で記入）,AI,35,,false,confirmed,対応表.pdf,前半ブロック,案件合計。突合で参照中の列
+合計（数字で記入）,CZ,104,,false,confirmed,対応表.pdf,後半ブロック,前半AIと同一項目名に2列紐付き
