@@ -1,0 +1,6 @@
+page_no,store_name,v3_value,v2_value,v21_value,v22_estimated_value,user_interpretation,match_user_interpretation,match_v3,confidence,target_cell_found,is_blank,visible_mark_type,reason,status
+24,六甲道,7,,2,2,2,✓,✗,medium,Yes,No,unclear,AI合計行のセルに2つのチェックマーク/正の字が見える,success
+14,イオンモール神戸北,34,,3,3,3,✓,✗,medium,Yes,No,tally_stroke,AI合計行のセルに3画の正の字が見える,success
+11,深江橋,20,,2,2,2,✓,✗,medium,Yes,No,tally_stroke,AI合計行のセルに2画の正の字が見える,success
+12,広畑,0,,1,1,1,✓,✗,medium,Yes,No,tally_stroke,AI合計行のセルに1画（横棒）が見える,success
+28,宝殿,0,,0,0,0,✓,✓,medium,Yes,Yes,blank,AI合計行のセルに記入が見えない,success

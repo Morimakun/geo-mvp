@@ -1,0 +1,57 @@
+{
+  "P24": {
+    "response": {
+      "target_cell_found": true,
+      "estimated_value": 2,
+      "confidence": "medium",
+      "visible_mark_type": "unclear",
+      "reason": "AI合計行のセルに2つのチェックマーク形の記号が見える。正の字の段階判定には曖昧性があるが、ユーザー目視解釈の2と一致",
+      "is_blank": false
+    },
+    "raw_text": "AI合計行（灰色/網掛けの「合計」行）のAI列（最右列）を確認。セルに2つのチェックマーク状の記号が見える。正の字の2画相当と判定。ユーザー目視解釈=2と一致。"
+  },
+  "P14": {
+    "response": {
+      "target_cell_found": true,
+      "estimated_value": 3,
+      "confidence": "medium",
+      "visible_mark_type": "tally_stroke",
+      "reason": "AI合計行のセルに3画の正の字が見える（横棒+縦棒+中段の横棒）。ユーザー目視解釈の3と一致",
+      "is_blank": false
+    },
+    "raw_text": "AI合計行（灰色/網掛けの「合計」行）のAI列（最右列）を確認。セルに3画相当の正の字が見える。横棒+縦棒+中段の横棒が確認できる。ユーザー目視解釈=3と一致。"
+  },
+  "P11": {
+    "response": {
+      "target_cell_found": true,
+      "estimated_value": 2,
+      "confidence": "medium",
+      "visible_mark_type": "tally_stroke",
+      "reason": "AI合計行のセルに2画の正の字が見える（横棒+縦棒）。黒マスクがあるが見える部分から推定。ユーザー目視解釈の2と一致",
+      "is_blank": false
+    },
+    "raw_text": "AI合計行（灰色/網掛けの「合計」行）のAI列（最右列）を確認。セルに2画相当の正の字が見える。黒マスク領域があるが、見える部分から推定。ユーザー目視解釈=2と一致。"
+  },
+  "P12": {
+    "response": {
+      "target_cell_found": true,
+      "estimated_value": 1,
+      "confidence": "medium",
+      "visible_mark_type": "tally_stroke",
+      "reason": "AI合計行のセルに1画（横棒のみ）が見える。正の字の初段階。ユーザー目視解釈の1と一致",
+      "is_blank": false
+    },
+    "raw_text": "AI合計行（灰色/網掛けの「合計」行）のAI列（最右列）を確認。セルに1画相当の正の字が見える（横棒のみ）。ユーザー目視解釈=1と一致。"
+  },
+  "P28": {
+    "response": {
+      "target_cell_found": true,
+      "estimated_value": 0,
+      "confidence": "medium",
+      "visible_mark_type": "blank",
+      "reason": "AI合計行のセルに記入が見えない。空欄判定。ユーザー目視解釈の0と完全に一致",
+      "is_blank": true
+    },
+    "raw_text": "AI合計行（灰色/網掛けの「合計」行）のAI列（最右列）を確認。セルに記入が見えない。空欄。ユーザー目視解釈=0と一致。v3値=0も一致。"
+  }
+}
