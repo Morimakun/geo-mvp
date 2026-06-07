@@ -1,0 +1,14 @@
+page_number,page_index,store_name,store_code,pdf_ai,csv_ai,difference,au_pdf,av_pdf,ay_pdf,az_pdf,pdf_internal_sum,csv_ai_match_internal,classification,visual_inspection_required,priority_check,notes
+14,13,イオンモール神戸北,AU1K4050139,34,3,-31,0,2,,2,AU+AV=2（AY/AZ未抽出）,差分-29,B,Yes,High,34と報告されているが内訳AU+AV=2。34はOCR誤読の可能性。原紙で「3」「2」「34」のいずれが書かれているか確認必須。
+2,1,イオンモール大日,AU1KC490237,0,2,+2,0,0,,0,AU+AV=0,0=0,D,No,Medium,PDFは0で内訳も0だが、CSVには+2。Salesforce側の後入力・更新タイミング差の可能性。
+10,9,イオンモール大日,AU1KC490237,0,2,+2,0,0,,0,AU+AV=0,0=0,D,No,Medium,同一店舗の別日。PDF=0、内訳=0だがCSV=2。同様に更新タイミング差か。
+11,10,深江橋,AU1K0024104,20,2,-18,0,0,,0,AU+AV=0,内訳全null（検証不可）,C,Yes,High,AI=20と報告されているが内訳AU/AV/AY/AZ全て空。20は誤読か、または内訳が完全に抽出失敗している。原紙確認で「20」が本当に書かれているか、または「2」か確認。
+12,11,広畑,AU1KC400079,0,2,+2,,,,AU/AV/AY/AZ全null,内訳全null（検証不可）,C,No,Medium,内訳項目がすべて抽出失敗（4null）。AI=0だがCSV=2。blank vs 0の区別失敗またはクロップ領域問題。後処理でreview化推奨。
+15,14,イオンモール大日,AU1KC490237,4,2,-2,,1,1,,AY+AZ=2（AU/AV未抽出）,AI=4と内訳=2で不一致,G,Yes,High,AU/AVが空、AY/AZ=1+1=2だがAI=4。内訳不完全で検証不可。複合的な問題で要目視確認。
+16,15,熊取,AU1KC310039,9,11,+2,0,,2,uncertain,AU+AY=2、AZ=uncertain,PDF内訳計=2だがAI=9,F,Yes,High,PDF AI=9だが内訳AU+AY=2。AZ=uncertainで抽出ルール例外。正の字途中形の可能性。ルール例外として確認。
+20,19,魚住,AU1KC490278,6,5,-1,2,2,,,,AU+AV=4（AY/AZ未抽出）,PDF内訳=4だがAI=6,C,No,Medium,内訳AU+AV=4で記録されているがAY/AZ未抽出。AI=6は妥当性確認必須。内訳抽出不足で検証不完全。
+24,23,六甲道,AU1K3430050,7,1,-6,1,,,,AU=1（AV/AY/AZ未抽出）,PDF内訳=1だがAI=7,B,Yes,High,AU=1だがAI=7。7はOCR誤読の可能性（「1」を「7」と読むか、または別の数字）。原紙確認必須。
+28,27,宝殿,AU1KC400038,0,2,+2,,,,AU/AV/AY/AZ全null,内訳全null（検証不可）,C,No,Medium,内訳項目がすべて抽出失敗（4null）。AI=0だがCSV=2。blank vs 0区別失敗またはクロップ領域問題。後処理でreview化推奨。
+29,28,松井山手,AU1K0620604,2,3,+1,2,,,,AU=2（AV/AY/AZ未抽出）,PDF内訳=2だがCSV内訳=3,D,No,Low,AU PDF=2 vs CSV=3。AU値の記録ズレまたはSalesforce更新タイミング差。内訳AV/AY/AZ未抽出だが、AU差分が全体差分を説明。
+9,8,イオンモール神戸北,AU1K4050139,2,3,+1,2,,,,AU=2（AV/AY/AZ未抽出）,PDF内訳=2だがCSV内訳=1,D,No,Low,AU PDF=2 vs CSV=1だが、AI差分は+1。CSVが更新されたか、または店舗データが重複している可能性。内訳不完全で実差分と推定。
+30,29,JR神戸北,AU1KC400020,2,1,-1,1,,,,AU=1（AV/AY/AZ未抽出）,PDF内訳=1だがAI=2,B,Yes,Low,AU=1で記録されているがAI=2。AV/AY/AZ未抽出で完全検証不可。AI=2は読取ミス（「1」を「2」と読むか）、または右ブロック値の誤混入。確認推奨。
