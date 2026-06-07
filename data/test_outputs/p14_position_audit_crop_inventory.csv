@@ -1,0 +1,8 @@
+file_name,image_size,crop_target,expected_content,contains_ai_area,contains_non_contact_column,contains_right_block,contains_total_area,needs_user_review,review_priority,key_question
+p14_left_block_full.png,TBD,P14左側ブロック全体,AU/AV/AY/AZ/AI配置,✅,❌,❌,✅,高,1,AI欄に「34」が見えるか
+p14_ai_area.png,TBD,P14 AI欄周辺,AI合計欄（34？3？），✅,❌,❌,✅,最高,2,AI欄に本当に「34」が見えるか
+p14_au_av_ay_az_ai_area.png,TBD,P14 AU/AV/AY/AZ/AI一式,AU=0, AV=2, AY=?, AZ=?, AI=34,✅,❌,❌,✅,高,3,4項目の値が見えるか
+p14_non_contact_column.png,TBD,P14非接列周辺,複数行の正の字+下部合計,❌,✅,❌,✅,最高,4,非接列に複数行の正の字があるか、下部合計は「14」か「34」か
+p14_case_items_current_crop.png,TBD,P14 case_items現行crop,AU/AV/AY/AZ/AI+隣の列も見えるか,✅,⚠️,❌,✅,最高,5,Visionが見ている範囲：非接列が含まれているか
+p14_right_block.png,TBD,P14右側ブロック周辺,DL=0, DM=40, DP=0, DQ=15等,❌,❌,✅,❌,中,6,テンプレート値が見えているか
+p14_ai_non_contact_comparison.png,TBD,P14 AI欄と非接列並列比較,左：AI欄 / 右：非接列,✅,✅,❌,⚠️,最高,7,両者が同時に見えているか、crop が両方を含むか
