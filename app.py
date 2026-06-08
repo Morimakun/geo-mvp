@@ -60,6 +60,24 @@ import uuid
 import random
 import string
 
+def normalize_page_number(value):
+    """
+    ページ番号を整数に正規化
+    14, 14.0, "14", "P14" → 14
+    """
+    if value is None:
+        return None
+
+    # "P14" → "14"
+    if isinstance(value, str) and value.upper().startswith('P'):
+        value = value[1:]
+
+    # "14" → 14, 14.0 → 14
+    try:
+        return int(float(value))
+    except (ValueError, TypeError):
+        return None
+
 def generate_session_id():
     """セッションIDを生成"""
     now = datetime.now()
@@ -2134,6 +2152,9 @@ if v22_csv_path.exists():
     try:
         df_v22 = pd.read_csv(v22_csv_path)
 
+        # ページ番号を正規化（14, 14.0, "14", "P14" → 14）
+        df_v22["page_number_norm"] = df_v22["page_id"].apply(normalize_page_number)
+
         # 説明文
         st.info(
             "**この判定はAI合計欄に対する補助判定です。** 既存の照合結果を置き換えるものではありません。"
@@ -2277,53 +2298,53 @@ if v22_csv_path.exists():
         # 対象ページ選択
         st.info("対象ページは下のプルダウンから選択できます。P14/P16/P30はデモ用の代表ページです。")
 
-        # デモ用クイック選択ボタン
+        # デモ用クイック選択ボタン（整数ページ番号を保存）
         col_demo1, col_demo2, col_demo3 = st.columns(3)
         with col_demo1:
             if st.button("P14を選択", use_container_width=True, key="demo_select_p14"):
-                st.session_state.demo_selected_page = "P14"
+                st.session_state.confirmation_selected_page = 14
                 st.rerun()
         with col_demo2:
             if st.button("P16を選択", use_container_width=True, key="demo_select_p16"):
-                st.session_state.demo_selected_page = "P16"
+                st.session_state.confirmation_selected_page = 16
                 st.rerun()
         with col_demo3:
             if st.button("P30を選択", use_container_width=True, key="demo_select_p30"):
-                st.session_state.demo_selected_page = "P30"
+                st.session_state.confirmation_selected_page = 30
                 st.rerun()
 
-        page_options = []
-        for _, row in df_v22.iterrows():
-            page_id = row['page_id']
-            classification = row.get('classification', '')
-            v3_val = row.get('v3_value', '')
-            v22_val = row.get('v22_value', '')
-            csv_val = row.get('csv_value', '')
-            label = f"{page_id} | {classification} | v3={v3_val} / v22={v22_val} / csv={csv_val}"
-            page_options.append((page_id, label))
+        # ページ番号（整数）でselectboxのオプションを生成
+        page_numbers = sorted(df_v22["page_number_norm"].dropna().unique())
 
-        if len(page_options) > 0:
-            # デモ選択の初期値を selectbox に反映
-            demo_selected = st.session_state.get("demo_selected_page", None)
-            default_index = 0
-            if demo_selected:
-                for idx, (page_id, label) in enumerate(page_options):
-                    if page_id == demo_selected:
-                        default_index = idx
-                        break
+        if len(page_numbers) > 0:
+            # セッション状態の初期値を設定
+            if "confirmation_selected_page" not in st.session_state:
+                st.session_state.confirmation_selected_page = int(page_numbers[0])
 
-            selected_page_label = st.selectbox(
+            # selectboxのデフォルト値を設定
+            try:
+                default_index = list(page_numbers).index(st.session_state.confirmation_selected_page)
+            except ValueError:
+                default_index = 0
+                st.session_state.confirmation_selected_page = int(page_numbers[0])
+
+            selected_page_no = st.selectbox(
                 "対象ページを選択",
-                options=[label for _, label in page_options],
+                options=page_numbers,
                 index=default_index,
+                format_func=lambda x: f"P{int(x)}",
                 key="confirmation_page_select"
             )
 
-            # 選択ページの page_id を取得
-            selected_page_id = next(page for page, label in page_options if label == selected_page_label)
+            # セッション状態を更新
+            st.session_state.confirmation_selected_page = selected_page_no
 
-            # 選択ページのデータを取得
-            selected_row = df_v22[df_v22['page_id'] == selected_page_id].iloc[0]
+            # 選択ページのデータを取得（ページ番号で検索）
+            selected_rows = df_v22[df_v22['page_number_norm'] == selected_page_no]
+            if selected_rows.empty:
+                st.error("選択ページのデータが見つかりません")
+                st.stop()
+            selected_row = selected_rows.iloc[0]
 
             # 詳細表示
             st.markdown("**選択ページの詳細**")
@@ -2400,7 +2421,7 @@ if v22_csv_path.exists():
                     # ログ行を構築
                     if operation == "確認済み（V2.2を採用）":
                         log_row = build_confirmation_log_row(
-                            page=selected_page_id,
+                            page=f"P{selected_page_no}",
                             v3_value=selected_row.get('v3_value'),
                             v22_value=selected_row.get('v22_value'),
                             csv_value=selected_row.get('csv_value'),
@@ -2422,7 +2443,7 @@ if v22_csv_path.exists():
 
                     elif operation == "V2.2を採用":
                         log_row = build_confirmation_log_row(
-                            page=selected_page_id,
+                            page=f"P{selected_page_no}",
                             v3_value=selected_row.get('v3_value'),
                             v22_value=selected_row.get('v22_value'),
                             csv_value=selected_row.get('csv_value'),
@@ -2444,7 +2465,7 @@ if v22_csv_path.exists():
 
                     elif operation == "CSV値を採用":
                         log_row = build_confirmation_log_row(
-                            page=selected_page_id,
+                            page=f"P{selected_page_no}",
                             v3_value=selected_row.get('v3_value'),
                             v22_value=selected_row.get('v22_value'),
                             csv_value=selected_row.get('csv_value'),
@@ -2466,7 +2487,7 @@ if v22_csv_path.exists():
 
                     elif operation == "PDF値を採用":
                         log_row = build_confirmation_log_row(
-                            page=selected_page_id,
+                            page=f"P{selected_page_no}",
                             v3_value=selected_row.get('v3_value'),
                             v22_value=selected_row.get('v22_value'),
                             csv_value=selected_row.get('csv_value'),
@@ -2488,7 +2509,7 @@ if v22_csv_path.exists():
 
                     elif operation == "v3値を採用":
                         log_row = build_confirmation_log_row(
-                            page=selected_page_id,
+                            page=f"P{selected_page_no}",
                             v3_value=selected_row.get('v3_value'),
                             v22_value=selected_row.get('v22_value'),
                             csv_value=selected_row.get('csv_value'),
@@ -2510,7 +2531,7 @@ if v22_csv_path.exists():
 
                     elif operation == "手動修正":
                         log_row = build_confirmation_log_row(
-                            page=selected_page_id,
+                            page=f"P{selected_page_no}",
                             v3_value=selected_row.get('v3_value'),
                             v22_value=selected_row.get('v22_value'),
                             csv_value=selected_row.get('csv_value'),
@@ -2532,7 +2553,7 @@ if v22_csv_path.exists():
 
                     elif operation == "保留":
                         log_row = build_confirmation_log_row(
-                            page=selected_page_id,
+                            page=f"P{selected_page_no}",
                             v3_value=selected_row.get('v3_value'),
                             v22_value=selected_row.get('v22_value'),
                             csv_value=selected_row.get('csv_value'),
@@ -2554,7 +2575,7 @@ if v22_csv_path.exists():
 
                     elif operation == "スキップ":
                         log_row = build_confirmation_log_row(
-                            page=selected_page_id,
+                            page=f"P{selected_page_no}",
                             v3_value=selected_row.get('v3_value'),
                             v22_value=selected_row.get('v22_value'),
                             csv_value=selected_row.get('csv_value'),
