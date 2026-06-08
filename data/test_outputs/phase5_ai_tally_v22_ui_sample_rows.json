@@ -1,0 +1,152 @@
+[
+  {
+    "page": "P1",
+    "store_name": "小倉",
+    "ai_tally_v22": {
+      "v3_value": 5,
+      "v22_value": 5,
+      "csv_value": 5,
+      "confidence": "medium",
+      "auto_confirm_candidate": true,
+      "review_required": false,
+      "target_cell_found": true,
+      "visible_mark_type": "tally",
+      "badges": ["auto_confirm"],
+      "message": "PDF AI合計とSalesforce CSVが一致しています。確認不要候補です。",
+      "display_priority": 4,
+      "suggested_action": "skip",
+      "review_reason": null
+    }
+  },
+  {
+    "page": "P3",
+    "store_name": "高石",
+    "ai_tally_v22": {
+      "v3_value": 3,
+      "v22_value": 3,
+      "csv_value": 1,
+      "confidence": "medium",
+      "auto_confirm_candidate": false,
+      "review_required": true,
+      "target_cell_found": true,
+      "visible_mark_type": "tally",
+      "badges": ["review"],
+      "message": "PDF AI合計とSalesforce CSVに差分があります。確認してください。差分：+2",
+      "display_priority": 2,
+      "suggested_action": "confirm",
+      "review_reason": ["v22値とCSVが不一致"]
+    }
+  },
+  {
+    "page": "P14",
+    "store_name": "小倉町",
+    "ai_tally_v22": {
+      "v3_value": 34,
+      "v22_value": 3,
+      "csv_value": 3,
+      "confidence": "medium",
+      "auto_confirm_candidate": true,
+      "review_required": false,
+      "target_cell_found": true,
+      "visible_mark_type": "tally",
+      "badges": ["auto_confirm", "ocr_correction"],
+      "message": "PDF AI合計とCSVが一致しています。旧読取値34はOCR誤読の可能性があります。V2.2により補正されました。",
+      "display_priority": 3,
+      "suggested_action": "skip_with_sample_confirmation",
+      "review_reason": null,
+      "ocr_correction_info": {
+        "old_value": 34,
+        "new_value": 3,
+        "matches_csv": true,
+        "improvement": "大幅な誤読を修正"
+      }
+    }
+  },
+  {
+    "page": "P16",
+    "store_name": "神戸北",
+    "ai_tally_v22": {
+      "v3_value": 9,
+      "v22_value": 2,
+      "csv_value": 11,
+      "confidence": "low",
+      "auto_confirm_candidate": false,
+      "review_required": true,
+      "target_cell_found": true,
+      "visible_mark_type": "tally",
+      "badges": ["low_confidence", "review"],
+      "message": "AIの確信度が低いため確認が必要です。v22がv3よりCSVから遠ざかっています。人間確認を強制します。",
+      "display_priority": 1,
+      "suggested_action": "force_confirm",
+      "review_reason": ["confidence低; 低信頼度（マスク領域の影響）", "v22がv3よりCSVから遠ざかる（悪化検知）"],
+      "degradation_info": {
+        "v3_distance_to_csv": 2,
+        "v22_distance_to_csv": 9,
+        "degraded": true
+      }
+    }
+  },
+  {
+    "page": "P18",
+    "store_name": "難波",
+    "ai_tally_v22": {
+      "v3_value": 1,
+      "v22_value": 1,
+      "csv_value": 1,
+      "confidence": "medium",
+      "auto_confirm_candidate": true,
+      "review_required": false,
+      "target_cell_found": true,
+      "visible_mark_type": "tally",
+      "badges": ["auto_confirm"],
+      "message": "PDF AI合計とSalesforce CSVが一致しています。確認不要候補です。",
+      "display_priority": 4,
+      "suggested_action": "skip",
+      "review_reason": null
+    }
+  },
+  {
+    "page": "P20",
+    "store_name": "梅田",
+    "ai_tally_v22": {
+      "v3_value": 6,
+      "v22_value": 4,
+      "csv_value": 5,
+      "confidence": "medium",
+      "auto_confirm_candidate": false,
+      "review_required": true,
+      "target_cell_found": true,
+      "visible_mark_type": "tally",
+      "badges": ["review"],
+      "message": "PDF AI合計とSalesforce CSVに差分があります。確認してください。差分：+1。内訳の不完全性が疑われます。",
+      "display_priority": 2,
+      "suggested_action": "confirm",
+      "review_reason": ["v22値とCSVが不一致（+1）"]
+    }
+  },
+  {
+    "page": "P30",
+    "store_name": "天王寺",
+    "ai_tally_v22": {
+      "v3_value": 2,
+      "v22_value": 1,
+      "csv_value": 1,
+      "confidence": "medium",
+      "auto_confirm_candidate": true,
+      "review_required": false,
+      "target_cell_found": true,
+      "visible_mark_type": "tally",
+      "badges": ["auto_confirm", "ocr_correction"],
+      "message": "PDF AI合計とCSVが一致しています。旧読取値2から1へ補正され、CSVと一致しています。V2.2による読取精度向上の例です。",
+      "display_priority": 3,
+      "suggested_action": "skip_with_sample_confirmation",
+      "review_reason": null,
+      "ocr_correction_info": {
+        "old_value": 2,
+        "new_value": 1,
+        "matches_csv": true,
+        "improvement": "誤読を1画分修正"
+      }
+    }
+  }
+]

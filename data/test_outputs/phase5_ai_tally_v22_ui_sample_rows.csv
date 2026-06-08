@@ -1,0 +1,8 @@
+page,store_name,v3_ai_value,v22_estimated_value,csv_ai_value,confidence,auto_confirm_candidate,review_required,classification,ui_badge,ui_message,review_reason,display_priority,suggested_action
+P1,小倉,5,5,5,medium,true,false,auto_confirm,✅ 自動確定候補,PDF AI合計とSalesforce CSVが一致しています。確認不要候補です。,なし,4,skip
+P3,高石,3,3,1,medium,false,true,review,⚠️ 要確認,PDF AI合計とSalesforce CSVに差分があります。確認してください。,v22値とCSVが不一致,2,confirm
+P14,小倉町,34,3,3,medium,true,false,ocr_correction,✅ 自動確定候補 / 🔄 OCR補正候補,PDF AI合計とCSVが一致しています。旧読取値34はOCR誤読の可能性があります。V2.2により補正されました。,v3大誤読を修正,3,skip_with_sample_confirmation
+P16,神戸北,9,2,11,low,false,true,low_confidence,🔶 低信頼度 / ⚠️ 要確認,AIの確信度が低いため確認が必要です。v22がv3よりCSVから遠ざかっています。,confidence低; 悪化検知,1,force_confirm
+P18,難波,1,1,1,medium,true,false,auto_confirm,✅ 自動確定候補,PDF AI合計とSalesforce CSVが一致しています。確認不要候補です。,なし,4,skip
+P20,梅田,4,4,5,medium,false,true,review,⚠️ 要確認,PDF AI合計とSalesforce CSVに差分があります。確認してください。,v22値とCSVが不一致（+1差分）,2,confirm
+P30,天王寺,2,1,1,medium,true,false,ocr_correction,✅ 自動確定候補 / 🔄 OCR補正候補,PDF AI合計とCSVが一致しています。旧読取値2から1へ補正され、CSVと一致しています。,v3誤読を修正,3,skip_with_sample_confirmation
