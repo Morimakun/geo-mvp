@@ -1,0 +1,11 @@
+page_id,page_num,store_name,v22_value,csv_value,v3_value,confidence,target_cell_found,visible_mark_type,auto_confirm_v22,review_required_v22,classification,review_reasons,display_message,auto_confirm_original,review_required_original,classification_match
+P14,14,イオンモール神戸北,3.0,3.0,34.0,medium,True,tally,True,False,ocr_correction,,"🔄 OCR補正候補
+旧読取値（v3）：34
+新読取値（v22）：3
+Salesforce AI値：3
+→ 読取の改善が検出されました。正の字読取が補正された可能性があります。",True,True,False
+P30,30,JR神戸北,1.0,1.0,2.0,medium,True,tally,True,False,ocr_correction,,"🔄 OCR補正候補
+旧読取値（v3）：2
+新読取値（v22）：1
+Salesforce AI値：1
+→ 読取の改善が検出されました。正の字読取が補正された可能性があります。",False,False,False

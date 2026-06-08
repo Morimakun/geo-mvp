@@ -1,0 +1,151 @@
+page_id,page_num,store_name,v22_value,csv_value,v3_value,confidence,target_cell_found,visible_mark_type,auto_confirm_v22,review_required_v22,classification,review_reasons,display_message,auto_confirm_original,review_required_original,classification_match
+P1,1,小倉,5.0,5.0,5.0,medium,True,tally,True,False,auto_confirm,,"✅ 自動確定候補
+PDF AI合計：5
+Salesforce AI値：5
+→ 完全に一致しています。確認をスキップ可能です。",True,False,True
+P2,2,イオンモール大日,0.0,2.0,0.0,medium,True,blank,False,True,review,v22値 0 != CSV値 2; blank判定だがCSV値=2,"⚠️ 要確認
+PDF AI合計：0
+Salesforce AI値：2
+理由：
+  • v22値 0 != CSV値 2
+  • blank判定だがCSV値=2
+→ 確認して値を確定してください。",False,True,True
+P3,3,高石,3.0,1.0,3.0,medium,True,tally,False,True,review,v22値 3 != CSV値 1,"⚠️ 要確認
+PDF AI合計：3
+Salesforce AI値：1
+理由：
+  • v22値 3 != CSV値 1
+→ 確認して値を確定してください。",False,True,True
+P4,4,ニトリモール枚方,,,,medium,True,blank,False,True,review,estimated_value == null,"⚠️ 要確認
+PDF AI合計：None
+Salesforce AI値：None
+理由：
+  • estimated_value == null
+→ 確認して値を確定してください。",False,True,True
+P5,5,イオンモール鶴見緑地,2.0,2.0,2.0,medium,True,tally,True,False,auto_confirm,,"✅ 自動確定候補
+PDF AI合計：2
+Salesforce AI値：2
+→ 完全に一致しています。確認をスキップ可能です。",True,False,True
+P6,6,イオンモール鶴見緑地,3.0,2.0,3.0,medium,True,tally,False,True,review,v22値 3 != CSV値 2,"⚠️ 要確認
+PDF AI合計：3
+Salesforce AI値：2
+理由：
+  • v22値 3 != CSV値 2
+→ 確認して値を確定してください。",False,True,True
+P7,7,イオンモール堺北花田,3.0,3.0,3.0,medium,True,tally,True,False,auto_confirm,,"✅ 自動確定候補
+PDF AI合計：3
+Salesforce AI値：3
+→ 完全に一致しています。確認をスキップ可能です。",True,False,True
+P8,8,JR神戸北,1.0,1.0,1.0,medium,True,tally,True,False,auto_confirm,,"✅ 自動確定候補
+PDF AI合計：1
+Salesforce AI値：1
+→ 完全に一致しています。確認をスキップ可能です。",True,False,True
+P9,9,イオンモール神戸北,2.0,2.0,2.0,medium,True,tally,True,False,auto_confirm,,"✅ 自動確定候補
+PDF AI合計：2
+Salesforce AI値：2
+→ 完全に一致しています。確認をスキップ可能です。",True,False,True
+P10,10,イオンモール大日,0.0,0.0,0.0,medium,True,blank,True,False,auto_confirm,,"✅ 自動確定候補
+PDF AI合計：0
+Salesforce AI値：0
+→ 完全に一致しています。確認をスキップ可能です。",True,False,True
+P11,11,イオンモール大日,0.0,2.0,0.0,medium,True,blank,False,True,review,v22値 0 != CSV値 2; blank判定だがCSV値=2,"⚠️ 要確認
+PDF AI合計：0
+Salesforce AI値：2
+理由：
+  • v22値 0 != CSV値 2
+  • blank判定だがCSV値=2
+→ 確認して値を確定してください。",False,True,True
+P12,12,広畑,1.0,2.0,0.0,medium,True,tally,False,True,review,v22値 1 != CSV値 2,"⚠️ 要確認
+PDF AI合計：1
+Salesforce AI値：2
+理由：
+  • v22値 1 != CSV値 2
+→ 確認して値を確定してください。",False,True,True
+P13,13,豊中,2.0,2.0,2.0,medium,True,tally,True,False,auto_confirm,,"✅ 自動確定候補
+PDF AI合計：2
+Salesforce AI値：2
+→ 完全に一致しています。確認をスキップ可能です。",True,False,True
+P14,14,イオンモール神戸北,3.0,3.0,34.0,medium,True,tally,True,False,ocr_correction,,"🔄 OCR補正候補
+旧読取値（v3）：34
+新読取値（v22）：3
+Salesforce AI値：3
+→ 読取の改善が検出されました。正の字読取が補正された可能性があります。",True,True,False
+P15,15,イオンモール大日,2.0,2.0,4.0,low,True,tally,False,True,low_confidence,confidence == low,"🔶 低信頼度（強制確認）
+PDF AI合計：2
+Salesforce AI値：2
+信頼度：low
+→ AIの確信度が低いため、必ず確認してください。",False,True,True
+P16,16,熊取,2.0,11.0,9.0,low,True,tally,False,True,low_confidence,confidence == low; v22値 2 != CSV値 11; v3との大差: |2-9|=7; 悪化検知: v22がv3よりCSVから遠い (v22距離=9 > v3距離=2),"🔶 低信頼度（強制確認）
+PDF AI合計：2
+Salesforce AI値：11
+信頼度：low
+→ AIの確信度が低いため、必ず確認してください。",False,True,True
+P17,17,新小松島,2.0,3.0,2.0,medium,True,tally,False,True,review,v22値 2 != CSV値 3,"⚠️ 要確認
+PDF AI合計：2
+Salesforce AI値：3
+理由：
+  • v22値 2 != CSV値 3
+→ 確認して値を確定してください。",False,True,True
+P18,18,石垣,1.0,1.0,1.0,medium,True,tally,True,False,auto_confirm,,"✅ 自動確定候補
+PDF AI合計：1
+Salesforce AI値：1
+→ 完全に一致しています。確認をスキップ可能です。",True,False,True
+P19,19,鶴見,2.0,2.0,2.0,medium,True,tally,True,False,auto_confirm,,"✅ 自動確定候補
+PDF AI合計：2
+Salesforce AI値：2
+→ 完全に一致しています。確認をスキップ可能です。",True,False,True
+P20,20,魚住,4.0,5.0,6.0,medium,True,tally,False,True,review,v22値 4 != CSV値 5,"⚠️ 要確認
+PDF AI合計：4
+Salesforce AI値：5
+理由：
+  • v22値 4 != CSV値 5
+→ 確認して値を確定してください。",False,True,True
+P21,21,松浦,3.0,3.0,3.0,medium,True,tally,True,False,auto_confirm,,"✅ 自動確定候補
+PDF AI合計：3
+Salesforce AI値：3
+→ 完全に一致しています。確認をスキップ可能です。",True,False,True
+P22,22,青山,2.0,2.0,2.0,medium,True,tally,True,False,auto_confirm,,"✅ 自動確定候補
+PDF AI合計：2
+Salesforce AI値：2
+→ 完全に一致しています。確認をスキップ可能です。",True,False,True
+P23,23,富田林,1.0,1.0,1.0,medium,True,tally,True,False,auto_confirm,,"✅ 自動確定候補
+PDF AI合計：1
+Salesforce AI値：1
+→ 完全に一致しています。確認をスキップ可能です。",True,False,True
+P24,24,六甲道,2.0,1.0,7.0,medium,True,tally,False,True,review,v22値 2 != CSV値 1; v3との大差: |2-7|=5,"⚠️ 要確認
+PDF AI合計：2
+Salesforce AI値：1
+理由：
+  • v22値 2 != CSV値 1
+  • v3との大差: |2-7|=5
+→ 確認して値を確定してください。",False,True,True
+P25,25,松原,3.0,3.0,3.0,medium,True,tally,True,False,auto_confirm,,"✅ 自動確定候補
+PDF AI合計：3
+Salesforce AI値：3
+→ 完全に一致しています。確認をスキップ可能です。",True,False,True
+P26,26,八尾,2.0,2.0,2.0,medium,True,tally,True,False,auto_confirm,,"✅ 自動確定候補
+PDF AI合計：2
+Salesforce AI値：2
+→ 完全に一致しています。確認をスキップ可能です。",True,False,True
+P27,27,柏原,0.0,0.0,0.0,medium,True,blank,True,False,auto_confirm,,"✅ 自動確定候補
+PDF AI合計：0
+Salesforce AI値：0
+→ 完全に一致しています。確認をスキップ可能です。",True,False,True
+P28,28,宝殿,0.0,2.0,0.0,medium,True,blank,False,True,review,v22値 0 != CSV値 2; blank判定だがCSV値=2,"⚠️ 要確認
+PDF AI合計：0
+Salesforce AI値：2
+理由：
+  • v22値 0 != CSV値 2
+  • blank判定だがCSV値=2
+→ 確認して値を確定してください。",False,True,True
+P29,29,松井山手,2.0,3.0,2.0,medium,True,tally,False,True,review,v22値 2 != CSV値 3,"⚠️ 要確認
+PDF AI合計：2
+Salesforce AI値：3
+理由：
+  • v22値 2 != CSV値 3
+→ 確認して値を確定してください。",False,True,True
+P30,30,JR神戸北,1.0,1.0,2.0,medium,True,tally,True,False,ocr_correction,,"🔄 OCR補正候補
+旧読取値（v3）：2
+新読取値（v22）：1
+Salesforce AI値：1
+→ 読取の改善が検出されました。正の字読取が補正された可能性があります。",False,False,False
