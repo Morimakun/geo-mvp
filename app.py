@@ -1999,12 +1999,154 @@ def run_phase1_reconciliation():
         st.warning("⚠️ 照合結果がありません")
 
 
+# ===== [4] AI合計欄V2.2参考判定 =====
+st.markdown("### [4] AI合計欄 V2.2 参考判定（補助機能）")
+
+# V2.2並列分類CSVを読み込む
+v22_csv_path = Path(__file__).parent / "data" / "test_outputs" / "phase5_ai_tally_v22_parallel_classification.csv"
+
+if v22_csv_path.exists():
+    try:
+        df_v22 = pd.read_csv(v22_csv_path)
+
+        # 説明文
+        st.info(
+            "**この判定はAI合計欄に対する補助判定です。** 既存の照合結果を置き換えるものではありません。"
+            "自動確定候補と要確認を分け、確認作業を支援します。\n"
+            "初期導入では、自動確定候補も含めサンプル確認を推奨します。"
+        )
+
+        # KPIサマリー
+        st.markdown("#### KPI サマリー")
+
+        total_pages = len(df_v22)
+        auto_confirm_count = int(df_v22['auto_confirm_v22'].sum())
+        review_required_count = int(df_v22['review_required_v22'].sum())
+        low_confidence_count = int((df_v22['confidence'] == 'low').sum())
+        ocr_correction_count = int((df_v22['classification'] == 'ocr_correction').sum())
+        dual_classification = int(((df_v22['auto_confirm_v22']) & (df_v22['review_required_v22'])).sum())
+
+        col1, col2, col3, col4, col5 = st.columns(5, gap="small")
+
+        with col1:
+            st.metric("対象ページ数", total_pages)
+
+        with col2:
+            st.metric("✅ 自動確定候補", auto_confirm_count)
+
+        with col3:
+            st.metric("⚠️ 要確認", review_required_count)
+
+        with col4:
+            st.metric("🔶 低信頼度", low_confidence_count)
+
+        with col5:
+            st.metric("🔄 OCR補正", ocr_correction_count)
+
+        # 排他チェック
+        st.markdown(f"**排他チェック：** {'✅ OK（重複なし）' if dual_classification == 0 else '⚠️ 重複あり'}")
+
+        # フィルター
+        st.markdown("#### フィルター")
+        filter_option = st.radio(
+            "表示する分類：",
+            options=("すべて", "自動確定候補のみ", "要確認のみ", "低信頼度のみ", "OCR補正候補のみ"),
+            horizontal=True,
+            key="v22_filter"
+        )
+
+        # フィルター適用
+        if filter_option == "自動確定候補のみ":
+            df_filtered = df_v22[df_v22['auto_confirm_v22'] == True].copy()
+        elif filter_option == "要確認のみ":
+            df_filtered = df_v22[df_v22['review_required_v22'] == True].copy()
+        elif filter_option == "低信頼度のみ":
+            df_filtered = df_v22[df_v22['confidence'] == 'low'].copy()
+        elif filter_option == "OCR補正候補のみ":
+            df_filtered = df_v22[df_v22['classification'] == 'ocr_correction'].copy()
+        else:
+            df_filtered = df_v22.copy()
+
+        # 特別ページの説明
+        if len(df_filtered) > 0:
+            st.markdown("#### 注目ページ")
+
+            special_pages = {
+                "P14": "旧読取34 → 新読取3（CSV=3）｜OCR補正候補 + 自動確定候補",
+                "P16": "v3=9、v22=2、CSV=11、confidence=low｜低信頼度 + 要確認（強制確認）",
+                "P30": "旧読取2 → 新読取1（CSV=1）｜OCR補正候補 + 自動確定候補"
+            }
+
+            for page_id, description in special_pages.items():
+                if page_id in df_filtered['page_id'].values:
+                    st.write(f"**{page_id}：** {description}")
+
+        # テーブル表示
+        st.markdown("#### 詳細テーブル")
+
+        # 表示列を選定
+        display_cols = [
+            'page_id', 'store_name', 'v3_value', 'v22_value', 'csv_value',
+            'confidence', 'classification', 'auto_confirm_v22', 'review_required_v22',
+            'review_reasons'
+        ]
+
+        df_display = df_filtered[display_cols].copy()
+
+        # 列名を日本語に変更
+        df_display.columns = [
+            'ページ', '店舗名', 'v3値', 'v22値', 'CSV値',
+            '信頼度', '分類', '自動確定', '要確認', '確認理由'
+        ]
+
+        # auto_confirm / review_required を ✅/⚠️ に
+        df_display['自動確定'] = df_display['自動確定'].apply(lambda x: '✅' if x else '❌')
+        df_display['要確認'] = df_display['要確認'].apply(lambda x: '⚠️' if x else '❌')
+
+        st.dataframe(df_display, use_container_width=True, hide_index=True)
+
+        # CSVダウンロード
+        st.markdown("#### ダウンロード")
+
+        # V2.2参考判定テーブルをCSV形式で出力
+        csv_buffer = io.StringIO()
+        df_v22.to_csv(csv_buffer, index=False, encoding='utf-8-sig')
+        csv_bytes = csv_buffer.getvalue().encode('utf-8-sig')
+
+        st.download_button(
+            label="📥 V2.2参考判定 CSV をダウンロード",
+            data=csv_bytes,
+            file_name="ai_tally_v22_review_flags.csv",
+            mime="text/csv",
+            use_container_width=True,
+            key="download_v22_csv"
+        )
+
+        # 注意書き
+        st.warning(
+            "⚠️ **V2.2は参考判定です。**\n"
+            "• 初期導入では、自動確定候補も必要に応じてサンプル確認してください。\n"
+            "• CSV不一致、低信頼度、悪化検知は必ず人間確認してください。\n"
+            "• 最終決定責任は確認担当者にあります。"
+        )
+
+    except Exception as e:
+        st.error(f"❌ V2.2参考判定の読み込みに失敗しました：{e}")
+else:
+    st.warning(
+        "⚠️ **AI合計欄V2.2参考表示データが見つかりません。**\n"
+        "先に並列分類を実行してください。\n"
+        "`python scripts/apply_ai_tally_v22_classification_to_all30.py`"
+    )
+
+
 # ===== フッター =====
 st.markdown("""
 <div style="background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; padding: 0.75rem; margin-top: 2rem;">
 <small>
 ⚠️ <b>この画面は試作版です。</b><br>
-実際の読み取り精度は、実FAX帳票PDFと実Salesforce CSVでの検証後に調整します。
+実際の読み取り精度は、実FAX帳票PDFと実Salesforce CSVでの検証後に調整します。<br>
+AI合計欄V2.2判定は条件付き採用候補です。確認支援ツールとしてご利用ください。
 </small>
 </div>
 """, unsafe_allow_html=True)
