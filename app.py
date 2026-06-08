@@ -31,6 +31,62 @@ from reconciliation_phase1 import create_phase1_engine
 # 環境変数読込
 load_dotenv()
 
+# ===== ヘルパー関数：確認ログ関連 =====
+
+import uuid
+import random
+import string
+
+def generate_session_id():
+    """セッションIDを生成"""
+    now = datetime.now()
+    date_time = now.strftime("%Y%m%d_%H%M%S")
+    random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=4))
+    return f"{date_time}_{random_suffix}"
+
+def build_confirmation_log_row(
+    page, v3_value, v22_value, csv_value, confidence, classification,
+    auto_confirm, review_required, review_reason,
+    user_action, user_decision, manual_correction_value=None,
+    decision_reason="", before_status="", after_status="",
+    operator_name="", store_name="", store_code=""
+):
+    """確認ログ行を構築（27項目）"""
+
+    log_id = f"LOG_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{page}_{user_action}"
+    timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S+09:00")
+    session_id = st.session_state.get("confirmation_session_id", "")
+
+    return {
+        "log_id": log_id,
+        "timestamp": timestamp,
+        "user_id": "local_user",
+        "operator_name": operator_name,
+        "session_id": session_id,
+        "page": page,
+        "store_name": store_name,
+        "store_code": store_code,
+        "field_code": "AI",
+        "field_name": "AI合計",
+        "v3_value": str(v3_value) if v3_value is not None else "",
+        "v22_value": str(v22_value) if v22_value is not None else "",
+        "csv_value": str(csv_value) if csv_value is not None else "",
+        "final_value": str(manual_correction_value) if manual_correction_value is not None else "",
+        "confidence": confidence if confidence else "",
+        "classification": classification if classification else "",
+        "auto_confirm_candidate": str(auto_confirm).lower() if auto_confirm is not None else "",
+        "review_required": str(review_required).lower() if review_required is not None else "",
+        "review_reason": review_reason if review_reason else "",
+        "user_action": user_action,
+        "user_decision": user_decision,
+        "manual_correction_value": str(manual_correction_value) if manual_correction_value is not None else "",
+        "decision_reason": decision_reason,
+        "before_status": before_status,
+        "after_status": after_status,
+        "raw_response_id": "",
+        "app_version": "Phase5_Step6_prototype"
+    }
+
 # ページ設定
 st.set_page_config(
     page_title="FAX帳票・Salesforce照合システム",
@@ -2129,6 +2185,342 @@ if v22_csv_path.exists():
             "• CSV不一致、低信頼度、悪化検知は必ず人間確認してください。\n"
             "• 最終決定責任は確認担当者にあります。"
         )
+
+        # ===== 確認ログ操作 =====
+        st.divider()
+        st.markdown("#### 確認ログ操作")
+
+        # セッションID初期化
+        if "confirmation_session_id" not in st.session_state:
+            st.session_state.confirmation_session_id = generate_session_id()
+
+        if "confirmation_logs" not in st.session_state:
+            st.session_state.confirmation_logs = []
+
+        # 確認者名入力
+        operator_name = st.text_input(
+            "確認者名",
+            value="スタッフA",
+            max_chars=50,
+            key="confirmation_operator_name"
+        )
+
+        # 対象ページ選択
+        page_options = []
+        for _, row in df_v22.iterrows():
+            page_id = row['page_id']
+            classification = row.get('classification', '')
+            v3_val = row.get('v3_value', '')
+            v22_val = row.get('v22_value', '')
+            csv_val = row.get('csv_value', '')
+            label = f"{page_id} | {classification} | v3={v3_val} / v22={v22_val} / csv={csv_val}"
+            page_options.append((page_id, label))
+
+        if len(page_options) > 0:
+            selected_page_label = st.selectbox(
+                "対象ページを選択",
+                options=[label for _, label in page_options],
+                key="confirmation_page_select"
+            )
+
+            # 選択ページの page_id を取得
+            selected_page_id = next(page for page, label in page_options if label == selected_page_label)
+
+            # 選択ページのデータを取得
+            selected_row = df_v22[df_v22['page_id'] == selected_page_id].iloc[0]
+
+            # 詳細表示
+            st.markdown("**選択ページの詳細**")
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                st.write(f"**ページ:** {selected_row['page_id']}")
+                st.write(f"**店舗:** {selected_row.get('store_name', '-')}")
+                st.write(f"**分類:** {selected_row.get('classification', '-')}")
+
+            with col2:
+                st.write(f"**v3値:** {selected_row.get('v3_value', '-')}")
+                st.write(f"**v22値:** {selected_row.get('v22_value', '-')}")
+                st.write(f"**CSV値:** {selected_row.get('csv_value', '-')}")
+
+            with col3:
+                st.write(f"**信頼度:** {selected_row.get('confidence', '-')}")
+                st.write(f"**自動確定:** {'✅' if selected_row.get('auto_confirm_v22') else '❌'}")
+                st.write(f"**要確認:** {'⚠️' if selected_row.get('review_required_v22') else '❌'}")
+
+            # before_status を決定
+            before_status = "unreviewed"
+            if selected_row.get('auto_confirm_v22'):
+                before_status = "auto_confirm_candidate"
+            elif selected_row.get('review_required_v22'):
+                before_status = "review_required"
+
+            # 操作ボタン
+            st.markdown("**操作を選択してください**")
+            operation = st.radio(
+                "対応内容",
+                options=[
+                    "確認済み（V2.2を採用）",
+                    "V2.2を採用",
+                    "CSV値を採用",
+                    "PDF値を採用",
+                    "v3値を採用",
+                    "手動修正",
+                    "保留",
+                    "スキップ"
+                ],
+                horizontal=True,
+                key="confirmation_operation"
+            )
+
+            # 手動修正 / PDF値 / 保留 時の入力欄
+            manual_correction_value = None
+            decision_reason = ""
+
+            if operation in ["手動修正", "PDF値を採用", "保留"]:
+                col_input1, col_input2 = st.columns(2)
+
+                with col_input1:
+                    if operation == "手動修正":
+                        manual_correction_value = st.text_input(
+                            "修正後の値",
+                            value="",
+                            key="confirmation_manual_value"
+                        )
+
+                with col_input2:
+                    decision_reason = st.text_area(
+                        "判定理由 / メモ",
+                        value="",
+                        height=60,
+                        key="confirmation_reason"
+                    )
+
+            # 操作実行ボタン
+            col_btn1, col_btn2 = st.columns(2)
+
+            with col_btn1:
+                if st.button("操作を記録", key="confirmation_confirm_btn"):
+                    # ログ行を構築
+                    if operation == "確認済み（V2.2を採用）":
+                        log_row = build_confirmation_log_row(
+                            page=selected_page_id,
+                            v3_value=selected_row.get('v3_value'),
+                            v22_value=selected_row.get('v22_value'),
+                            csv_value=selected_row.get('csv_value'),
+                            confidence=selected_row.get('confidence'),
+                            classification=selected_row.get('classification'),
+                            auto_confirm=selected_row.get('auto_confirm_v22'),
+                            review_required=selected_row.get('review_required_v22'),
+                            review_reason=selected_row.get('review_reasons', ''),
+                            user_action="confirm",
+                            user_decision="accept_v22",
+                            manual_correction_value=selected_row.get('v22_value'),
+                            decision_reason=decision_reason,
+                            before_status=before_status,
+                            after_status="confirmed",
+                            operator_name=operator_name,
+                            store_name=selected_row.get('store_name', ''),
+                            store_code=selected_row.get('store_code', '')
+                        )
+
+                    elif operation == "V2.2を採用":
+                        log_row = build_confirmation_log_row(
+                            page=selected_page_id,
+                            v3_value=selected_row.get('v3_value'),
+                            v22_value=selected_row.get('v22_value'),
+                            csv_value=selected_row.get('csv_value'),
+                            confidence=selected_row.get('confidence'),
+                            classification=selected_row.get('classification'),
+                            auto_confirm=selected_row.get('auto_confirm_v22'),
+                            review_required=selected_row.get('review_required_v22'),
+                            review_reason=selected_row.get('review_reasons', ''),
+                            user_action="select_v22",
+                            user_decision="accept_v22",
+                            manual_correction_value=selected_row.get('v22_value'),
+                            decision_reason=decision_reason,
+                            before_status=before_status,
+                            after_status="confirmed",
+                            operator_name=operator_name,
+                            store_name=selected_row.get('store_name', ''),
+                            store_code=selected_row.get('store_code', '')
+                        )
+
+                    elif operation == "CSV値を採用":
+                        log_row = build_confirmation_log_row(
+                            page=selected_page_id,
+                            v3_value=selected_row.get('v3_value'),
+                            v22_value=selected_row.get('v22_value'),
+                            csv_value=selected_row.get('csv_value'),
+                            confidence=selected_row.get('confidence'),
+                            classification=selected_row.get('classification'),
+                            auto_confirm=selected_row.get('auto_confirm_v22'),
+                            review_required=selected_row.get('review_required_v22'),
+                            review_reason=selected_row.get('review_reasons', ''),
+                            user_action="select_csv",
+                            user_decision="accept_csv",
+                            manual_correction_value=selected_row.get('csv_value'),
+                            decision_reason=decision_reason,
+                            before_status=before_status,
+                            after_status="confirmed",
+                            operator_name=operator_name,
+                            store_name=selected_row.get('store_name', ''),
+                            store_code=selected_row.get('store_code', '')
+                        )
+
+                    elif operation == "PDF値を採用":
+                        log_row = build_confirmation_log_row(
+                            page=selected_page_id,
+                            v3_value=selected_row.get('v3_value'),
+                            v22_value=selected_row.get('v22_value'),
+                            csv_value=selected_row.get('csv_value'),
+                            confidence=selected_row.get('confidence'),
+                            classification=selected_row.get('classification'),
+                            auto_confirm=selected_row.get('auto_confirm_v22'),
+                            review_required=selected_row.get('review_required_v22'),
+                            review_reason=selected_row.get('review_reasons', ''),
+                            user_action="select_pdf",
+                            user_decision="accept_pdf",
+                            manual_correction_value=manual_correction_value,
+                            decision_reason=decision_reason,
+                            before_status=before_status,
+                            after_status="confirmed",
+                            operator_name=operator_name,
+                            store_name=selected_row.get('store_name', ''),
+                            store_code=selected_row.get('store_code', '')
+                        )
+
+                    elif operation == "v3値を採用":
+                        log_row = build_confirmation_log_row(
+                            page=selected_page_id,
+                            v3_value=selected_row.get('v3_value'),
+                            v22_value=selected_row.get('v22_value'),
+                            csv_value=selected_row.get('csv_value'),
+                            confidence=selected_row.get('confidence'),
+                            classification=selected_row.get('classification'),
+                            auto_confirm=selected_row.get('auto_confirm_v22'),
+                            review_required=selected_row.get('review_required_v22'),
+                            review_reason=selected_row.get('review_reasons', ''),
+                            user_action="select_v3",
+                            user_decision="accept_v3",
+                            manual_correction_value=selected_row.get('v3_value'),
+                            decision_reason=decision_reason,
+                            before_status=before_status,
+                            after_status="confirmed",
+                            operator_name=operator_name,
+                            store_name=selected_row.get('store_name', ''),
+                            store_code=selected_row.get('store_code', '')
+                        )
+
+                    elif operation == "手動修正":
+                        log_row = build_confirmation_log_row(
+                            page=selected_page_id,
+                            v3_value=selected_row.get('v3_value'),
+                            v22_value=selected_row.get('v22_value'),
+                            csv_value=selected_row.get('csv_value'),
+                            confidence=selected_row.get('confidence'),
+                            classification=selected_row.get('classification'),
+                            auto_confirm=selected_row.get('auto_confirm_v22'),
+                            review_required=selected_row.get('review_required_v22'),
+                            review_reason=selected_row.get('review_reasons', ''),
+                            user_action="correct",
+                            user_decision="manual_correct",
+                            manual_correction_value=manual_correction_value,
+                            decision_reason=decision_reason,
+                            before_status=before_status,
+                            after_status="corrected",
+                            operator_name=operator_name,
+                            store_name=selected_row.get('store_name', ''),
+                            store_code=selected_row.get('store_code', '')
+                        )
+
+                    elif operation == "保留":
+                        log_row = build_confirmation_log_row(
+                            page=selected_page_id,
+                            v3_value=selected_row.get('v3_value'),
+                            v22_value=selected_row.get('v22_value'),
+                            csv_value=selected_row.get('csv_value'),
+                            confidence=selected_row.get('confidence'),
+                            classification=selected_row.get('classification'),
+                            auto_confirm=selected_row.get('auto_confirm_v22'),
+                            review_required=selected_row.get('review_required_v22'),
+                            review_reason=selected_row.get('review_reasons', ''),
+                            user_action="defer",
+                            user_decision="needs_follow_up",
+                            manual_correction_value=None,
+                            decision_reason=decision_reason,
+                            before_status=before_status,
+                            after_status="deferred",
+                            operator_name=operator_name,
+                            store_name=selected_row.get('store_name', ''),
+                            store_code=selected_row.get('store_code', '')
+                        )
+
+                    elif operation == "スキップ":
+                        log_row = build_confirmation_log_row(
+                            page=selected_page_id,
+                            v3_value=selected_row.get('v3_value'),
+                            v22_value=selected_row.get('v22_value'),
+                            csv_value=selected_row.get('csv_value'),
+                            confidence=selected_row.get('confidence'),
+                            classification=selected_row.get('classification'),
+                            auto_confirm=selected_row.get('auto_confirm_v22'),
+                            review_required=selected_row.get('review_required_v22'),
+                            review_reason=selected_row.get('review_reasons', ''),
+                            user_action="skip",
+                            user_decision="skip",
+                            manual_correction_value=None,
+                            decision_reason=decision_reason,
+                            before_status=before_status,
+                            after_status="skipped",
+                            operator_name=operator_name,
+                            store_name=selected_row.get('store_name', ''),
+                            store_code=selected_row.get('store_code', '')
+                        )
+
+                    # セッションログに追加
+                    st.session_state.confirmation_logs.append(log_row)
+
+                    st.success(f"✅ ログを記録しました ({len(st.session_state.confirmation_logs)}件)")
+
+        # ログ一覧表示
+        if len(st.session_state.confirmation_logs) > 0:
+            st.markdown("#### 確認ログ一覧")
+
+            # ログをDataFrameに変換
+            df_logs = pd.DataFrame(st.session_state.confirmation_logs)
+
+            # 表示列を選定
+            display_log_cols = [
+                'timestamp', 'operator_name', 'page', 'user_action', 'user_decision',
+                'final_value', 'before_status', 'after_status', 'decision_reason'
+            ]
+
+            df_logs_display = df_logs[display_log_cols].copy()
+
+            # 列名を日本語に
+            df_logs_display.columns = [
+                '記録時刻', '確認者', 'ページ', '操作', '判定',
+                '最終値', '操作前', '操作後', '理由'
+            ]
+
+            st.dataframe(df_logs_display, use_container_width=True, hide_index=True)
+
+            # ログCSVダウンロード
+            st.markdown("#### ログダウンロード")
+
+            csv_buffer = io.StringIO()
+            df_logs.to_csv(csv_buffer, index=False, encoding='utf-8-sig')
+            csv_bytes = csv_buffer.getvalue().encode('utf-8-sig')
+
+            st.download_button(
+                label="📥 確認ログ CSV をダウンロード",
+                data=csv_bytes,
+                file_name=f"ai_tally_v22_confirmation_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                mime="text/csv",
+                use_container_width=True,
+                key="download_confirmation_logs"
+            )
 
     except Exception as e:
         st.error(f"❌ V2.2参考判定の読み込みに失敗しました：{e}")
