@@ -2296,23 +2296,6 @@ if v22_csv_path.exists():
         )
 
         # 対象ページ選択
-        st.info("対象ページは下のプルダウンから選択できます。P14/P16/P30はデモ用の代表ページです。")
-
-        # デモ用クイック選択ボタン（整数ページ番号を保存）
-        col_demo1, col_demo2, col_demo3 = st.columns(3)
-        with col_demo1:
-            if st.button("P14を選択", use_container_width=True, key="demo_select_p14"):
-                st.session_state.confirmation_selected_page = 14
-                st.rerun()
-        with col_demo2:
-            if st.button("P16を選択", use_container_width=True, key="demo_select_p16"):
-                st.session_state.confirmation_selected_page = 16
-                st.rerun()
-        with col_demo3:
-            if st.button("P30を選択", use_container_width=True, key="demo_select_p30"):
-                st.session_state.confirmation_selected_page = 30
-                st.rerun()
-
         # ページ番号（整数）でselectboxのオプションを生成
         page_numbers = sorted(df_v22["page_number_norm"].dropna().unique())
 
@@ -2320,6 +2303,39 @@ if v22_csv_path.exists():
             # セッション状態の初期値を設定
             if "confirmation_selected_page" not in st.session_state:
                 st.session_state.confirmation_selected_page = int(page_numbers[0])
+
+            # デモ用クイック選択ボタンの有効/無効を判定
+            demo_pages = {14, 16, 30}
+            available_demo_pages = demo_pages & set(int(p) for p in page_numbers)
+
+            st.info("対象ページは下のプルダウンから選択できます。P14/P16/P30はデモ用の代表ページです。")
+
+            # デモ用クイック選択ボタン（両方の session_state を更新）
+            col_demo1, col_demo2, col_demo3 = st.columns(3)
+            with col_demo1:
+                if 14 in available_demo_pages:
+                    if st.button("P14を選択", use_container_width=True, key="demo_select_p14"):
+                        st.session_state.confirmation_selected_page = 14
+                        st.session_state.confirmation_page_select = 14
+                        st.rerun()
+                else:
+                    st.button("P14を選択", use_container_width=True, disabled=True)
+            with col_demo2:
+                if 16 in available_demo_pages:
+                    if st.button("P16を選択", use_container_width=True, key="demo_select_p16"):
+                        st.session_state.confirmation_selected_page = 16
+                        st.session_state.confirmation_page_select = 16
+                        st.rerun()
+                else:
+                    st.button("P16を選択", use_container_width=True, disabled=True)
+            with col_demo3:
+                if 30 in available_demo_pages:
+                    if st.button("P30を選択", use_container_width=True, key="demo_select_p30"):
+                        st.session_state.confirmation_selected_page = 30
+                        st.session_state.confirmation_page_select = 30
+                        st.rerun()
+                else:
+                    st.button("P30を選択", use_container_width=True, disabled=True)
 
             # selectboxのデフォルト値を設定
             try:
@@ -2336,8 +2352,9 @@ if v22_csv_path.exists():
                 key="confirmation_page_select"
             )
 
-            # セッション状態を更新
+            # selectboxの選択値をセッション状態に反映（両方を同期）
             st.session_state.confirmation_selected_page = selected_page_no
+            st.session_state.confirmation_page_select = selected_page_no
 
             # 選択ページのデータを取得（ページ番号で検索）
             selected_rows = df_v22[df_v22['page_number_norm'] == selected_page_no]
