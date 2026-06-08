@@ -2298,7 +2298,7 @@ if v22_csv_path.exists():
 
         # ===== 確認ログ操作 =====
         st.divider()
-        st.markdown("#### 確認ログ操作")
+        st.markdown("# 📋 確認ログ操作（ステップ別ガイド）")
 
         # セッションID初期化
         if "confirmation_session_id" not in st.session_state:
@@ -2315,7 +2315,9 @@ if v22_csv_path.exists():
             key="confirmation_operator_name"
         )
 
-        # 対象ページ選択
+        # ===== Step 1: ページ選択 =====
+        st.markdown("### 📌 Step 1：確認するページを選択")
+
         # ページ番号（整数）でselectboxのオプションを生成
         page_numbers = sorted(df_v22["page_number_norm"].dropna().unique())
 
@@ -2331,34 +2333,42 @@ if v22_csv_path.exists():
             demo_pages = {14, 16, 30}
             available_demo_pages = demo_pages & set(int(p) for p in page_numbers)
 
-            st.info("対象ページは下のプルダウンから選択できます。P14/P16/P30はデモ用の代表ページです。")
-
-            # デモ用クイック選択ボタン（両方の session_state を更新）
+            # デモ用クイック選択カード（説明付き）
+            st.write("**デモ用：代表的なページを選ぶ** （クリックするだけで選択完了）")
             col_demo1, col_demo2, col_demo3 = st.columns(3)
+
             with col_demo1:
+                st.markdown("#### 🔧 P14")
+                st.caption("OCR補正候補｜34 → 3")
                 if 14 in available_demo_pages:
                     if st.button("P14を選択", use_container_width=True, key="demo_select_p14"):
                         st.session_state.confirmation_selected_page = 14
                         st.session_state.confirmation_page_select = 14
                         st.rerun()
                 else:
-                    st.button("P14を選択", use_container_width=True, disabled=True)
+                    st.button("P14を選択", use_container_width=True, disabled=True, key="demo_select_p14_disabled")
+
             with col_demo2:
+                st.markdown("#### ⚠️ P16")
+                st.caption("要確認｜low confidence")
                 if 16 in available_demo_pages:
                     if st.button("P16を選択", use_container_width=True, key="demo_select_p16"):
                         st.session_state.confirmation_selected_page = 16
                         st.session_state.confirmation_page_select = 16
                         st.rerun()
                 else:
-                    st.button("P16を選択", use_container_width=True, disabled=True)
+                    st.button("P16を選択", use_container_width=True, disabled=True, key="demo_select_p16_disabled")
+
             with col_demo3:
+                st.markdown("#### ✏️ P30")
+                st.caption("人間修正例｜1 → 0")
                 if 30 in available_demo_pages:
                     if st.button("P30を選択", use_container_width=True, key="demo_select_p30"):
                         st.session_state.confirmation_selected_page = 30
                         st.session_state.confirmation_page_select = 30
                         st.rerun()
                 else:
-                    st.button("P30を選択", use_container_width=True, disabled=True)
+                    st.button("P30を選択", use_container_width=True, disabled=True, key="demo_select_p30_disabled")
 
             # selectboxのデフォルト値を設定
             try:
@@ -2367,6 +2377,7 @@ if v22_csv_path.exists():
                 default_index = 0
                 st.session_state.confirmation_selected_page = int(page_numbers[0])
 
+            st.write("**または、プルダウンから選択：**")
             selected_page_no = st.selectbox(
                 "対象ページを選択",
                 options=page_numbers,
@@ -2385,24 +2396,36 @@ if v22_csv_path.exists():
                 st.stop()
             selected_row = selected_rows.iloc[0]
 
-            # 詳細表示
-            st.markdown("**選択ページの詳細**")
+            # ===== Step 2: 選択ページ確認 =====
+            st.markdown("### 👁️ Step 2：選択ページの内容確認")
+
+            # 現在の確認対象を大きく表示
+            store_name = selected_row.get('store_name', '不明')
+            classification = selected_row.get('classification', '不明')
+            st.success(f"📌 **現在の確認対象：P{int(selected_page_no)}｜{store_name}｜{classification}**")
+
+            # 詳細表示（カード風）
             col1, col2, col3 = st.columns(3)
 
             with col1:
-                st.write(f"**ページ:** {selected_row['page_id']}")
-                st.write(f"**店舗:** {selected_row.get('store_name', '-')}")
-                st.write(f"**分類:** {selected_row.get('classification', '-')}")
+                col1.metric("v3値", selected_row.get('v3_value', '-'))
 
             with col2:
-                st.write(f"**v3値:** {selected_row.get('v3_value', '-')}")
-                st.write(f"**v22値:** {selected_row.get('v22_value', '-')}")
-                st.write(f"**CSV値:** {selected_row.get('csv_value', '-')}")
+                col2.metric("V2.2値", selected_row.get('v22_value', '-'))
 
             with col3:
-                st.write(f"**信頼度:** {selected_row.get('confidence', '-')}")
-                st.write(f"**自動確定:** {'✅' if selected_row.get('auto_confirm_v22') else '❌'}")
-                st.write(f"**要確認:** {'⚠️' if selected_row.get('review_required_v22') else '❌'}")
+                col3.metric("CSV値", selected_row.get('csv_value', '-'))
+
+            # 追加情報
+            col_info1, col_info2, col_info3, col_info4 = st.columns(4)
+            with col_info1:
+                st.write(f"**信頼度**\n{selected_row.get('confidence', '-')}")
+            with col_info2:
+                st.write(f"**分類**\n{selected_row.get('classification', '-')}")
+            with col_info3:
+                st.write(f"**自動確定候補**\n{'✅ はい' if selected_row.get('auto_confirm_v22') else '❌ いいえ'}")
+            with col_info4:
+                st.write(f"**要確認**\n{'⚠️ はい' if selected_row.get('review_required_v22') else '❌ いいえ'}")
 
             # before_status を決定
             before_status = "unreviewed"
@@ -2411,10 +2434,21 @@ if v22_csv_path.exists():
             elif selected_row.get('review_required_v22'):
                 before_status = "review_required"
 
-            # 操作ボタン
-            st.markdown("**操作を選択してください**")
+            # ===== Step 3: 操作選択 =====
+            st.markdown("### ✅ Step 3：確認結果を選択")
+
+            st.info(
+                "**操作の説明：**\n"
+                "• **確認済み（V2.2採用）** → V2.2値をそのまま最終値として確認済みにする\n"
+                "• **CSV値採用** → Salesforce CSV側の値を正とする\n"
+                "• **手動修正** → PDFを目視して、値を直接入力する（0も有効）\n"
+                "• **保留** → 判断できないため後で確認する\n"
+                "• **スキップ** → 今回は確認対象から外す\n\n"
+                "💡 **迷った場合は、保留または手動修正を選んでください。**"
+            )
+
             operation = st.radio(
-                "対応内容",
+                "確認内容を選択",
                 options=[
                     "確認済み（V2.2を採用）",
                     "V2.2を採用",
@@ -2434,26 +2468,42 @@ if v22_csv_path.exists():
             decision_reason = ""
 
             if operation in ["手動修正", "PDF値を採用", "保留"]:
-                col_input1, col_input2 = st.columns(2)
+                if operation == "手動修正":
+                    st.markdown("### 📝 修正内容を入力")
+                    col_input1, col_input2 = st.columns(2)
 
-                with col_input1:
-                    if operation == "手動修正":
+                    with col_input1:
                         manual_correction_value = st.text_input(
-                            "修正後の値",
+                            "修正後の値（0も有効です）",
                             value="",
+                            help="0を入力した場合も、空欄ではなく0として記録されます。",
                             key="confirmation_manual_value"
                         )
 
-                with col_input2:
-                    decision_reason = st.text_area(
-                        "判定理由 / メモ",
-                        value="",
-                        height=60,
-                        key="confirmation_reason"
-                    )
+                    with col_input2:
+                        decision_reason = st.text_area(
+                            "判定理由 / メモ",
+                            value="",
+                            height=100,
+                            key="confirmation_reason"
+                        )
+                else:
+                    col_input1, col_input2 = st.columns(2)
+                    with col_input1:
+                        pass
+                    with col_input2:
+                        decision_reason = st.text_area(
+                            "判定理由 / メモ",
+                            value="",
+                            height=60,
+                            key="confirmation_reason"
+                        )
 
-            # デバッグ表示
-            with st.expander("🔧 デバッグ情報（ページ選択確認）", expanded=False):
+            # ===== Step 4: ログ記録 =====
+            st.markdown("### 💾 Step 4：確認ログに記録")
+
+            # デバッグ表示（開発者向け）
+            with st.expander("🔍 開発者向け：ページ選択状態の確認", expanded=False):
                 st.write(f"**selected_page_no:** {selected_page_no}")
                 st.write(f"**selected_row page_id:** {selected_row.get('page_id', 'N/A')}")
                 st.write(f"**selected_row page_number_norm:** {selected_row.get('page_number_norm', 'N/A')}")
@@ -2461,11 +2511,11 @@ if v22_csv_path.exists():
                 st.write(f"**df_v22行数:** {len(df_v22)}")
                 st.write(f"**df_v22.page_number_norm 値:** {sorted(df_v22['page_number_norm'].dropna().unique())[:10]}")
 
-            # 操作実行ボタン
-            col_btn1, col_btn2 = st.columns(2)
+            # 操作実行ボタン（目立たせる）
+            col_btn1, col_btn2 = st.columns([3, 1])
 
             with col_btn1:
-                if st.button("操作を記録", key="confirmation_confirm_btn"):
+                if st.button("✅ この内容で確認ログに記録する", type="primary", use_container_width=True, key="confirmation_confirm_btn"):
                     # 手動修正時の入力値検証
                     if operation == "手動修正":
                         # 0 は有効値なので、is not None で判定
@@ -2653,45 +2703,12 @@ if v22_csv_path.exists():
                     # セッションログに追加
                     st.session_state.confirmation_logs.append(log_row)
 
-                    st.success(f"✅ ログを記録しました ({len(st.session_state.confirmation_logs)}件)")
+                    st.success(f"✅ P{selected_page_no} の確認ログを保存しました (累計: {len(st.session_state.confirmation_logs)}件)")
 
-        # ===== デモ用取り消し機能 =====
+        # ===== ログ一覧とダウンロード =====
         if len(st.session_state.confirmation_logs) > 0:
-            st.divider()
-            st.markdown("#### デモ用ログ取り消し機能")
-
-            col_undo1, col_undo2 = st.columns(2)
-
-            with col_undo1:
-                if st.button("↩️ 直前のログを取り消す", use_container_width=True, key="undo_last_log"):
-                    if len(st.session_state.confirmation_logs) > 0:
-                        st.session_state.confirmation_logs.pop()
-                        st.success("✅ 直前のログを取り消しました")
-                        st.rerun()
-                    else:
-                        st.info("取り消すログがありません")
-
-            with col_undo2:
-                # 全クリア用チェックボックス
-                enable_clear = st.checkbox(
-                    "全クリアを有効にする",
-                    value=False,
-                    key="enable_full_clear"
-                )
-
-                if enable_clear:
-                    if st.button("🗑️ このセッションのログを全クリア", use_container_width=True, key="clear_all_logs"):
-                        st.session_state.confirmation_logs = []
-                        st.success("✅ このセッションのログを全クリアしました")
-                        st.rerun()
-
-            # 注意書き
-            st.warning("⚠️ **この取り消し機能はデモ用です。** 本格導入時は、削除ではなく取消履歴を残す方式を推奨します。")
-            st.divider()
-
-        # ログ一覧表示
-        if len(st.session_state.confirmation_logs) > 0:
-            st.markdown("#### 確認ログ一覧")
+            st.markdown("### 📊 確認ログ一覧")
+            st.write("ここには、このセッションで確認・修正・保留した履歴が表示されます。CSVとしてダウンロードできます。")
 
             # ログをDataFrameに変換
             df_logs = pd.DataFrame(st.session_state.confirmation_logs)
@@ -2735,6 +2752,36 @@ if v22_csv_path.exists():
                 use_container_width=True,
                 key="download_confirmation_logs"
             )
+
+            # ===== デモ用：操作ミスの取り消し =====
+            st.divider()
+            st.markdown("### 🔄 デモ用：操作ミスの取り消し")
+            st.warning("⚠️ **この機能はデモ用です。** 本格導入時は、削除ではなく取消履歴を残す方式を推奨します。")
+
+            col_undo1, col_undo2 = st.columns(2)
+
+            with col_undo1:
+                if st.button("↩️ 直前のログを取り消す", use_container_width=True, key="undo_last_log"):
+                    if len(st.session_state.confirmation_logs) > 0:
+                        st.session_state.confirmation_logs.pop()
+                        st.success("✅ 直前のログを取り消しました")
+                        st.rerun()
+                    else:
+                        st.info("取り消すログがありません")
+
+            with col_undo2:
+                # 全クリア用チェックボックス
+                enable_clear = st.checkbox(
+                    "全クリアを有効にする",
+                    value=False,
+                    key="enable_full_clear"
+                )
+
+                if enable_clear:
+                    if st.button("🗑️ このセッションのログを全クリア", use_container_width=True, key="clear_all_logs"):
+                        st.session_state.confirmation_logs = []
+                        st.success("✅ このセッションのログを全クリアしました")
+                        st.rerun()
 
     except Exception as e:
         st.error(f"❌ V2.2参考判定の読み込みに失敗しました：{e}")
