@@ -60,6 +60,29 @@ import uuid
 import random
 import string
 
+def display_confidence_label(value):
+    """confidence を顧客向け日本語に変換"""
+    if value == "low":
+        return "要注意"
+    elif value == "medium":
+        return "通常確認"
+    elif value == "high":
+        return "高信頼"
+    else:
+        return "未判定"
+
+def display_classification_label(value):
+    """classification を顧客向け日本語に変換"""
+    classification_map = {
+        "auto_confirm": "自動確認候補",
+        "ocr_correction": "OCR補正候補",
+        "low_confidence": "要確認",
+        "review": "要確認",
+        "mismatch": "不一致",
+        "unknown": "未判定"
+    }
+    return classification_map.get(value, str(value))
+
 def normalize_na_value(value):
     """
     None, nan, NaN, <NA>, float("nan") を空欄に正規化
@@ -2162,8 +2185,8 @@ def run_phase1_reconciliation():
         st.warning("⚠️ 照合結果がありません")
 
 
-# ===== [4] AI合計欄V2.2参考判定 =====
-st.markdown("### [4] AI合計欄 V2.2 参考判定（補助機能）")
+# ===== [4] AI補助判定・確認ログ =====
+st.markdown("### [4] AI補助判定・確認ログ")
 
 # V2.2並列分類CSVを読み込む
 v22_csv_path = Path(__file__).parent / "data" / "test_outputs" / "phase5_ai_tally_v22_parallel_classification.csv"
@@ -2175,11 +2198,15 @@ if v22_csv_path.exists():
         # ページ番号を正規化（14, 14.0, "14", "P14" → 14）
         df_v22["page_number_norm"] = df_v22["page_id"].apply(normalize_page_number)
 
-        # 説明文
+        # 顧客向け表示モードの切り替え
+        st.markdown("---")
+        show_developer_info = st.checkbox("🔧 開発者向け情報を表示する", value=False)
+        st.markdown("---")
+
+        # 顧客向け説明
         st.info(
-            "**この判定はAI合計欄に対する補助判定です。** 既存の照合結果を置き換えるものではありません。"
-            "自動確定候補と要確認を分け、確認作業を支援します。\n"
-            "初期導入では、自動確定候補も含めサンプル確認を推奨します。"
+            "**この画面では、AIが読み取った結果をSalesforce CSVと照合し、確認が必要な箇所を仕分けます。**\n"
+            "最終判断は担当者が行い、確認履歴をCSVで出力できます。"
         )
 
         # KPIサマリー
@@ -2235,41 +2262,44 @@ if v22_csv_path.exists():
 
         # 特別ページの説明
         if len(df_filtered) > 0:
-            st.markdown("#### 注目ページ")
+            st.markdown("#### デモ用：代表ページの説明")
 
             special_pages = {
-                "P14": "旧読取34 → 新読取3（CSV=3）｜OCR補正候補 + 自動確定候補",
-                "P16": "v3=9、v22=2、CSV=11、confidence=low｜低信頼度 + 要確認（強制確認）",
-                "P30": "旧読取2 → 新読取1（CSV=1）｜OCR補正候補 + 自動確定候補"
+                "P14": ("読み取り補正の例", "AIが大きく読み違えた値（34）を補正し、CSVと一致（3）した例"),
+                "P16": ("要確認の例", "AI読取（2）とCSV（11）が一致しないため、人間確認に回す例"),
+                "P30": ("人間修正の例", "AIとCSVは一致（1）していても、担当者が目視確認で0に修正できる例")
             }
 
-            for page_id, description in special_pages.items():
+            for page_id, (title, description) in special_pages.items():
                 if page_id in df_filtered['page_id'].values:
-                    st.write(f"**{page_id}：** {description}")
+                    st.write(f"**{page_id}：{title}**\n{description}")
 
-        # テーブル表示
-        st.markdown("#### 詳細テーブル")
+        # 詳細テーブルを expander に入れる
+        with st.expander("📋 詳細テーブルを表示する", expanded=False):
+            # 表示列を選定
+            display_cols = [
+                'page_id', 'store_name', 'v3_value', 'v22_value', 'csv_value',
+                'confidence', 'classification', 'auto_confirm_v22', 'review_required_v22',
+                'review_reasons'
+            ]
 
-        # 表示列を選定
-        display_cols = [
-            'page_id', 'store_name', 'v3_value', 'v22_value', 'csv_value',
-            'confidence', 'classification', 'auto_confirm_v22', 'review_required_v22',
-            'review_reasons'
-        ]
+            df_display = df_filtered[display_cols].copy()
 
-        df_display = df_filtered[display_cols].copy()
+            # 列名を日本語に変更
+            df_display.columns = [
+                'ページ', '店舗名', 'v3値', 'v22値', 'CSV値',
+                '確認レベル', '分類', '自動確認', '要確認', '確認理由'
+            ]
 
-        # 列名を日本語に変更
-        df_display.columns = [
-            'ページ', '店舗名', 'v3値', 'v22値', 'CSV値',
-            '信頼度', '分類', '自動確定', '要確認', '確認理由'
-        ]
+            # 確認レベルと分類を顧客向け日本語に
+            df_display['確認レベル'] = df_display['確認レベル'].apply(display_confidence_label)
+            df_display['分類'] = df_display['分類'].apply(display_classification_label)
 
-        # auto_confirm / review_required を ✅/⚠️ に
-        df_display['自動確定'] = df_display['自動確定'].apply(lambda x: '✅' if x else '❌')
-        df_display['要確認'] = df_display['要確認'].apply(lambda x: '⚠️' if x else '❌')
+            # auto_confirm / review_required を ✅/⚠️ に
+            df_display['自動確認'] = df_display['自動確認'].apply(lambda x: '✅' if x else '❌')
+            df_display['要確認'] = df_display['要確認'].apply(lambda x: '⚠️' if x else '❌')
 
-        st.dataframe(df_display, use_container_width=True, hide_index=True)
+            st.dataframe(df_display, use_container_width=True, hide_index=True)
 
         # CSVダウンロード
         st.markdown("#### ダウンロード")
@@ -2316,7 +2346,7 @@ if v22_csv_path.exists():
         )
 
         # ===== Step 1: ページ選択 =====
-        st.markdown("### 📌 Step 1：確認するページを選択")
+        st.markdown("### 📌 Step 1：確認する帳票ページを選ぶ")
 
         # ページ番号（整数）でselectboxのオプションを生成
         page_numbers = sorted(df_v22["page_number_norm"].dropna().unique())
@@ -2397,7 +2427,7 @@ if v22_csv_path.exists():
             selected_row = selected_rows.iloc[0]
 
             # ===== Step 2: 選択ページ確認 =====
-            st.markdown("### 👁️ Step 2：選択ページの内容確認")
+            st.markdown("### 👁️ Step 2：読み取り結果とCSV値を確認")
 
             # 現在の確認対象を大きく表示
             store_name = selected_row.get('store_name', '不明')
@@ -2435,7 +2465,7 @@ if v22_csv_path.exists():
                 before_status = "review_required"
 
             # ===== Step 3: 操作選択 =====
-            st.markdown("### ✅ Step 3：確認結果を選択")
+            st.markdown("### ✅ Step 3：担当者の判断を選ぶ")
 
             st.info(
                 "**操作の説明：**\n"
@@ -2500,16 +2530,17 @@ if v22_csv_path.exists():
                         )
 
             # ===== Step 4: ログ記録 =====
-            st.markdown("### 💾 Step 4：確認ログに記録")
+            st.markdown("### 💾 Step 4：確認履歴を保存する")
 
-            # デバッグ表示（開発者向け）
-            with st.expander("🔍 開発者向け：ページ選択状態の確認", expanded=False):
-                st.write(f"**selected_page_no:** {selected_page_no}")
-                st.write(f"**selected_row page_id:** {selected_row.get('page_id', 'N/A')}")
-                st.write(f"**selected_row page_number_norm:** {selected_row.get('page_number_norm', 'N/A')}")
-                st.write(f"**ログに渡す page:** P{selected_page_no}")
-                st.write(f"**df_v22行数:** {len(df_v22)}")
-                st.write(f"**df_v22.page_number_norm 値:** {sorted(df_v22['page_number_norm'].dropna().unique())[:10]}")
+            # デバッグ表示（開発者向けのみ）
+            if show_developer_info:
+                with st.expander("🔍 開発者向け：ページ選択状態の確認", expanded=False):
+                    st.write(f"**selected_page_no:** {selected_page_no}")
+                    st.write(f"**selected_row page_id:** {selected_row.get('page_id', 'N/A')}")
+                    st.write(f"**selected_row page_number_norm:** {selected_row.get('page_number_norm', 'N/A')}")
+                    st.write(f"**ログに渡す page:** P{selected_page_no}")
+                    st.write(f"**df_v22行数:** {len(df_v22)}")
+                    st.write(f"**df_v22.page_number_norm 値:** {sorted(df_v22['page_number_norm'].dropna().unique())[:10]}")
 
             # 操作実行ボタン（目立たせる）
             col_btn1, col_btn2 = st.columns([3, 1])
@@ -2707,7 +2738,7 @@ if v22_csv_path.exists():
 
         # ===== ログ一覧とダウンロード =====
         if len(st.session_state.confirmation_logs) > 0:
-            st.markdown("### 📊 確認ログ一覧")
+            st.markdown("### 📊 確認履歴一覧")
             st.write("ここには、このセッションで確認・修正・保留した履歴が表示されます。CSVとしてダウンロードできます。")
 
             # ログをDataFrameに変換
