@@ -2185,8 +2185,8 @@ def run_phase1_reconciliation():
         st.warning("⚠️ 照合結果がありません")
 
 
-# ===== [4] AI補助判定・確認ログ =====
-st.markdown("### [4] AI補助判定・確認ログ")
+# ===== [4] 照合結果の確認（担当者向け） =====
+st.markdown("### [4] 照合結果の確認")
 
 # V2.2並列分類CSVを読み込む
 v22_csv_path = Path(__file__).parent / "data" / "test_outputs" / "phase5_ai_tally_v22_parallel_classification.csv"
@@ -2205,77 +2205,119 @@ if v22_csv_path.exists():
 
         # 顧客向け説明
         st.info(
-            "**この画面では、AIが読み取った結果をSalesforce CSVと照合し、確認が必要な箇所を仕分けます。**\n"
-            "最終判断は担当者が行い、確認履歴をCSVで出力できます。"
+            "**FAX帳票とSalesforce CSVを照合した結果です。**\n"
+            "AIが「一致／不一致／要確認」に仕分けします。担当者は「要確認」と「不一致」を中心に確認してください。"
         )
 
-        # KPIサマリー
-        st.markdown("#### KPI サマリー")
+        # === 状態・対応の分類ロジック ===
+        def classify_status(row):
+            """提案書スタイル：一致 / 不一致 / 要確認 の3分類"""
+            v22 = pd.to_numeric(row.get('v22_value'), errors='coerce')
+            csv = pd.to_numeric(row.get('csv_value'), errors='coerce')
+            conf = row.get('confidence', '')
+            review_req = row.get('review_required_v22', False)
+
+            # 要確認: review_required=True または confidence=low
+            if review_req or conf == 'low':
+                return '要確認'
+            # 不一致: v22 != csv
+            if pd.notna(v22) and pd.notna(csv) and v22 != csv:
+                return '不一致'
+            # 一致: v22 == csv
+            if pd.notna(v22) and pd.notna(csv) and v22 == csv:
+                return '一致'
+            # その他 → 要確認
+            return '要確認'
+
+        def classify_action(status):
+            """対応列：帳票確認 / 対応不要 / 修正候補"""
+            if status == '要確認':
+                return '帳票確認'
+            elif status == '不一致':
+                return '修正候補'
+            elif status == '一致':
+                return '対応不要'
+            return '帳票確認'
+
+        df_v22['_status'] = df_v22.apply(classify_status, axis=1)
+        df_v22['_action'] = df_v22['_status'].apply(classify_action)
+
+        # === KPIサマリー（提案書スタイル：要確認・一致・不一致） ===
+        st.markdown("#### 📊 照合結果サマリー")
 
         total_pages = len(df_v22)
-        auto_confirm_count = int(df_v22['auto_confirm_v22'].sum())
-        review_required_count = int(df_v22['review_required_v22'].sum())
-        low_confidence_count = int((df_v22['confidence'] == 'low').sum())
-        ocr_correction_count = int((df_v22['classification'] == 'ocr_correction').sum())
-        dual_classification = int(((df_v22['auto_confirm_v22']) & (df_v22['review_required_v22'])).sum())
+        match_count = int((df_v22['_status'] == '一致').sum())
+        mismatch_count = int((df_v22['_status'] == '不一致').sum())
+        review_count = int((df_v22['_status'] == '要確認').sum())
 
-        col1, col2, col3, col4, col5 = st.columns(5, gap="small")
+        col1, col2, col3, col4 = st.columns(4)
 
         with col1:
             st.metric("対象ページ数", total_pages)
-
         with col2:
-            st.metric("✅ 自動確定候補", auto_confirm_count)
-
+            st.metric("✅ 一致", match_count)
         with col3:
-            st.metric("⚠️ 要確認", review_required_count)
-
+            st.metric("❌ 不一致", mismatch_count)
         with col4:
-            st.metric("🔶 低信頼度", low_confidence_count)
+            st.metric("⚠️ 要確認", review_count)
 
-        with col5:
-            st.metric("🔄 OCR補正", ocr_correction_count)
+        # === 提案書スタイル「照合結果一覧」（担当者向けメイン表） ===
+        st.markdown("#### 🔍 照合結果一覧")
+        st.caption("担当者が確認すべき項目を一覧表示します。「要確認」「不一致」を中心にご確認ください。")
 
-        # 排他チェック
-        st.markdown(f"**排他チェック：** {'✅ OK（重複なし）' if dual_classification == 0 else '⚠️ 重複あり'}")
-
-        # フィルター
-        st.markdown("#### フィルター")
+        # フィルター（提案書スタイル）
         filter_option = st.radio(
-            "表示する分類：",
-            options=("すべて", "自動確定候補のみ", "要確認のみ", "低信頼度のみ", "OCR補正候補のみ"),
+            "表示するもの：",
+            options=("要確認・不一致のみ", "すべて", "一致のみ"),
             horizontal=True,
             key="v22_filter"
         )
 
-        # フィルター適用
-        if filter_option == "自動確定候補のみ":
-            df_filtered = df_v22[df_v22['auto_confirm_v22'] == True].copy()
-        elif filter_option == "要確認のみ":
-            df_filtered = df_v22[df_v22['review_required_v22'] == True].copy()
-        elif filter_option == "低信頼度のみ":
-            df_filtered = df_v22[df_v22['confidence'] == 'low'].copy()
-        elif filter_option == "OCR補正候補のみ":
-            df_filtered = df_v22[df_v22['classification'] == 'ocr_correction'].copy()
+        if filter_option == "要確認・不一致のみ":
+            df_filtered = df_v22[df_v22['_status'].isin(['要確認', '不一致'])].copy()
+        elif filter_option == "一致のみ":
+            df_filtered = df_v22[df_v22['_status'] == '一致'].copy()
         else:
             df_filtered = df_v22.copy()
 
-        # 特別ページの説明
+        # 提案書通りの列構成で表示
         if len(df_filtered) > 0:
-            st.markdown("#### デモ用：代表ページの説明")
+            df_main = df_filtered.copy()
+            df_main['_status_icon'] = df_main['_status'].map({
+                '要確認': '⚠️ 要確認',
+                '不一致': '❌ 不一致',
+                '一致': '✅ 一致'
+            })
 
-            special_pages = {
-                "P14": ("読み取り補正の例", "AIが大きく読み違えた値（34）を補正し、CSVと一致（3）した例"),
-                "P16": ("要確認の例", "AI読取（2）とCSV（11）が一致しないため、人間確認に回す例"),
-                "P30": ("人間修正の例", "AIとCSVは一致（1）していても、担当者が目視確認で0に修正できる例")
-            }
+            df_main_display = pd.DataFrame({
+                '状態': df_main['_status_icon'],
+                '店舗名': df_main['store_name'],
+                '確認項目': 'AI合計',  # 現在はAI合計欄のみ
+                'FAX帳票側': df_main['v22_value'].apply(lambda x: '' if pd.isna(x) else (str(int(x)) if float(x).is_integer() else str(x))),
+                'CSV側': df_main['csv_value'].apply(lambda x: '' if pd.isna(x) else (str(int(x)) if float(x).is_integer() else str(x))),
+                '対応': df_main['_action'],
+                'ページ': df_main['page_id'],
+            })
 
-            for page_id, (title, description) in special_pages.items():
-                if page_id in df_filtered['page_id'].values:
-                    st.write(f"**{page_id}：{title}**\n{description}")
+            st.dataframe(df_main_display, use_container_width=True, hide_index=True)
+            st.caption(f"表示件数：{len(df_filtered)}件 / 全{total_pages}件")
+        else:
+            st.info("該当する項目はありません。")
 
-        # 詳細テーブルを expander に入れる
-        with st.expander("📋 詳細テーブルを表示する", expanded=False):
+        # 注目ページ説明（デモ用）
+        if len(df_filtered) > 0:
+            with st.expander("💡 デモ用：代表ページの説明", expanded=False):
+                special_pages = {
+                    "P14": ("読み取り補正の例", "AIが大きく読み違えた値（34）を補正し、CSVと一致（3）した例"),
+                    "P16": ("要確認の例", "AI読取（2）とCSV（11）が一致しないため、人間確認に回す例"),
+                    "P30": ("人間修正の例", "AIとCSVは一致（1）していても、担当者が目視確認で0に修正できる例")
+                }
+                for page_id, (title, description) in special_pages.items():
+                    if page_id in df_v22['page_id'].values:
+                        st.write(f"**{page_id}：{title}**\n{description}")
+
+        # 詳細テーブルを expander に入れる（開発者向け：内部分類詳細）
+        with st.expander("📋 内部分類詳細を表示（開発者向け）", expanded=False):
             # 表示列を選定
             display_cols = [
                 'page_id', 'store_name', 'v3_value', 'v22_value', 'csv_value',
@@ -2326,9 +2368,14 @@ if v22_csv_path.exists():
             "• 最終決定責任は確認担当者にあります。"
         )
 
-        # ===== 確認ログ操作 =====
+        # ===== 担当者の判断と確認履歴 =====
         st.divider()
-        st.markdown("# 📋 確認ログ操作（ステップ別ガイド）")
+        st.markdown("## 📋 担当者の判断を記録する")
+        st.write(
+            "上の照合結果一覧で「要確認」「不一致」と表示されたページを、"
+            "1件ずつ担当者が判断します。判断結果は確認履歴として保存し、"
+            "Salesforce 修正用 CSV として出力できます。"
+        )
 
         # セッションID初期化
         if "confirmation_session_id" not in st.session_state:
@@ -2347,6 +2394,7 @@ if v22_csv_path.exists():
 
         # ===== Step 1: ページ選択 =====
         st.markdown("### 📌 Step 1：確認する帳票ページを選ぶ")
+        st.caption("「要確認」「不一致」のページを優先的に確認してください。")
 
         # ページ番号（整数）でselectboxのオプションを生成
         page_numbers = sorted(df_v22["page_number_norm"].dropna().unique())
@@ -2364,41 +2412,44 @@ if v22_csv_path.exists():
             available_demo_pages = demo_pages & set(int(p) for p in page_numbers)
 
             # デモ用クイック選択カード（説明付き）
-            st.write("**デモ用：代表的なページを選ぶ** （クリックするだけで選択完了）")
+            st.write("**デモ用：代表ページにすぐ移動できます**")
             col_demo1, col_demo2, col_demo3 = st.columns(3)
 
             with col_demo1:
                 st.markdown("#### 🔧 P14")
-                st.caption("OCR補正候補｜34 → 3")
+                st.caption("読み取り補正の例")
+                st.caption("FAX: 3 / CSV: 3")
                 if 14 in available_demo_pages:
-                    if st.button("P14を選択", use_container_width=True, key="demo_select_p14"):
+                    if st.button("P14 を開く", use_container_width=True, key="demo_select_p14"):
                         st.session_state.confirmation_selected_page = 14
                         st.session_state.confirmation_page_select = 14
                         st.rerun()
                 else:
-                    st.button("P14を選択", use_container_width=True, disabled=True, key="demo_select_p14_disabled")
+                    st.button("P14 を開く", use_container_width=True, disabled=True, key="demo_select_p14_disabled")
 
             with col_demo2:
                 st.markdown("#### ⚠️ P16")
-                st.caption("要確認｜low confidence")
+                st.caption("要確認の例")
+                st.caption("FAX: 2 / CSV: 11")
                 if 16 in available_demo_pages:
-                    if st.button("P16を選択", use_container_width=True, key="demo_select_p16"):
+                    if st.button("P16 を開く", use_container_width=True, key="demo_select_p16"):
                         st.session_state.confirmation_selected_page = 16
                         st.session_state.confirmation_page_select = 16
                         st.rerun()
                 else:
-                    st.button("P16を選択", use_container_width=True, disabled=True, key="demo_select_p16_disabled")
+                    st.button("P16 を開く", use_container_width=True, disabled=True, key="demo_select_p16_disabled")
 
             with col_demo3:
                 st.markdown("#### ✏️ P30")
-                st.caption("人間修正例｜1 → 0")
+                st.caption("人間修正の例")
+                st.caption("FAX: 1 / CSV: 1 → 0 に修正")
                 if 30 in available_demo_pages:
-                    if st.button("P30を選択", use_container_width=True, key="demo_select_p30"):
+                    if st.button("P30 を開く", use_container_width=True, key="demo_select_p30"):
                         st.session_state.confirmation_selected_page = 30
                         st.session_state.confirmation_page_select = 30
                         st.rerun()
                 else:
-                    st.button("P30を選択", use_container_width=True, disabled=True, key="demo_select_p30_disabled")
+                    st.button("P30 を開く", use_container_width=True, disabled=True, key="demo_select_p30_disabled")
 
             # selectboxのデフォルト値を設定
             try:
@@ -2427,35 +2478,55 @@ if v22_csv_path.exists():
             selected_row = selected_rows.iloc[0]
 
             # ===== Step 2: 選択ページ確認 =====
-            st.markdown("### 👁️ Step 2：読み取り結果とCSV値を確認")
+            st.markdown("### 👁️ Step 2：FAX帳票側とCSV側を見比べる")
 
             # 現在の確認対象を大きく表示
             store_name = selected_row.get('store_name', '不明')
-            classification = selected_row.get('classification', '不明')
-            st.success(f"📌 **現在の確認対象：P{int(selected_page_no)}｜{store_name}｜{classification}**")
+            current_status = selected_row.get('_status', '-')
+            st.success(f"📌 **現在の確認対象：P{int(selected_page_no)}｜{store_name}｜状態：{current_status}**")
 
-            # 詳細表示（カード風）
-            col1, col2, col3 = st.columns(3)
+            # FAX側 vs CSV側を並列に表示（提案書スタイル）
+            st.markdown("**📝 確認項目：AI合計**")
+            col_fax, col_csv = st.columns(2)
 
-            with col1:
-                col1.metric("v3値", selected_row.get('v3_value', '-'))
+            with col_fax:
+                st.markdown("##### 📄 FAX帳票側")
+                fax_val = selected_row.get('v22_value')
+                fax_disp = '-' if pd.isna(fax_val) else (str(int(fax_val)) if float(fax_val).is_integer() else str(fax_val))
+                st.markdown(f"### {fax_disp}")
+                st.caption("AI が FAX 帳票から読み取った値")
 
-            with col2:
-                col2.metric("V2.2値", selected_row.get('v22_value', '-'))
+            with col_csv:
+                st.markdown("##### 📊 Salesforce CSV側")
+                csv_val = selected_row.get('csv_value')
+                csv_disp = '-' if pd.isna(csv_val) else (str(int(csv_val)) if float(csv_val).is_integer() else str(csv_val))
+                st.markdown(f"### {csv_disp}")
+                st.caption("Salesforce CSV に記録されている値")
 
-            with col3:
-                col3.metric("CSV値", selected_row.get('csv_value', '-'))
+            # 推奨対応の表示
+            action = selected_row.get('_action', '-')
+            if current_status == '要確認':
+                st.warning(f"💡 **推奨対応：{action}** — FAX帳票を確認してください")
+            elif current_status == '不一致':
+                st.error(f"💡 **推奨対応：{action}** — どちらを正とするか判断してください")
+            else:
+                st.info(f"💡 **推奨対応：{action}**")
 
-            # 追加情報
-            col_info1, col_info2, col_info3, col_info4 = st.columns(4)
-            with col_info1:
-                st.write(f"**信頼度**\n{selected_row.get('confidence', '-')}")
-            with col_info2:
-                st.write(f"**分類**\n{selected_row.get('classification', '-')}")
-            with col_info3:
-                st.write(f"**自動確定候補**\n{'✅ はい' if selected_row.get('auto_confirm_v22') else '❌ いいえ'}")
-            with col_info4:
-                st.write(f"**要確認**\n{'⚠️ はい' if selected_row.get('review_required_v22') else '❌ いいえ'}")
+            # 開発者向け詳細（チェックON時のみ）
+            if show_developer_info:
+                with st.expander("🔧 内部値の詳細（開発者向け）", expanded=False):
+                    col_d1, col_d2, col_d3 = st.columns(3)
+                    with col_d1:
+                        st.metric("v3値（旧版）", selected_row.get('v3_value', '-'))
+                    with col_d2:
+                        st.metric("V2.2値（新版）", selected_row.get('v22_value', '-'))
+                    with col_d3:
+                        st.metric("CSV値", selected_row.get('csv_value', '-'))
+
+                    st.write(f"**confidence:** {selected_row.get('confidence', '-')}")
+                    st.write(f"**classification:** {selected_row.get('classification', '-')}")
+                    st.write(f"**auto_confirm_v22:** {selected_row.get('auto_confirm_v22')}")
+                    st.write(f"**review_required_v22:** {selected_row.get('review_required_v22')}")
 
             # before_status を決定
             before_status = "unreviewed"
@@ -2468,69 +2539,66 @@ if v22_csv_path.exists():
             st.markdown("### ✅ Step 3：担当者の判断を選ぶ")
 
             st.info(
-                "**操作の説明：**\n"
-                "• **確認済み（V2.2採用）** → V2.2値をそのまま最終値として確認済みにする\n"
-                "• **CSV値採用** → Salesforce CSV側の値を正とする\n"
-                "• **手動修正** → PDFを目視して、値を直接入力する（0も有効）\n"
-                "• **保留** → 判断できないため後で確認する\n"
-                "• **スキップ** → 今回は確認対象から外す\n\n"
+                "**判断の説明：**\n"
+                "• **FAX帳票側を正とする** → FAX帳票の値が正しい（CSV側を修正する必要あり）\n"
+                "• **CSV側を正とする** → Salesforce CSV の値が正しい\n"
+                "• **手動で修正する** → 目視確認の結果、別の値が正しい（0 も有効）\n"
+                "• **保留する** → 今は判断できないので後で確認する\n"
+                "• **対応不要** → このページは確認不要・スキップする\n\n"
                 "💡 **迷った場合は、保留または手動修正を選んでください。**"
             )
 
-            operation = st.radio(
-                "確認内容を選択",
-                options=[
-                    "確認済み（V2.2を採用）",
-                    "V2.2を採用",
-                    "CSV値を採用",
-                    "PDF値を採用",
-                    "v3値を採用",
-                    "手動修正",
-                    "保留",
-                    "スキップ"
-                ],
+            # 顧客向けラベル → 内部操作名のマッピング
+            operation_label_map = {
+                "FAX帳票側を正とする": "PDF値を採用",  # 内部: select_pdf
+                "CSV側を正とする": "CSV値を採用",       # 内部: select_csv
+                "手動で修正する": "手動修正",           # 内部: correct
+                "保留する": "保留",                     # 内部: defer
+                "対応不要（スキップ）": "スキップ",     # 内部: skip
+            }
+
+            operation_label = st.radio(
+                "担当者の判断",
+                options=list(operation_label_map.keys()),
                 horizontal=True,
                 key="confirmation_operation"
             )
+            operation = operation_label_map[operation_label]
 
             # 手動修正 / PDF値 / 保留 時の入力欄
             manual_correction_value = None
             decision_reason = ""
 
-            if operation in ["手動修正", "PDF値を採用", "保留"]:
+            if operation in ["手動修正", "保留"]:
                 if operation == "手動修正":
-                    st.markdown("### 📝 修正内容を入力")
+                    st.markdown("##### 📝 修正内容を入力")
                     col_input1, col_input2 = st.columns(2)
 
                     with col_input1:
                         manual_correction_value = st.text_input(
-                            "修正後の値（0も有効です）",
+                            "正しい値を入力してください（0も有効）",
                             value="",
-                            help="0を入力した場合も、空欄ではなく0として記録されます。",
+                            help="0 を入力した場合も、空欄ではなく 0 として記録されます。",
                             key="confirmation_manual_value"
                         )
 
                     with col_input2:
                         decision_reason = st.text_area(
-                            "判定理由 / メモ",
+                            "判断理由 / 担当者メモ",
                             value="",
                             height=100,
                             key="confirmation_reason"
                         )
                 else:
-                    col_input1, col_input2 = st.columns(2)
-                    with col_input1:
-                        pass
-                    with col_input2:
-                        decision_reason = st.text_area(
-                            "判定理由 / メモ",
-                            value="",
-                            height=60,
-                            key="confirmation_reason"
-                        )
+                    decision_reason = st.text_area(
+                        "判断理由 / 担当者メモ（任意）",
+                        value="",
+                        height=60,
+                        key="confirmation_reason"
+                    )
 
-            # ===== Step 4: ログ記録 =====
-            st.markdown("### 💾 Step 4：確認履歴を保存する")
+            # ===== Step 4: 確認履歴保存 =====
+            st.markdown("### 💾 Step 4：判断を確認履歴に保存")
 
             # デバッグ表示（開発者向けのみ）
             if show_developer_info:
@@ -2546,7 +2614,7 @@ if v22_csv_path.exists():
             col_btn1, col_btn2 = st.columns([3, 1])
 
             with col_btn1:
-                if st.button("✅ この内容で確認ログに記録する", type="primary", use_container_width=True, key="confirmation_confirm_btn"):
+                if st.button("✅ この判断を確認履歴に保存する", type="primary", use_container_width=True, key="confirmation_confirm_btn"):
                     # 手動修正時の入力値検証
                     if operation == "手動修正":
                         # 0 は有効値なので、is not None で判定
@@ -2736,32 +2804,48 @@ if v22_csv_path.exists():
 
                     st.success(f"✅ P{selected_page_no} の確認ログを保存しました (累計: {len(st.session_state.confirmation_logs)}件)")
 
-        # ===== ログ一覧とダウンロード =====
+        # ===== 確認履歴一覧と Salesforce 修正用 CSV 出力 =====
         if len(st.session_state.confirmation_logs) > 0:
+            st.divider()
             st.markdown("### 📊 確認履歴一覧")
-            st.write("ここには、このセッションで確認・修正・保留した履歴が表示されます。CSVとしてダウンロードできます。")
+            st.write(
+                "担当者が判断した履歴です。下の **Salesforce 修正用 CSV** を出力して、"
+                "Salesforce 側での修正作業にお使いください。"
+            )
 
             # ログをDataFrameに変換
             df_logs = pd.DataFrame(st.session_state.confirmation_logs)
 
-            # 表示列を選定
-            display_log_cols = [
-                'timestamp', 'operator_name', 'page', 'user_action', 'user_decision',
-                'final_value', 'before_status', 'after_status', 'decision_reason'
-            ]
+            # 顧客向けラベル変換マップ
+            user_action_label = {
+                'confirm': '確認済み',
+                'select_v22': 'FAX側採用',
+                'select_csv': 'CSV側採用',
+                'select_pdf': 'FAX帳票側採用',
+                'select_v3': '旧版採用',
+                'correct': '手動修正',
+                'defer': '保留',
+                'skip': '対応不要',
+            }
 
-            df_logs_display = df_logs[display_log_cols].copy()
-
-            # 列名を日本語に
-            df_logs_display.columns = [
-                '記録時刻', '確認者', 'ページ', '操作', '判定',
-                '最終値', '操作前', '操作後', '理由'
-            ]
+            # 表示列を選定（提案書スタイル：担当者向け）
+            df_logs_display = pd.DataFrame({
+                '記録時刻': df_logs['timestamp'].str.replace('T', ' ').str.slice(0, 19),
+                '確認者': df_logs['operator_name'],
+                'ページ': df_logs['page'],
+                '店舗名': df_logs['store_name'],
+                '確認項目': df_logs['field_name'],
+                'FAX帳票側': df_logs['v22_value'],
+                'CSV側': df_logs['csv_value'],
+                '判断': df_logs['user_action'].map(lambda x: user_action_label.get(x, x)),
+                '修正値': df_logs['final_value'],
+                '判断理由': df_logs['decision_reason'],
+            })
 
             st.dataframe(df_logs_display, use_container_width=True, hide_index=True)
 
-            # ログCSVダウンロード
-            st.markdown("#### ログダウンロード")
+            # CSVダウンロード
+            st.markdown("#### 📤 Salesforce 修正用 CSV 出力")
 
             # CSV出力用：数値列を文字列として保持（0.0ではなく0として出力）
             df_logs_csv = df_logs.copy()
@@ -2776,17 +2860,17 @@ if v22_csv_path.exists():
             csv_bytes = csv_buffer.getvalue().encode('utf-8-sig')
 
             st.download_button(
-                label="📥 確認ログ CSV をダウンロード",
+                label="📥 Salesforce 修正用 CSV をダウンロード",
                 data=csv_bytes,
-                file_name=f"ai_tally_v22_confirmation_logs_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                file_name=f"salesforce_modification_request_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
                 mime="text/csv",
                 use_container_width=True,
                 key="download_confirmation_logs"
             )
 
-            # ===== デモ用：操作ミスの取り消し =====
+            # ===== 操作ミスの取り消し（デモ用） =====
             st.divider()
-            st.markdown("### 🔄 デモ用：操作ミスの取り消し")
+            st.markdown("### 🔄 操作ミスの取り消し（デモ用）")
             st.warning("⚠️ **この機能はデモ用です。** 本格導入時は、削除ではなく取消履歴を残す方式を推奨します。")
 
             col_undo1, col_undo2 = st.columns(2)
