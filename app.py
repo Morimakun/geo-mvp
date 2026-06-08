@@ -2413,6 +2413,15 @@ if v22_csv_path.exists():
                         key="confirmation_reason"
                     )
 
+            # デバッグ表示
+            with st.expander("🔧 デバッグ情報（ページ選択確認）", expanded=False):
+                st.write(f"**selected_page_no:** {selected_page_no}")
+                st.write(f"**selected_row page_id:** {selected_row.get('page_id', 'N/A')}")
+                st.write(f"**selected_row page_number_norm:** {selected_row.get('page_number_norm', 'N/A')}")
+                st.write(f"**ログに渡す page:** P{selected_page_no}")
+                st.write(f"**df_v22行数:** {len(df_v22)}")
+                st.write(f"**df_v22.page_number_norm 値:** {sorted(df_v22['page_number_norm'].dropna().unique())[:10]}")
+
             # 操作実行ボタン
             col_btn1, col_btn2 = st.columns(2)
 
