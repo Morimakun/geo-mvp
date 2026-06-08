@@ -11,6 +11,8 @@ import csv
 from datetime import datetime
 from pathlib import Path
 import tempfile
+import os
+import html
 
 import streamlit as st
 import pandas as pd
@@ -30,6 +32,27 @@ from reconciliation_phase1 import create_phase1_engine
 
 # 環境変数読込
 load_dotenv()
+
+# ===== ヘルパー関数：セキュリティ =====
+
+def sanitize_csv_cell(value):
+    """
+    CSVセルの数式インジェクション対策
+
+    危険な先頭文字（=, +, -, @, \t, \r, \n）が検出されたら、
+    先頭にシングルクォート（'）を付与してエスケープする。
+    これにより Excel/Google Sheets での数式実行を防止。
+    """
+    if value is None:
+        return ""
+
+    text = str(value)
+
+    # 危険な先頭文字を検出
+    if text and text[0] in ('=', '+', '-', '@', '\t', '\r', '\n'):
+        return "'" + text
+
+    return text
 
 # ===== ヘルパー関数：確認ログ関連 =====
 
@@ -583,13 +606,21 @@ with tab1:
                             st.info(f"✓ CSV読込成功：{len(df_csv)}行 × {len(df_csv.columns)}列  文字コード：{encoding_used}")
 
                         # load_salesforce_csv() 用に temp CSV に保存
-                        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
-                            df_csv.to_csv(tmp.name, index=False, encoding='utf-8')
-                            tmp_path = tmp.name
+                        tmp_path = None
+                        try:
+                            with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
+                                df_csv.to_csv(tmp.name, index=False, encoding='utf-8')
+                                tmp_path = tmp.name
 
-                        st.session_state.salesforce_records = load_salesforce_csv(tmp_path)
-                        st.session_state.using_sample_data = False
-                        st.success(f"✓ {len(st.session_state.salesforce_records)}件のレコードを読込")
+                            st.session_state.salesforce_records = load_salesforce_csv(tmp_path)
+                            st.session_state.using_sample_data = False
+                            st.success(f"✓ {len(st.session_state.salesforce_records)}件のレコードを読込")
+                        finally:
+                            if tmp_path and os.path.exists(tmp_path):
+                                try:
+                                    os.unlink(tmp_path)
+                                except Exception:
+                                    pass
 
                         if date_col:
                             # 日付別の件数を集計
@@ -1061,9 +1092,11 @@ with tab1:
                 ]
 
                 for label, value in data_items:
+                    # XSS対策：外部入力値をescape
+                    safe_value = html.escape(str(value) if value else "-")
                     st.markdown(f"""
                     <div class="data-item">
-                        <span class="data-label">{label}</span>: <span class="data-value">{value}</span>
+                        <span class="data-label">{label}</span>: <span class="data-value">{safe_value}</span>
                     </div>
                     """, unsafe_allow_html=True)
 
@@ -1107,7 +1140,9 @@ with tab1:
                     if result.differences:
                         st.markdown("#### 差分内容")
                         for diff in result.differences:
-                            st.markdown(f'<div class="diff-highlight">{diff}</div>', unsafe_allow_html=True)
+                            # XSS対策：差分内容をescape
+                            safe_diff = html.escape(str(diff))
+                            st.markdown(f'<div class="diff-highlight">{safe_diff}</div>', unsafe_allow_html=True)
                     else:
                         st.markdown("#### 差分内容")
                         st.markdown('<p style="color: #718096;">差分がありません</p>', unsafe_allow_html=True)
@@ -1151,7 +1186,7 @@ with tab1:
             ]
 
             for result in results:
-                csv_rows.append([
+                row = [
                     result.file_name,
                     "",  # マッチング方式（Phase 1では未使用）
                     result.extraction.date or "",
@@ -1171,7 +1206,10 @@ with tab1:
                     result.status,
                     " | ".join(result.differences) if result.differences else "",
                     " | ".join(result.review_reasons) if result.review_reasons else ""
-                ])
+                ]
+                # CSV数式インジェクション対策
+                sanitized_row = [sanitize_csv_cell(cell) for cell in row]
+                csv_rows.append(sanitized_row)
 
             csv_buffer = io.StringIO()
             writer = csv.writer(csv_buffer)
@@ -1227,11 +1265,19 @@ with tab1:
                         st.info(f"✓ 修正後CSV読込成功：{len(revised_df)}行")
 
                         # 修正後CSVから SalesforceRecord を生成
-                        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
-                            revised_df.to_csv(tmp.name, index=False, encoding='utf-8')
-                            tmp_path = tmp.name
+                        tmp_path = None
+                        try:
+                            with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
+                                revised_df.to_csv(tmp.name, index=False, encoding='utf-8')
+                                tmp_path = tmp.name
 
-                        revised_records = load_salesforce_csv(tmp_path)
+                            revised_records = load_salesforce_csv(tmp_path)
+                        finally:
+                            if tmp_path and os.path.exists(tmp_path):
+                                try:
+                                    os.unlink(tmp_path)
+                                except Exception:
+                                    pass
 
                         # 同じPDF結果で再照合
                         rereconciled_results = []
@@ -1380,13 +1426,21 @@ with tab2:
                         st.info(f"✓ CSV読込成功：{len(df)}行 × {len(df.columns)}列  文字コード：{encoding_used}")
 
                         # DataFrame を一度 CSV 保存して load_salesforce_csv() で読込（互換性維持）
-                        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
-                            df.to_csv(tmp.name, index=False, encoding='utf-8')
-                            tmp_path = tmp.name
+                        tmp_path = None
+                        try:
+                            with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
+                                df.to_csv(tmp.name, index=False, encoding='utf-8')
+                                tmp_path = tmp.name
 
-                        st.session_state.salesforce_records = load_salesforce_csv(tmp_path)
-                        st.session_state.using_sample_data = False
-                        st.success(f"✓ {len(st.session_state.salesforce_records)}件のレコードを読込")
+                            st.session_state.salesforce_records = load_salesforce_csv(tmp_path)
+                            st.session_state.using_sample_data = False
+                            st.success(f"✓ {len(st.session_state.salesforce_records)}件のレコードを読込")
+                        finally:
+                            if tmp_path and os.path.exists(tmp_path):
+                                try:
+                                    os.unlink(tmp_path)
+                                except Exception:
+                                    pass
 
                         with st.expander("プレビュー"):
                             st.dataframe(df.head(5), use_container_width=True)
@@ -1417,13 +1471,21 @@ with tab2:
                         st.info(f"✓ CSV読込成功：{len(df)}行 × {len(df.columns)}列  文字コード：{encoding_used}")
 
                         # DataFrame を一度 CSV 保存して load_extraction_results() で読込（互換性維持）
-                        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
-                            df.to_csv(tmp.name, index=False, encoding='utf-8')
-                            tmp_path = tmp.name
+                        tmp_path = None
+                        try:
+                            with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False, encoding='utf-8') as tmp:
+                                df.to_csv(tmp.name, index=False, encoding='utf-8')
+                                tmp_path = tmp.name
 
-                        st.session_state.extraction_results = load_extraction_results(tmp_path)
-                        st.session_state.using_sample_data = False
-                        st.success(f"✓ {len(st.session_state.extraction_results)}件の抽出結果を読込")
+                            st.session_state.extraction_results = load_extraction_results(tmp_path)
+                            st.session_state.using_sample_data = False
+                            st.success(f"✓ {len(st.session_state.extraction_results)}件の抽出結果を読込")
+                        finally:
+                            if tmp_path and os.path.exists(tmp_path):
+                                try:
+                                    os.unlink(tmp_path)
+                                except Exception:
+                                    pass
 
                         with st.expander("プレビュー"):
                             st.dataframe(df.head(5), use_container_width=True)
@@ -1683,9 +1745,11 @@ with tab2:
                 ]
 
                 for label, value in data_items:
+                    # XSS対策：外部入力値をescape
+                    safe_value = html.escape(str(value) if value else "-")
                     st.markdown(f"""
                     <div class="data-item">
-                        <span class="data-label">{label}</span>: <span class="data-value">{value}</span>
+                        <span class="data-label">{label}</span>: <span class="data-value">{safe_value}</span>
                     </div>
                     """, unsafe_allow_html=True)
 
@@ -1729,7 +1793,9 @@ with tab2:
                     if result.differences:
                         st.markdown("#### 差分内容")
                         for diff in result.differences:
-                            st.markdown(f'<div class="diff-highlight">{diff}</div>', unsafe_allow_html=True)
+                            # XSS対策：差分内容をescape
+                            safe_diff = html.escape(str(diff))
+                            st.markdown(f'<div class="diff-highlight">{safe_diff}</div>', unsafe_allow_html=True)
                     else:
                         st.markdown("#### 差分内容")
                         st.markdown('<p style="color: #718096;">差分がありません</p>', unsafe_allow_html=True)
@@ -1773,7 +1839,7 @@ with tab2:
             ]
 
             for result in results:
-                csv_rows.append([
+                row = [
                     result.file_name,
                     "",  # マッチング方式（Phase 1では未使用）
                     result.extraction.date or "",
@@ -1793,7 +1859,10 @@ with tab2:
                     result.status,
                     " | ".join(result.differences) if result.differences else "",
                     " | ".join(result.review_reasons) if result.review_reasons else ""
-                ])
+                ]
+                # CSV数式インジェクション対策
+                sanitized_row = [sanitize_csv_cell(cell) for cell in row]
+                csv_rows.append(sanitized_row)
 
             csv_buffer = io.StringIO()
             writer = csv.writer(csv_buffer)
@@ -2514,6 +2583,8 @@ if v22_csv_path.exists():
             # すべてのカラムを明示的に文字列型にしてから出力
             for col in df_logs_csv.columns:
                 df_logs_csv[col] = df_logs_csv[col].astype(str).replace(['None', 'nan', '<NA>'], '')
+                # CSV数式インジェクション対策：危険な先頭文字をエスケープ
+                df_logs_csv[col] = df_logs_csv[col].apply(sanitize_csv_cell)
 
             csv_buffer = io.StringIO()
             df_logs_csv.to_csv(csv_buffer, index=False, encoding='utf-8-sig', quoting=1)
