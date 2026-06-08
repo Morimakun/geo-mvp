@@ -2509,8 +2509,14 @@ if v22_csv_path.exists():
             # ログCSVダウンロード
             st.markdown("#### ログダウンロード")
 
+            # CSV出力用：数値列を文字列として保持（0.0ではなく0として出力）
+            df_logs_csv = df_logs.copy()
+            # すべてのカラムを明示的に文字列型にしてから出力
+            for col in df_logs_csv.columns:
+                df_logs_csv[col] = df_logs_csv[col].astype(str).replace(['None', 'nan', '<NA>'], '')
+
             csv_buffer = io.StringIO()
-            df_logs.to_csv(csv_buffer, index=False, encoding='utf-8-sig')
+            df_logs_csv.to_csv(csv_buffer, index=False, encoding='utf-8-sig', quoting=1)
             csv_bytes = csv_buffer.getvalue().encode('utf-8-sig')
 
             st.download_button(
