@@ -2308,9 +2308,9 @@ if v22_csv_path.exists():
         if len(df_filtered) > 0:
             with st.expander("💡 デモ用：代表ページの説明", expanded=False):
                 special_pages = {
-                    "P14": ("読み取り補正の例", "AIが大きく読み違えた値（34）を補正し、CSVと一致（3）した例"),
-                    "P16": ("要確認の例", "AI読取（2）とCSV（11）が一致しないため、人間確認に回す例"),
-                    "P30": ("人間修正の例", "AIとCSVは一致（1）していても、担当者が目視確認で0に修正できる例")
+                    "P14": ("読み取り補正の例", "AIが大きく読み違えた値（34）を補正し、CSV（3）・PDF目視（3）と一致した例"),
+                    "P16": ("三者不一致の例", "AI読取（2）・CSV（11）・PDF目視（9）が全て異なるため、人間確認に回す例"),
+                    "P30": ("人間修正の例", "AI読取・CSVは1で一致しているが、PDF目視では2のため、担当者が修正できる例")
                 }
                 for page_id, (title, description) in special_pages.items():
                     if page_id in df_v22['page_id'].values:
@@ -2429,8 +2429,8 @@ if v22_csv_path.exists():
 
             with col_demo2:
                 st.markdown("#### ⚠️ P16")
-                st.caption("要確認の例")
-                st.caption("FAX: 2 / CSV: 11")
+                st.caption("三者不一致の例")
+                st.caption("FAX読取: 2 / CSV: 11 / 目視: 9")
                 if 16 in available_demo_pages:
                     if st.button("P16 を開く", use_container_width=True, key="demo_select_p16"):
                         st.session_state.confirmation_selected_page = 16
@@ -2442,7 +2442,7 @@ if v22_csv_path.exists():
             with col_demo3:
                 st.markdown("#### ✏️ P30")
                 st.caption("人間修正の例")
-                st.caption("FAX: 1 / CSV: 1 → 0 に修正")
+                st.caption("FAX読取: 1 / CSV: 1 / 目視: 2 → 2 に修正")
                 if 30 in available_demo_pages:
                     if st.button("P30 を開く", use_container_width=True, key="demo_select_p30"):
                         st.session_state.confirmation_selected_page = 30
