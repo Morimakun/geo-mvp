@@ -60,6 +60,26 @@ import uuid
 import random
 import string
 
+def normalize_na_value(value):
+    """
+    None, nan, NaN, <NA>, float("nan") を空欄に正規化
+    """
+    if value is None:
+        return ""
+
+    value_str = str(value).lower().strip()
+    if value_str in ('nan', '<na>', 'none'):
+        return ""
+
+    # float("nan") チェック
+    try:
+        if pd.isna(value):
+            return ""
+    except (TypeError, ValueError):
+        pass
+
+    return str(value) if value else ""
+
 def normalize_page_number(value):
     """
     ページ番号を整数に正規化
@@ -117,7 +137,7 @@ def build_confirmation_log_row(
         "classification": classification if classification else "",
         "auto_confirm_candidate": str(auto_confirm).lower() if auto_confirm is not None else "",
         "review_required": str(review_required).lower() if review_required is not None else "",
-        "review_reason": review_reason if review_reason else "",
+        "review_reason": normalize_na_value(review_reason),
         "user_action": user_action,
         "user_decision": user_decision,
         "manual_correction_value": str(manual_correction_value) if manual_correction_value is not None else "",
@@ -2446,6 +2466,13 @@ if v22_csv_path.exists():
 
             with col_btn1:
                 if st.button("操作を記録", key="confirmation_confirm_btn"):
+                    # 手動修正時の入力値検証
+                    if operation == "手動修正":
+                        # 0 は有効値なので、is not None で判定
+                        if manual_correction_value is None or (isinstance(manual_correction_value, str) and manual_correction_value.strip() == ""):
+                            st.error("手動修正を選択した場合、修正後の値を入力してください。（0 も有効です）")
+                            st.stop()
+
                     # ログ行を構築
                     if operation == "確認済み（V2.2を採用）":
                         log_row = build_confirmation_log_row(
@@ -2460,7 +2487,7 @@ if v22_csv_path.exists():
                             review_reason=selected_row.get('review_reasons', ''),
                             user_action="confirm",
                             user_decision="accept_v22",
-                            manual_correction_value=selected_row.get('v22_value'),
+                            manual_correction_value=None,  # 手動修正ではないので空欄
                             decision_reason=decision_reason,
                             before_status=before_status,
                             after_status="confirmed",
@@ -2482,7 +2509,7 @@ if v22_csv_path.exists():
                             review_reason=selected_row.get('review_reasons', ''),
                             user_action="select_v22",
                             user_decision="accept_v22",
-                            manual_correction_value=selected_row.get('v22_value'),
+                            manual_correction_value=None,  # 手動修正ではないので空欄
                             decision_reason=decision_reason,
                             before_status=before_status,
                             after_status="confirmed",
@@ -2504,7 +2531,7 @@ if v22_csv_path.exists():
                             review_reason=selected_row.get('review_reasons', ''),
                             user_action="select_csv",
                             user_decision="accept_csv",
-                            manual_correction_value=selected_row.get('csv_value'),
+                            manual_correction_value=None,  # 手動修正ではないので空欄
                             decision_reason=decision_reason,
                             before_status=before_status,
                             after_status="confirmed",
@@ -2526,7 +2553,7 @@ if v22_csv_path.exists():
                             review_reason=selected_row.get('review_reasons', ''),
                             user_action="select_pdf",
                             user_decision="accept_pdf",
-                            manual_correction_value=manual_correction_value,
+                            manual_correction_value=None,  # 手動修正ではないので空欄
                             decision_reason=decision_reason,
                             before_status=before_status,
                             after_status="confirmed",
@@ -2548,7 +2575,7 @@ if v22_csv_path.exists():
                             review_reason=selected_row.get('review_reasons', ''),
                             user_action="select_v3",
                             user_decision="accept_v3",
-                            manual_correction_value=selected_row.get('v3_value'),
+                            manual_correction_value=None,  # 手動修正ではないので空欄
                             decision_reason=decision_reason,
                             before_status=before_status,
                             after_status="confirmed",
