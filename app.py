@@ -2300,9 +2300,12 @@ if v22_csv_path.exists():
         page_numbers = sorted(df_v22["page_number_norm"].dropna().unique())
 
         if len(page_numbers) > 0:
-            # セッション状態の初期値を設定
+            # selectbox描画前に、両方の初期化を完了
+            if "confirmation_page_select" not in st.session_state:
+                st.session_state.confirmation_page_select = int(page_numbers[0])
+
             if "confirmation_selected_page" not in st.session_state:
-                st.session_state.confirmation_selected_page = int(page_numbers[0])
+                st.session_state.confirmation_selected_page = st.session_state.confirmation_page_select
 
             # デモ用クイック選択ボタンの有効/無効を判定
             demo_pages = {14, 16, 30}
@@ -2352,9 +2355,8 @@ if v22_csv_path.exists():
                 key="confirmation_page_select"
             )
 
-            # selectboxの選択値をセッション状態に反映（両方を同期）
+            # selectboxの選択値をセッション状態に反映（confirmation_selected_pageのみ）
             st.session_state.confirmation_selected_page = selected_page_no
-            st.session_state.confirmation_page_select = selected_page_no
 
             # 選択ページのデータを取得（ページ番号で検索）
             selected_rows = df_v22[df_v22['page_number_norm'] == selected_page_no]
