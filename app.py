@@ -2275,6 +2275,23 @@ if v22_csv_path.exists():
         )
 
         # 対象ページ選択
+        st.info("対象ページは下のプルダウンから選択できます。P14/P16/P30はデモ用の代表ページです。")
+
+        # デモ用クイック選択ボタン
+        col_demo1, col_demo2, col_demo3 = st.columns(3)
+        with col_demo1:
+            if st.button("P14を選択", use_container_width=True, key="demo_select_p14"):
+                st.session_state.demo_selected_page = "P14"
+                st.rerun()
+        with col_demo2:
+            if st.button("P16を選択", use_container_width=True, key="demo_select_p16"):
+                st.session_state.demo_selected_page = "P16"
+                st.rerun()
+        with col_demo3:
+            if st.button("P30を選択", use_container_width=True, key="demo_select_p30"):
+                st.session_state.demo_selected_page = "P30"
+                st.rerun()
+
         page_options = []
         for _, row in df_v22.iterrows():
             page_id = row['page_id']
@@ -2286,9 +2303,19 @@ if v22_csv_path.exists():
             page_options.append((page_id, label))
 
         if len(page_options) > 0:
+            # デモ選択の初期値を selectbox に反映
+            demo_selected = st.session_state.get("demo_selected_page", None)
+            default_index = 0
+            if demo_selected:
+                for idx, (page_id, label) in enumerate(page_options):
+                    if page_id == demo_selected:
+                        default_index = idx
+                        break
+
             selected_page_label = st.selectbox(
                 "対象ページを選択",
                 options=[label for _, label in page_options],
+                index=default_index,
                 key="confirmation_page_select"
             )
 
@@ -2551,6 +2578,40 @@ if v22_csv_path.exists():
                     st.session_state.confirmation_logs.append(log_row)
 
                     st.success(f"✅ ログを記録しました ({len(st.session_state.confirmation_logs)}件)")
+
+        # ===== デモ用取り消し機能 =====
+        if len(st.session_state.confirmation_logs) > 0:
+            st.divider()
+            st.markdown("#### デモ用ログ取り消し機能")
+
+            col_undo1, col_undo2 = st.columns(2)
+
+            with col_undo1:
+                if st.button("↩️ 直前のログを取り消す", use_container_width=True, key="undo_last_log"):
+                    if len(st.session_state.confirmation_logs) > 0:
+                        st.session_state.confirmation_logs.pop()
+                        st.success("✅ 直前のログを取り消しました")
+                        st.rerun()
+                    else:
+                        st.info("取り消すログがありません")
+
+            with col_undo2:
+                # 全クリア用チェックボックス
+                enable_clear = st.checkbox(
+                    "全クリアを有効にする",
+                    value=False,
+                    key="enable_full_clear"
+                )
+
+                if enable_clear:
+                    if st.button("🗑️ このセッションのログを全クリア", use_container_width=True, key="clear_all_logs"):
+                        st.session_state.confirmation_logs = []
+                        st.success("✅ このセッションのログを全クリアしました")
+                        st.rerun()
+
+            # 注意書き
+            st.warning("⚠️ **この取り消し機能はデモ用です。** 本格導入時は、削除ではなく取消履歴を残す方式を推奨します。")
+            st.divider()
 
         # ログ一覧表示
         if len(st.session_state.confirmation_logs) > 0:
