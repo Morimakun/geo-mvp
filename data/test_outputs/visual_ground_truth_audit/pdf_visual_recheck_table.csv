@@ -1,0 +1,6 @@
+﻿page,field_name,current_visual_candidate,v3_value,v22_value,csv_value,human_recheck_value,human_recheck_confidence,human_recheck_note,image_full_page,image_crop,status
+P14,AI合計欄,3,34,3,3,,,,P14_full_page.png,,reference_check
+P16,AI合計欄,9,9,2,11,,,,P16_full_page.png,,needs_human_recheck
+P30,AI合計欄,2,2,1,1,,,,P30_full_page.png,,needs_human_recheck
+P19,CZ合計欄,blank,-,-,-,,,,P19_full_page.png,,needs_human_recheck
+P29,CZ合計欄,blank,-,-,-,,,,P29_full_page.png,,needs_human_recheck
