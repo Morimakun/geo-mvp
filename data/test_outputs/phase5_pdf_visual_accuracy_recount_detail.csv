@@ -1,0 +1,31 @@
+page,pdf_visual_ai_total,v3_ai_total,v22_ai_total,csv_ai_total,v3_match_pdf,v22_match_pdf,csv_match_pdf,auto_confirm_candidate,review_required,dangerous_auto_confirm,recount_classification,note
+P1,5,5.0,5.0,5.0,True,True,True,True,False,False,pdf_match_all,
+P2,1,0.0,0.0,2.0,False,False,False,False,True,False,review_required_true,
+P3,3,3.0,3.0,1.0,True,True,False,False,True,False,v3_matches_pdf,
+P4,3,,,,False,False,False,False,True,False,review_required_true,
+P5,2,2.0,2.0,2.0,True,True,True,True,False,False,pdf_match_all,
+P6,3,3.0,3.0,2.0,True,True,False,False,True,False,v3_matches_pdf,
+P7,3,3.0,3.0,3.0,True,True,True,True,False,False,pdf_match_all,
+P8,1,1.0,1.0,1.0,True,True,True,True,False,False,pdf_match_all,
+P9,2,2.0,2.0,2.0,True,True,True,True,False,False,pdf_match_all,
+P10,2,0.0,0.0,0.0,False,False,False,True,False,True,dangerous_auto_confirm,
+P11,2,0.0,0.0,2.0,False,False,True,False,True,False,csv_matches_pdf,
+P12,0,0.0,1.0,2.0,True,False,False,False,True,False,v3_matches_pdf,
+P13,2,2.0,2.0,2.0,True,True,True,True,False,False,pdf_match_all,
+P14,3,34.0,3.0,3.0,False,True,True,True,False,False,v22_csv_match_pdf,"Confirmed: v22=3, csv=3, pdf=3"
+P15,4,4.0,2.0,2.0,True,False,False,False,True,False,v3_matches_pdf,
+P16,9,9.0,2.0,11.0,True,False,False,False,True,False,v3_matches_pdf,"Manual check: v22=2, csv=11, pdf=9 (v3 matches pdf)"
+P17,3,2.0,2.0,3.0,False,False,True,False,True,False,csv_matches_pdf,
+P18,2,1.0,1.0,1.0,False,False,False,True,False,True,dangerous_auto_confirm,
+P19,4,2.0,2.0,2.0,False,False,False,True,False,True,dangerous_auto_confirm,Blank expected
+P20,6,6.0,4.0,5.0,True,False,False,False,True,False,v3_matches_pdf,
+P21,0,3.0,3.0,3.0,False,False,False,True,False,True,dangerous_auto_confirm,
+P22,1,2.0,2.0,2.0,False,False,False,True,False,True,dangerous_auto_confirm,
+P23,4,1.0,1.0,1.0,False,False,False,True,False,True,dangerous_auto_confirm,
+P24,2,7.0,2.0,1.0,False,True,False,False,True,False,v22_matches_pdf,
+P25,0,3.0,3.0,3.0,False,False,False,True,False,True,dangerous_auto_confirm,
+P26,5,2.0,2.0,2.0,False,False,False,True,False,True,dangerous_auto_confirm,
+P27,4,0.0,0.0,0.0,False,False,False,True,False,True,dangerous_auto_confirm,
+P28,0,0.0,0.0,2.0,True,True,False,False,True,False,v3_matches_pdf,
+P29,2,2.0,2.0,3.0,True,True,False,False,True,False,v3_matches_pdf,Blank expected
+P30,2,2.0,1.0,1.0,True,False,False,True,False,True,v3_matches_pdf,"Manual check: v22=1, csv=1, pdf=2 (danger if auto_confirm)"

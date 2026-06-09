@@ -1,0 +1,19 @@
+metric,value
+v3 vs PDF目視 - match_count,15.0
+v3 vs PDF目視 - total,30.0
+v3 vs PDF目視 - match_rate(%),50.0
+V2.2 vs PDF目視 - match_count,12.0
+V2.2 vs PDF目視 - total,30.0
+V2.2 vs PDF目視 - match_rate(%),40.0
+CSV vs PDF目視 - match_count,9.0
+CSV vs PDF目視 - total,30.0
+CSV vs PDF目視 - match_rate(%),30.0
+auto_confirm_candidate - correct_count,7.0
+auto_confirm_candidate - total,17.0
+auto_confirm_candidate - correct_rate(%),41.18
+危険誤確定 - count,10.0
+危険誤確定 - rate_of_auto_confirm(%),58.82
+危険誤確定 - rate_of_all_30(%),33.33
+review_required捕捉 - correct_count,8.0
+review_required捕捉 - mismatch_count,18.0
+review_required捕捉 - capture_rate(%),44.44
