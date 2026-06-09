@@ -1,6 +1,6 @@
 ﻿page,field_name,current_visual_candidate,v3_value,v22_value,csv_value,human_recheck_value,human_recheck_confidence,human_recheck_note,image_full_page,image_crop,status
-P14,AI合計欄,3,34,3,3,,,,P14_full_page.png,,reference_check
-P16,AI合計欄,9,9,2,11,,,,P16_full_page.png,,needs_human_recheck
-P30,AI合計欄,2,2,1,1,,,,P30_full_page.png,,needs_human_recheck
-P19,CZ合計欄,blank,-,-,-,,,,P19_full_page.png,,needs_human_recheck
-P29,CZ合計欄,blank,-,-,-,,,,P29_full_page.png,,needs_human_recheck
+P14,AI合計欄,3,34,3,3,3,高,手書きで数字が修正されていてぐしゃっとしているが、上の正の字の画数合計が3、数字も3に見えるので3,P14_full_page.png,,confirmed_by_human
+P16,AI合計欄,9,9,2,11,9,高,上の正の字の画数合計も9,P16_full_page.png,,confirmed_by_human
+P30,AI合計欄,2,2,1,1,2,高,上の正の字の画数合計も2画,P30_full_page.png,,confirmed_by_human
+P19,CZ合計欄,blank,-,-,-,blank,高,帳票上空欄,P19_full_page.png,,confirmed_by_human
+P29,CZ合計欄,blank,-,-,-,blank,高,帳票上空欄,P29_full_page.png,,confirmed_by_human
