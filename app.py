@@ -1215,7 +1215,7 @@ with tab1:
                             st.info(reason)
                     else:
                         st.markdown("#### 確認理由")
-                        st.markdown('<p style="color: #718096;">確認不要</p>', unsafe_allow_html=True)
+                        st.markdown('<p style="color: #718096;">確認優先度が低い（参考一致候補）</p>', unsafe_allow_html=True)
 
         # ===== ダウンロード =====
         with st.container():
@@ -1868,7 +1868,7 @@ with tab2:
                             st.info(reason)
                     else:
                         st.markdown("#### 確認理由")
-                        st.markdown('<p style="color: #718096;">確認不要</p>', unsafe_allow_html=True)
+                        st.markdown('<p style="color: #718096;">確認優先度が低い（参考一致候補）</p>', unsafe_allow_html=True)
 
         # ===== ダウンロード =====
         with st.container():
@@ -2363,8 +2363,8 @@ if v22_csv_path.exists():
         # 注意書き
         st.warning(
             "⚠️ **V2.2は参考判定です。**\n"
-            "• 初期導入では、自動確定候補も必要に応じてサンプル確認してください。\n"
-            "• CSV不一致、低信頼度、悪化検知は必ず人間確認してください。\n"
+            "• 本番初期では、参考一致候補も含めてすべてのページを人間確認してください。\n"
+            "• CSV不一致、信頼度が低い場合、または差分が大きい場合は必ず確認してください。\n"
             "• 最終決定責任は確認担当者にあります。"
         )
 
@@ -2544,7 +2544,7 @@ if v22_csv_path.exists():
                 "• **CSV側を正とする** → Salesforce CSV の値が正しい\n"
                 "• **手動で修正する** → 目視確認の結果、別の値が正しい（0 も有効）\n"
                 "• **保留する** → 今は判断できないので後で確認する\n"
-                "• **対応不要** → このページは確認不要・スキップする\n\n"
+                "• **確認完了（同じ値）** → PDF・CSV・AI読取がすべて一致しており、修正は不要\n\n"
                 "💡 **迷った場合は、保留または手動修正を選んでください。**"
             )
 
