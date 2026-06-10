@@ -1,6 +1,6 @@
 ﻿page,pdf_visual_ai_total,v3_ai_total,v22_ai_total,csv_ai_total,v3_match_pdf,v22_match_pdf,csv_match_pdf,auto_confirm_candidate,review_required,dangerous_auto_confirm,recount_classification,note,gt_source,gt_audit_status,gt_audit_note
 P1,5,5.0,5.0,5.0,True,True,True,True,False,False,pdf_match_all,,answer_sheet,not_targeted,
-P2,1,0.0,0.0,2.0,False,False,False,False,True,False,review_required_true,,answer_sheet,reference_failure_candidate,
+P2,1,0.0,0.0,2.0,False,False,False,False,True,False,review_required_true,,human_reconfirmed,confirmed_by_human,将大さん目視確認済み。正の字で記入
 P3,3,3.0,3.0,1.0,True,True,False,False,True,False,v3_matches_pdf,,answer_sheet,not_targeted,
 P4,3,,,,False,False,False,False,True,False,review_required_true,,answer_sheet,not_targeted,
 P5,2,2.0,2.0,2.0,True,True,True,True,False,False,pdf_match_all,,answer_sheet,not_targeted,
@@ -8,24 +8,24 @@ P6,3,3.0,3.0,2.0,True,True,False,False,True,False,v3_matches_pdf,,answer_sheet,n
 P7,3,3.0,3.0,3.0,True,True,True,True,False,False,pdf_match_all,,answer_sheet,not_targeted,
 P8,1,1.0,1.0,1.0,True,True,True,True,False,False,pdf_match_all,,answer_sheet,not_targeted,
 P9,2,2.0,2.0,2.0,True,True,True,True,False,False,pdf_match_all,,answer_sheet,not_targeted,
-P10,2,0.0,0.0,0.0,False,False,False,True,False,True,dangerous_auto_confirm,,pending_recheck,needs_human_recheck,
-P11,2,0.0,0.0,2.0,False,False,True,False,True,False,csv_matches_pdf,,answer_sheet,reference_failure_candidate,
+P10,2,0.0,0.0,0.0,False,False,False,True,False,True,dangerous_auto_confirm,,human_reconfirmed,confirmed_by_human,将大さん目視確認済み。正の字で記入
+P11,2,0.0,0.0,2.0,False,False,True,False,True,False,csv_matches_pdf,,human_reconfirmed,confirmed_by_human,将大さん目視確認済み。
 P12,0,0.0,1.0,2.0,True,False,False,False,True,False,v3_matches_pdf,,answer_sheet,not_targeted,
 P13,2,2.0,2.0,2.0,True,True,True,True,False,False,pdf_match_all,,answer_sheet,not_targeted,
 P14,3,34.0,3.0,3.0,False,True,True,True,False,False,v22_csv_match_pdf,"Confirmed: v22=3, csv=3, pdf=3",human_reconfirmed,already_confirmed,
 P15,4,4.0,2.0,2.0,True,False,False,False,True,False,v3_matches_pdf,,answer_sheet,not_targeted,
 P16,9,9.0,2.0,11.0,True,False,False,False,True,False,v3_matches_pdf,"Manual check: v22=2, csv=11, pdf=9 (v3 matches pdf)",human_reconfirmed,already_confirmed,
-P17,3,2.0,2.0,3.0,False,False,True,False,True,False,csv_matches_pdf,,answer_sheet,reference_failure_candidate,
-P18,2,1.0,1.0,1.0,False,False,False,True,False,True,dangerous_auto_confirm,,pending_recheck,needs_human_recheck,
-P19,4,2.0,2.0,2.0,False,False,False,True,False,True,dangerous_auto_confirm,Blank expected,pending_recheck,needs_human_recheck,CZ合計欄=空欄は本人確認済み。AI合計欄は再確認対象。
+P17,3,2.0,2.0,3.0,False,False,True,False,True,False,csv_matches_pdf,,human_reconfirmed,confirmed_by_human,将大さん目視確認済み。
+P18,2,1.0,1.0,1.0,False,False,False,True,False,True,dangerous_auto_confirm,,human_reconfirmed,confirmed_by_human,将大さん目視確認済み。
+P19,4,2.0,2.0,2.0,False,False,False,True,False,True,dangerous_auto_confirm,Blank expected,human_reconfirmed,confirmed_by_human,将大さん目視確認済み。
 P20,6,6.0,4.0,5.0,True,False,False,False,True,False,v3_matches_pdf,,answer_sheet,not_targeted,
-P21,0,3.0,3.0,3.0,False,False,False,True,False,True,dangerous_auto_confirm,,pending_recheck,needs_human_recheck,
-P22,1,2.0,2.0,2.0,False,False,False,True,False,True,dangerous_auto_confirm,,pending_recheck,needs_human_recheck,
-P23,4,1.0,1.0,1.0,False,False,False,True,False,True,dangerous_auto_confirm,,pending_recheck,needs_human_recheck,
-P24,2,7.0,2.0,1.0,False,True,False,False,True,False,v22_matches_pdf,,answer_sheet,reference_failure_candidate,
-P25,0,3.0,3.0,3.0,False,False,False,True,False,True,dangerous_auto_confirm,,pending_recheck,needs_human_recheck,
-P26,5,2.0,2.0,2.0,False,False,False,True,False,True,dangerous_auto_confirm,,pending_recheck,needs_human_recheck,
-P27,4,0.0,0.0,0.0,False,False,False,True,False,True,dangerous_auto_confirm,,pending_recheck,needs_human_recheck,
+P21,0,3.0,3.0,3.0,False,False,False,True,False,True,dangerous_auto_confirm,,human_reconfirmed,confirmed_by_human,将大さん目視確認済み。
+P22,1,2.0,2.0,2.0,False,False,False,True,False,True,dangerous_auto_confirm,,human_reconfirmed,confirmed_by_human,将大さん目視確認済み。
+P23,4,1.0,1.0,1.0,False,False,False,True,False,True,dangerous_auto_confirm,,human_reconfirmed,confirmed_by_human,将大さん目視確認済み。
+P24,2,7.0,2.0,1.0,False,True,False,False,True,False,v22_matches_pdf,,human_reconfirmed,confirmed_by_human,将大さん目視確認済み。
+P25,0,3.0,3.0,3.0,False,False,False,True,False,True,dangerous_auto_confirm,,human_reconfirmed,confirmed_by_human,将大さん目視確認済み。
+P26,5,2.0,2.0,2.0,False,False,False,True,False,True,dangerous_auto_confirm,,human_reconfirmed,confirmed_by_human,将大さん目視確認済み。
+P27,4,0.0,0.0,0.0,False,False,False,True,False,True,dangerous_auto_confirm,,human_reconfirmed,confirmed_by_human,将大さん目視確認済み。
 P28,0,0.0,0.0,2.0,True,True,False,False,True,False,v3_matches_pdf,,answer_sheet,not_targeted,
 P29,2,2.0,2.0,3.0,True,True,False,False,True,False,v3_matches_pdf,Blank expected,answer_sheet,not_targeted,CZ合計欄=空欄は本人確認済み。AI合計欄はanswer_sheet由来。
 P30,2,2.0,1.0,1.0,True,False,False,True,False,True,v3_matches_pdf,"Manual check: v22=1, csv=1, pdf=2 (danger if auto_confirm)",human_reconfirmed,already_confirmed,
