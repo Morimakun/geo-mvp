@@ -1,0 +1,17 @@
+﻿page,field_name,current_gt,v3_value,v22_value,csv_value,suspect_reason,human_recheck_value,human_recheck_confidence,human_recheck_note,gt_source_before,gt_source_after,image_crop,image_full_page,status
+P10,AI合計欄,2,0.0,0.0,0.0,複数ソース一致なのにPDF目視正解候補と食い違う（GT監査対象）,,,,answer_sheet,,P10_ai_total_crop.png,P10_full_page.png,needs_human_recheck
+P18,AI合計欄,2,1.0,1.0,1.0,複数ソース一致なのにPDF目視正解候補と食い違う（GT監査対象）,,,,answer_sheet,,P18_ai_total_crop.png,P18_full_page.png,needs_human_recheck
+P19,AI合計欄,4,2.0,2.0,2.0,複数ソース一致なのにPDF目視正解候補と食い違う（GT監査対象）,,,,answer_sheet,,P19_ai_total_crop.png,P19_full_page.png,needs_human_recheck
+P21,AI合計欄,0,3.0,3.0,3.0,複数ソース一致なのにPDF目視正解候補と食い違う（GT監査対象）,,,,answer_sheet,,P21_ai_total_crop.png,P21_full_page.png,needs_human_recheck
+P22,AI合計欄,1,2.0,2.0,2.0,複数ソース一致なのにPDF目視正解候補と食い違う（GT監査対象）,,,,answer_sheet,,P22_ai_total_crop.png,P22_full_page.png,needs_human_recheck
+P23,AI合計欄,4,1.0,1.0,1.0,複数ソース一致なのにPDF目視正解候補と食い違う（GT監査対象）,,,,answer_sheet,,P23_ai_total_crop.png,P23_full_page.png,needs_human_recheck
+P25,AI合計欄,0,3.0,3.0,3.0,複数ソース一致なのにPDF目視正解候補と食い違う（GT監査対象）,,,,answer_sheet,,P25_ai_total_crop.png,P25_full_page.png,needs_human_recheck
+P26,AI合計欄,5,2.0,2.0,2.0,複数ソース一致なのにPDF目視正解候補と食い違う（GT監査対象）,,,,answer_sheet,,P26_ai_total_crop.png,P26_full_page.png,needs_human_recheck
+P27,AI合計欄,4,0.0,0.0,0.0,複数ソース一致なのにPDF目視正解候補と食い違う（GT監査対象）,,,,answer_sheet,,P27_ai_total_crop.png,P27_full_page.png,needs_human_recheck
+P2,AI合計欄,1,0.0,0.0,2.0,v3/v22=0 vs 目視候補>0（空欄/印の読み違い疑い）,,,,answer_sheet,,P2_ai_total_crop.png,P2_full_page.png,reference_failure_candidate
+P11,AI合計欄,2,0.0,0.0,2.0,v3/v22=0 vs 目視候補>0（空欄/印の読み違い疑い）,,,,answer_sheet,,P11_ai_total_crop.png,P11_full_page.png,reference_failure_candidate
+P14,AI合計欄,3,34.0,3.0,3.0,v3=34の過大読取（crop混入疑い）。本人確認済み=3,,,,human_reconfirmed,,P14_ai_total_crop.png,P14_full_page.png,already_confirmed
+P17,AI合計欄,3,2.0,2.0,3.0,v3/v22=2 vs 目視候補3（画数の数え落とし疑い）,,,,answer_sheet,,P17_ai_total_crop.png,P17_full_page.png,reference_failure_candidate
+P24,AI合計欄,2,7.0,2.0,1.0,v3=7の過大読取（crop混入疑い）,,,,answer_sheet,,P24_ai_total_crop.png,P24_full_page.png,reference_failure_candidate
+P16,AI合計欄,9,9.0,2.0,11.0,三者不一致例（本人確認済み=9）,,,,human_reconfirmed,,P16_ai_total_crop.png,P16_full_page.png,already_confirmed
+P30,AI合計欄,2,2.0,1.0,1.0,AI・CSV一致でも本人確認=2,,,,human_reconfirmed,,P30_ai_total_crop.png,P30_full_page.png,already_confirmed

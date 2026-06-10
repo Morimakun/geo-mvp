@@ -1,0 +1,9 @@
+﻿metric,coverage,coverage_pct,match_count,match_rate_pct,note
+v3_single,30,100.0,15,50.0,v3単独の全ページ一致率
+v22_single,30,100.0,12,40.0,V2.2単独の全ページ一致率
+csv_single,30,100.0,9,30.0,CSV単独の全ページ一致率
+tier_v3_eq_v22,23,76.67,10,43.48,v3==v22 のページ（v3値でGT照合）
+tier_v3_eq_v22_eq_csv,16,53.33,6,37.5,3ソース完全一致ページ
+tier_v3_eq_csv,16,53.33,6,37.5,v3==csv のページ
+tier_v22_eq_csv,19,63.33,7,36.84,v22==csv のページ
+tier_all_disagree,4,13.33,,,3ソースが割れたページ: v3一致=3件 / v22一致=1件 / csv一致=0件
