@@ -1,0 +1,31 @@
+﻿page,pdf_visual_ai_total,v3_value,v22_value,csv_value,v3_eq_v22,all_three_agree,possible_mapping_issue,possible_crop_issue,possible_csv_definition_issue,human_note
+P1,5,5.0,5.0,5.0,yes,yes,yes,,yes,
+P2,1,0.0,0.0,2.0,yes,no,,yes,yes, / 正の字で記入
+P3,3,3.0,3.0,1.0,yes,no,,yes,yes,
+P4,3,,,,no,no,,yes,yes,
+P5,2,2.0,2.0,2.0,yes,yes,yes,,yes,
+P6,3,3.0,3.0,2.0,yes,no,,yes,yes,
+P7,3,3.0,3.0,3.0,yes,yes,yes,,yes,
+P8,1,1.0,1.0,1.0,yes,yes,yes,,yes,
+P9,2,2.0,2.0,2.0,yes,yes,yes,,yes,
+P10,2,0.0,0.0,0.0,yes,yes,yes,,yes, / 正の字で記入
+P11,2,0.0,0.0,2.0,yes,no,,yes,yes,
+P12,0,0.0,1.0,2.0,no,no,,yes,yes,
+P13,2,2.0,2.0,2.0,yes,yes,yes,,yes,
+P14,3,34.0,3.0,3.0,no,no,,yes,yes,本人確認済み
+P15,4,4.0,2.0,2.0,no,no,,yes,yes,
+P16,9,9.0,2.0,11.0,no,no,,yes,yes,本人確認済み
+P17,3,2.0,2.0,3.0,yes,no,,yes,yes,
+P18,2,1.0,1.0,1.0,yes,yes,yes,,yes,
+P19,4,2.0,2.0,2.0,yes,yes,yes,,yes,
+P20,6,6.0,4.0,5.0,no,no,,yes,yes,
+P21,0,3.0,3.0,3.0,yes,yes,yes,,yes,
+P22,1,2.0,2.0,2.0,yes,yes,yes,,yes,
+P23,4,1.0,1.0,1.0,yes,yes,yes,,yes,
+P24,2,7.0,2.0,1.0,no,no,,yes,yes,
+P25,0,3.0,3.0,3.0,yes,yes,yes,,yes,
+P26,5,2.0,2.0,2.0,yes,yes,yes,,yes,
+P27,4,0.0,0.0,0.0,yes,yes,yes,,yes,
+P28,0,0.0,0.0,2.0,yes,no,,yes,yes,
+P29,2,2.0,2.0,3.0,yes,no,,yes,yes,
+P30,2,2.0,1.0,1.0,no,no,,yes,yes,本人確認済み
