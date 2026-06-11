@@ -1,0 +1,10 @@
+﻿metric,count,denominator,note
+total_pdf_pages,30,30.0,全PDFページ数
+key_matched_pages,23,30.0,店舗×日付キーで対応行が見つかったページ
+out_of_csv_period_pages,3,30.0,CSV対象期間外（5/19以降）
+resend_candidate_pages,2,30.0,再送FAX候補
+event_storefront_rule_needed_pages,2,30.0,イベント/店頭別分離が必要
+ai_evaluated_pages,14,,CSV対応行ありかつAI値評価可能
+ai_matched_pages,13,,AI値が一致
+ai_mismatch_pages,1,,AI値が不一致
+ai_match_rate,13,14.0,13/14

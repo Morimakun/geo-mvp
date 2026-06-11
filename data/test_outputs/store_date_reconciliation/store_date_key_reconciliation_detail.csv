@@ -1,0 +1,31 @@
+﻿page,pdf_store_name_raw,store_code,pdf_report_date,csv_row_index,match_key_status,pdf_visual_ai_total,csv_ai_total_col35,ai_match,pdf_visual_cz_total,csv_cz_total_col104,cz_match,reconciliation_status,special_case_type,note
+P1,小倉,AU1K0024112,2026/05/17,3,matched,5,5,✅ YES,,0,—,matched_ai_only,none,
+P10,イオンモール大日,AU1KC490237,2026/05/17,35,matched,2,2,✅ YES,,0,—,excluded_resend_old_version,resend,再送版
+P11,深江橋,AU1K0024104,2026/05/18,2,matched,2,2,✅ YES,,0,—,matched_ai_only,none,
+P12,広畑,AU1KC400079,2026/05/18,34,matched,,0,—,,1,—,needs_manual_review,none,
+P13,ニトリモール枚方,AU1KW740165,2026/05/18,43,matched,,2,—,,0,—,needs_manual_review,none,
+P14,イオンモール神戸北,AU1K4050139,2026/05/17,14,matched,3,3,✅ YES,,0,—,event_storefront_needs_rule,event_storefront,店頭(NO.1956 P.1)
+P15,イオンモール大日,AU1KC490237,2026/05/18,36,matched,,4,—,,0,—,needs_manual_review,none,
+P16,熊取,AU1KC310039,2026/05/18,27,matched,9,9,✅ YES,,0,—,matched_ai_only,none,
+P17,イオンモール神戸北,AU1K4050139,2026/05/18,15,matched,3,3,✅ YES,,0,—,matched_ai_only,none,
+P18,くずはモール,AU1KC901225,2026/05/18,40,matched,2,2,✅ YES,,0,—,matched_ai_only,none,
+P19,小倉,AU1K0024112,2026/05/18,4,matched,4,4,✅ YES,blank,0,—,matched_ai_only,none,
+P2,イオンモール大日,AU1KC490237,2026/05/17,35,matched,1,2,❌ NO,,0,—,excluded_resend_old_version,resend,再送前
+P20,,,2026/05/18,,unknown,,,—,,,—,needs_manual_review,none,店名なし
+P21,明石大久保,AU1KC400012,2026/05/18,29,matched,0,0,✅ YES,,2,—,matched_ai_only,none,
+P22,ララポートEXPOCITY,AU1K4050055,2026/05/18,13,matched,1,1,✅ YES,,0,—,matched_ai_only,none,
+P23,羽曳野伊賀,AU1K4150749,2026/05/18,17,matched,4,4,✅ YES,,0,—,matched_ai_only,none,
+P24,,,2026/05/18,,unknown,2,,—,,,—,needs_manual_review,none,店名未特定
+P25,高砂明姫,AU1K4280454,2026/05/18,19,matched,0,0,✅ YES,,1,—,matched_ai_only,none,
+P26,尼崎下坂部,AU1K0620331,2026/05/19,,out_of_csv_period,5,,—,,,—,excluded_out_of_period,out_of_csv_period,5/19対象外
+P27,羽曳野伊賀,AU1K4150749,2026/05/19,,out_of_csv_period,4,,—,,,—,excluded_out_of_period,out_of_csv_period,5/19対象外
+P28,宝殿,AU1KC400038,2026/05/19,,out_of_csv_period,,,—,,,—,excluded_out_of_period,out_of_csv_period,5/19対象外
+P29,松井山手,AU1K0620604,2026/05/18,7,matched,,2,—,blank,0,—,needs_manual_review,none,
+P3,高石,AU1KC310021,2026/05/17,25,matched,,3,—,,0,—,needs_manual_review,none,
+P30,JR神戸北,AU1KC400020,2026/05/18,31,matched,2,2,✅ YES,,0,—,matched_ai_only,none,
+P4,ニトリモール枚方,AU1KW740165,2026/05/17,42,matched,,3,—,,0,—,needs_manual_review,none,多頁1/4
+P5,,,2026/05/17,,unknown,,,—,,,—,needs_manual_review,none,店名なし
+P6,,,2026/05/17,,unknown,,,—,,,—,needs_manual_review,none,店名なし
+P7,堺北花田,AU1KB830201,2026/05/17,22,matched,,3,—,,0,—,needs_manual_review,none,
+P8,JR神戸北,AU1KC400020,2026/05/17,30,matched,,1,—,,0,—,needs_manual_review,none,
+P9,イオンモール神戸北,AU1K4050139,2026/05/17,14,matched,,3,—,,0,—,event_storefront_needs_rule,event_storefront,イベント(NO.1956 P.2)
