@@ -55,7 +55,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
-test_*.py
+/test_*.py
 ~*
 
 # Real customer data - NOT tracked in Git (Phase 6+)
