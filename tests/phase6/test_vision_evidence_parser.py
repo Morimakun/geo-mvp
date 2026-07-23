@@ -331,6 +331,35 @@ class TestLegacyCompatibility:
         assert page.intro_total is None
         assert page.intro_evidence.written_total.status == EvidenceStatus.NOT_OBSERVED
 
+    def test_p66_pending_observation_requires_allow_not_observed(self):
+        # P66の正の字状態はStep 3Bの実画像抽出まで未確定。unreadable/no_marks_observed/
+        # no_valueのいずれにも仮置きしないため、Vision結果ではないpending_observation
+        # fixtureとして保持し、allow_not_observed=Trueでのみ読める。
+        payload = _load_fixture("legacy", "pending_observation", "p66_pending.json")
+        with pytest.raises(VisionEvidenceContractError):
+            parse_vision_evidence_response(
+                payload,
+                expected_page_no=66,
+                expected_form_version="old",
+                selected_business_date=date(2026, 6, 25),
+            )
+
+    def test_p66_pending_observation_confirmed_fields_and_unconfirmed_tally(self):
+        payload = _load_fixture("legacy", "pending_observation", "p66_pending.json")
+        page = parse_vision_evidence_response(
+            payload,
+            expected_page_no=66,
+            expected_form_version="old",
+            selected_business_date=date(2026, 6, 25),
+            allow_not_observed=True,
+        )
+        # 確認済みの事実（旧帳票には店舗コード欄自体が存在しない、紹介の記載合計=6）
+        assert page.store_code_evidence.status == EvidenceStatus.NOT_APPLICABLE
+        assert page.intro_total == 6
+        # 未確認の正の字状態はnot_observedのまま。marks_present等の確定的な主張は行わない。
+        assert page.intro_evidence.tally.observation_status == TallyObservationStatus.NOT_OBSERVED
+        assert page.intro_evidence.tally.tally_count is None
+
 
 # ============================================================
 # 問題ページfixture
@@ -375,27 +404,20 @@ class TestFixtureP59:
         assert page.intro_evidence.tally.tally_count is None
 
 
-class TestFixtureP66:
-    def test_p66_written_total_6_store_code_not_applicable(self):
-        payload = _load_fixture("p66.json")
-        page = parse_vision_evidence_response(
-            payload,
-            expected_page_no=66,
-            expected_form_version="old",
-            selected_business_date=date(2026, 6, 25),
-        )
-        assert page.intro_total == 6
+# P66の実データはtally状態が未確定のため通常fixtureから除外した（別途
+# TestLegacyCompatibility.test_p66_pending_observation_* を参照）。
+# 「旧帳票では店舗コード欄自体が存在しない」という契約上のふるまいは、
+# P66の実データとは切り離し、合成payloadだけで単体テストする。
+class TestOldFormStoreCodeNotApplicable:
+    def test_old_form_store_code_not_applicable_is_a_normal_status(self):
+        payload = _example_payload()
+        payload["form_version"] = "old"
+        payload["store_code"] = {
+            "raw_value": None,
+            "status": "not_applicable",
+            "confidence": None,
+            "notes": "旧帳票には店舗コード欄自体が存在しない（合成payloadによる契約レベルの単体テスト）",
+        }
+        page = _parse_example(payload, expected_form_version="old")
         assert page.store_code_evidence.status == EvidenceStatus.NOT_APPLICABLE
-
-    def test_p66_tally_count_is_not_fabricated(self):
-        payload = _load_fixture("p66.json")
-        page = parse_vision_evidence_response(
-            payload,
-            expected_page_no=66,
-            expected_form_version="old",
-            selected_business_date=date(2026, 6, 25),
-        )
-        # 正の字状態は未確認のため、marks_present/no_marks_observedのような確定的な
-        # 主張はfixtureへ入れていない（tally_countが具体的な数へ化けないことを確認する）。
-        assert page.intro_evidence.tally.observation_status != TallyObservationStatus.MARKS_PRESENT
-        assert page.intro_evidence.tally.tally_count is None
+        assert page.store_code_evidence.raw_value is None

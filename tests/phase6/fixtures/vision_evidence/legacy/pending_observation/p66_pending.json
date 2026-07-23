@@ -1,0 +1,43 @@
+{
+  "_fixture_notice": "これはVision抽出結果ではない。P66の正の字状態はStep 3Bの実画像抽出まで未確定であり、unreadable/no_marks_observed/no_valueのいずれにも仮置きしない。allow_not_observed=Trueでのみ読める非Vision結果fixture。",
+  "page_no": 66,
+  "form_version": "old",
+  "store_code": {
+    "raw_value": null,
+    "status": "not_applicable",
+    "confidence": null,
+    "notes": "旧帳票にはAU1K店舗コード欄自体が存在しないため確定的にnot_applicable（この事実自体は未確認ではない）"
+  },
+  "intro": {
+    "written_total": {
+      "value": 6,
+      "status": "observed",
+      "confidence": "high",
+      "notes": "確認済みの記載合計値"
+    },
+    "tally": {
+      "observation_status": "not_observed",
+      "complete_five_groups": null,
+      "remainder_strokes": null,
+      "confidence": null,
+      "notes": "Step 3Bの実画像抽出まで未確定。unreadable/no_marks_observed/no_valueのいずれも実観測に基づかない仮置きであり使用しない",
+      "components": []
+    }
+  },
+  "voice": {
+    "written_total": {
+      "value": null,
+      "status": "not_observed",
+      "confidence": null,
+      "notes": "未確認（本fixtureの対象外）"
+    },
+    "tally": {
+      "observation_status": "not_observed",
+      "complete_five_groups": null,
+      "remainder_strokes": null,
+      "confidence": null,
+      "notes": "未確認（本fixtureの対象外）",
+      "components": []
+    }
+  }
+}
