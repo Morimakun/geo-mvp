@@ -1,0 +1,42 @@
+{
+  "page_no": 41,
+  "form_version": "new",
+  "store_code": {
+    "raw_value": null,
+    "status": "not_observed",
+    "confidence": null,
+    "notes": ""
+  },
+  "intro": {
+    "written_total": {
+      "value": null,
+      "status": "not_observed",
+      "confidence": null,
+      "notes": "過去の旧AI処理では紹介総数の数字欄が未抽出だった状態を再現するfixture。nullのまま保持し、0へ変換してはならない"
+    },
+    "tally": {
+      "observation_status": "not_observed",
+      "complete_five_groups": null,
+      "remainder_strokes": null,
+      "confidence": null,
+      "notes": "",
+      "components": []
+    }
+  },
+  "voice": {
+    "written_total": {
+      "value": null,
+      "status": "not_observed",
+      "confidence": null,
+      "notes": ""
+    },
+    "tally": {
+      "observation_status": "not_observed",
+      "complete_five_groups": null,
+      "remainder_strokes": null,
+      "confidence": null,
+      "notes": "",
+      "components": []
+    }
+  }
+}

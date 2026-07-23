@@ -1,0 +1,42 @@
+{
+  "page_no": 32,
+  "form_version": "new",
+  "store_code": {
+    "raw_value": "4330093",
+    "status": "observed",
+    "confidence": "high",
+    "notes": "正解値。AIの過去誤読(430093, 1桁欠落)ではなく正しい店舗コードを保持するfixture"
+  },
+  "intro": {
+    "written_total": {
+      "value": 1,
+      "status": "observed",
+      "confidence": "high",
+      "notes": ""
+    },
+    "tally": {
+      "observation_status": "no_marks_observed",
+      "complete_five_groups": null,
+      "remainder_strokes": null,
+      "confidence": "medium",
+      "notes": "",
+      "components": []
+    }
+  },
+  "voice": {
+    "written_total": {
+      "value": null,
+      "status": "no_value",
+      "confidence": null,
+      "notes": "このfixtureでは検証対象外の項目（プレースホルダー）"
+    },
+    "tally": {
+      "observation_status": "no_marks_observed",
+      "complete_five_groups": null,
+      "remainder_strokes": null,
+      "confidence": null,
+      "notes": "このfixtureでは検証対象外の項目（プレースホルダー）",
+      "components": []
+    }
+  }
+}
