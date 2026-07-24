@@ -1,7 +1,7 @@
 """Phase 6: Vision抽出プロンプト文字列（Step 3A / vision evidence prompt）。
 
 設計根拠: docs/PHASE_6_TRIPLE_EVIDENCE_SCHEMA_DESIGN_REVIEW.md 第4版
-         および Step 3A実装指示（2026-07-22）
+         および Step 3A実装指示（2026-07-22）、Step 3B実装指示（2026-07-23）
 
 このモジュールはVision API呼び出しを行わない。将来Vision APIを呼び出す
 モジュールが使用するプロンプト文字列を組み立てるだけに留める。
@@ -11,20 +11,62 @@
 Vision側へ明示的に説明するためのテキストである。
 EXAMPLE_VISION_EVIDENCE_PAYLOADの値はすべて架空のものであり、実際のいずれの
 ページの実データでもない（実データ汚染防止のため）。
+
+Step 3B（実画像パイロット）での変更点（v1.1.0）:
+    - 帳票版（新/旧）の判定基準を明示（Step 3Aでは読み取り方針のみで判定基準が
+      欠けていたため追加）。
+    - スタッフ名等、契約外の個人情報を抽出しないことを明示。
+    - build_vision_evidence_prompt(page_no=...) で、既知のページ番号を
+      プロンプト末尾に追記できるようにした（page_noは帳票に印字されておらず
+      画像から独立に観測できないため、PDFページ位置として明示的に伝える。
+      呼び出し側はこれをVisionの出力page_noとの照合にのみ使い、正本にはしない）。
+
+Step 3B v1パイロット後の修正（v2.0.0）:
+    - v1ではフルページ画像+新帳票合計行の広めの固定クロップ(y=215-290pt)を渡していたが、
+      そのクロップが【内訳】セクション（個別項目の行）まで含んでしまい、そこにある
+      紹介・お声がけとは無関係な手書き記号を正の字として誤認する事故が実際に発生した
+      （P59: 「eo光ユーザー数」「未購入件数(MT)」の記号をtallyのcomponentsとして誤検出）。
+    - これを受け、build_region_scoped_prompt() を新設。フルページ画像を主入力とせず、
+      帳票版ごとに固定した狭い対象領域（region_id）の画像のみを渡し、各証拠は
+      指定されたregion_idの画像だけを根拠にすること、対象領域外の情報で値を補わない
+      ことを明示的に指示する。
+    - build_vision_evidence_prompt()（v1のフルページ向けプロンプト）はテスト・後方
+      互換のためそのまま残すが、実画像パイロットではbuild_region_scoped_prompt()を使う。
 """
 
 from __future__ import annotations
 
 import json
+from typing import Optional
 
 from src.phase6.vision_evidence_contract import EXAMPLE_VISION_EVIDENCE_PAYLOAD
 
-__all__ = ["VISION_EVIDENCE_PROMPT_VERSION", "build_vision_evidence_prompt"]
+__all__ = [
+    "VISION_EVIDENCE_PROMPT_VERSION",
+    "build_vision_evidence_prompt",
+    "build_region_scoped_prompt",
+]
 
 
 # このプロンプト文字列自体のバージョン。プロンプトの内容を変更した場合に上げる。
-VISION_EVIDENCE_PROMPT_VERSION = "1.0.0"
+VISION_EVIDENCE_PROMPT_VERSION = "2.0.0"
 
+
+_FORM_VERSION_CLASSIFICATION = """\
+【帳票版（新/旧）の判定基準】
+- 新帳票（2026/6/21版）: 通し番号（daily_report_no/tablet_no相当の欄）・提出区分
+  （初回/再送）の欄がある。
+- 旧帳票（2026/4/1版）: 上記の欄がなく、店舗名が行頭に印字されている。
+- どちらか判定できない場合はform_version="new"/"old"のいずれかに無理に決めず、
+  read取れた根拠をnotesへ記録すること。
+"""
+
+_PII_SCOPE_NOTES = """\
+【対象外の個人情報】
+- スタッフ名・スタッフID等、この契約のJSONに定義されていない項目は一切抽出・出力しないこと。
+  出力してよいのは契約で定義された5項目（店舗コード・紹介written_total・紹介tally・
+  お声がけwritten_total・お声がけtally）に関する情報のみ。
+"""
 
 _CONTRACT_RULES = """\
 【重要な契約条件】
@@ -77,14 +119,21 @@ _STORE_CODE_NOTES = """\
 """
 
 
-def build_vision_evidence_prompt() -> str:
+def build_vision_evidence_prompt(*, page_no: Optional[int] = None) -> str:
     """紹介/お声がけの数字欄・正の字・店舗コードを混ぜずに抽出させるためのプロンプト文字列を組み立てる。
 
     Vision APIの呼び出しはこの関数の責務外。呼び出し側が別途Vision APIへこの文字列を渡す。
+
+    Args:
+        page_no: 既知のPDFページ番号（1始まり）。指定した場合、プロンプト末尾に
+            「この画像のpage_noは{page_no}です」という一文を追記する。page_noは
+            帳票に印字されていない（画像から独立に観測できない）ため、呼び出し側の
+            既知の値をそのまま伝える。JSON出力のpage_noはパーサー側で
+            expected_page_noと照合されるのみで、正本としては扱われない。
     """
     example_json = json.dumps(EXAMPLE_VISION_EVIDENCE_PAYLOAD, ensure_ascii=False, indent=2)
 
-    return f"""あなたは手書きFAX帳票の画像から、次の5項目を「混ぜずに」別々の証拠として読み取ります。
+    prompt = f"""あなたは手書きFAX帳票の画像から、次の5項目を「混ぜずに」別々の証拠として読み取ります。
 
 1. 店舗コード
 2. 紹介総数の数字欄（written_total）
@@ -96,9 +145,105 @@ def build_vision_evidence_prompt() -> str:
 （CSV値・CSV一致判定・review要否などは一切含めないこと）。
 
 {_CONTRACT_RULES}
+{_FORM_VERSION_CLASSIFICATION}
 {_NEW_FORM_NOTES}
 {_OLD_FORM_NOTES}
 {_STORE_CODE_NOTES}
+{_PII_SCOPE_NOTES}
 【出力JSON契約の例】
 {example_json}
+"""
+    if page_no is not None:
+        prompt += (
+            f"\nこの画像のpage_noは{page_no}です。JSON出力のpage_noにこの値を"
+            "そのまま反映してください（page_no自体は帳票に印字された情報ではありません）。\n"
+        )
+    return prompt
+
+
+# ============================================================
+# Step 3B v2: 領域限定（region-scoped）プロンプト
+# ============================================================
+_REGION_ISOLATION_RULES = """\
+【領域限定の絶対ルール（最重要）】
+- 各証拠（店舗コード・紹介written_total・紹介tally・お声がけwritten_total・
+  お声がけtally）は、その証拠に対応するregion_idの画像だけを根拠にすること。
+- 送っていない別の画像・別セクション・下部の内訳合計欄から値を補ってはならない。
+  ある画像に見えなかった情報を、記憶や推測、他の画像から埋め合わせないこと。
+- tallyのcomponentsに、帳票上に印字された項目名（スタッフ名・サービス名等）を
+  そのまま転記しないこと。行を区別する必要がある場合は"row_1"のような匿名の
+  識別子を使うこと。
+- 対象領域の外にある線・記号・マーク（罫線、他セクションの手書き記号等）を
+  正の字としてカウントしないこと。
+- 対象領域内に画線が一切見当たらない場合はobservation_status="no_marks_observed"
+  とすること。
+- 対象領域内の記載が薄い・かすれている等で判別できない場合は
+  observation_status="unreadable"とすること。
+- 確信が持てないのに推測でobservation_status="marks_present"にしないこと。
+  marks_presentは、対象領域内に正の字の画線が実際に見えた場合のみ選ぶこと。
+"""
+
+_OUTPUT_LENGTH_RULES = """\
+【出力形式・長さの制約】
+- 必ずsubmit_vision_evidenceツールの引数として結果を返すこと。
+  ツール呼び出し以外の自由文（前置き・説明・要約）は一切出力しないこと。
+- マークダウンのコードフェンス（```等）を使わないこと。
+- 各notesフィールドは1文・日本語で80文字程度までの短い説明に限定すること。
+  画像の詳細な描写や長い推論過程をnotesへ書かないこと。
+"""
+
+_STORE_CODE_INTEGRITY_NOTE = """\
+【店舗コードについての注意】
+- この画像には正解の店舗コード・CSV上の値・過去の抽出結果は一切含まれていません。
+  画像に実際に見えた文字だけをraw_valueへ転記すること。
+- 見えた通りに自信を持って読めない場合は、confidenceを正直にlow/mediumとすること。
+  無理に高いconfidenceを付けないこと。
+"""
+
+
+def build_region_scoped_prompt(
+    *,
+    page_no: int,
+    form_version: str,
+    region_ids_in_order: list,
+) -> str:
+    """帳票版ごとに固定した対象領域（region_id）の画像だけを渡す場合のプロンプトを組み立てる。
+
+    フルページ画像は渡さない前提。各画像は本関数が生成する順序どおりに
+    region_ids_in_orderで渡されることを想定し、その対応関係を明示する。
+
+    Args:
+        page_no: 既知のPDFページ番号（1始まり）。page_noは帳票に印字されていないため
+            明示的に伝える（Vision出力のpage_noは照合対象に限定され、正本にはしない）。
+        form_version: 既知の帳票版（"new"|"old"）。region_idの構成から呼び出し側が
+            既に把握している値であり、Visionに推定させる必要はないため明示的に伝える
+            （Vision出力のform_versionも照合対象に限定され、正本にはしない）。
+        region_ids_in_order: 渡す画像の順序に対応するregion_idのリスト。
+    """
+    region_list_text = "\n".join(
+        f"{i + 1}枚目: region_id=\"{rid}\"" for i, rid in enumerate(region_ids_in_order)
+    )
+    allowed_ids_text = "、".join(f'"{rid}"' for rid in region_ids_in_order)
+
+    return f"""あなたは手書きFAX帳票の、あらかじめ切り出された狭い対象領域の画像から、
+店舗コード・紹介/お声がけの数字欄・紹介/お声がけの正の字を「混ぜずに」読み取ります。
+フルページ画像は渡されていません。渡された各画像はそれぞれ1つの証拠に対応する
+固定領域のクロップです。
+
+【渡された画像とregion_idの対応】
+{region_list_text}
+
+各証拠のregion_idには、必ず上記のいずれか（{allowed_ids_text}）を
+そのまま設定すること。それ以外の値や、送っていない領域名を出力してはならない。
+
+出力は必ずsubmit_vision_evidenceツールの契約に厳密に従うこと。
+
+{_REGION_ISOLATION_RULES}
+{_CONTRACT_RULES}
+{_PII_SCOPE_NOTES}
+{_STORE_CODE_INTEGRITY_NOTE}
+{_OUTPUT_LENGTH_RULES}
+この画像のpage_noは{page_no}、form_versionは"{form_version}"です。
+ツール引数のpage_no/form_versionにこれらの値をそのまま反映してください
+（いずれも画像から独立に観測できる情報ではないため、既知の値を伝えています）。
 """
