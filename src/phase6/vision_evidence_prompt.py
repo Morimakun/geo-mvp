@@ -45,11 +45,17 @@ __all__ = [
     "VISION_EVIDENCE_PROMPT_VERSION",
     "build_vision_evidence_prompt",
     "build_region_scoped_prompt",
+    "build_cell_scoped_prompt_v3",
 ]
 
 
 # このプロンプト文字列自体のバージョン。プロンプトの内容を変更した場合に上げる。
-VISION_EVIDENCE_PROMPT_VERSION = "2.0.0"
+#
+# 3.0.0（Step 3B v3, 2026-07-25）: 同一セルをwritten用・tally用の別領域として
+#   二重送信する構造をやめ、1セル(cell_id)につきcontext/detailの2画像だけを送る
+#   構造へ変更（build_cell_scoped_prompt_v3）。cell_representation
+#   （numeric/tally/blank/unreadable/mixed）の自己申告を新たに指示する。
+VISION_EVIDENCE_PROMPT_VERSION = "3.0.0"
 
 
 _FORM_VERSION_CLASSIFICATION = """\
@@ -239,6 +245,86 @@ def build_region_scoped_prompt(
 出力は必ずsubmit_vision_evidenceツールの契約に厳密に従うこと。
 
 {_REGION_ISOLATION_RULES}
+{_CONTRACT_RULES}
+{_PII_SCOPE_NOTES}
+{_STORE_CODE_INTEGRITY_NOTE}
+{_OUTPUT_LENGTH_RULES}
+この画像のpage_noは{page_no}、form_versionは"{form_version}"です。
+ツール引数のpage_no/form_versionにこれらの値をそのまま反映してください
+（いずれも画像から独立に観測できる情報ではないため、既知の値を伝えています）。
+"""
+
+
+# ============================================================
+# Step 3B v3: セル単位（cell-scoped）プロンプト
+# 同じセルをwritten用・tally用の別々の証拠として二重送信しない（1セル=1組の
+# context/detail画像）。cell_representationの自己申告を新たに指示する。
+# ============================================================
+_CELL_REPRESENTATION_RULES = """\
+【cell_representationの分類（必須）】
+- 紹介・お声がけそれぞれのセルについて、次の5分類のいずれか1つを選び、
+  cell_representationとして必ず出力すること。
+  - "numeric": 算用数字が書かれている（0も含む）。正の字は書かれていない。
+  - "tally": 正の字だけが書かれている。算用数字は書かれていない。
+  - "blank": 算用数字も正の字も書かれていない（真の空欄）。
+  - "unreadable": 何か書かれているが判読できない
+    （この場合、written_total.status・tally.observation_statusの両方を
+    "unreadable"とすること。片方だけをunreadableにしないこと）。
+  - "mixed": 算用数字と正の字の両方が実際に書かれている異常系
+    （この場合のみwritten_total.status="observed"かつ
+    tally.observation_status="marks_present"を両立させてよい）。
+- 上記5分類のどれにも一致しない組み合わせ（例: 算用数字は読めるが正の字だけ
+  判読不能、といった片側だけのunreadable）を出力してはならない。
+  実際に見えた内容がこの5分類のどれにも当てはまらないと感じた場合は、
+  最も安全側（unreadableまたはmixed）に倒し、notesへ具体的な状況を記録すること。
+"""
+
+_CELL_ISOLATION_RULES = """\
+【セル単位の絶対ルール（最重要）】
+- 各セル（紹介・お声がけ・店舗コード）について、そのセルに対応する
+  cell_id__context / cell_id__detail の2枚の画像だけを根拠にすること。
+  同じセルについて、算用数字用の画像と正の字用の画像が別々に渡されることは
+  ない（1セル=1組の画像）。
+- 各証拠のcell_idには、必ず渡された画像のcell_id（末尾の__context/__detailを
+  除いた部分）と同じ値を設定すること。送っていないセルのcell_idを参照しては
+  ならない。
+- 送っていない別のセルの画像・記憶・推測から値を補ってはならない。
+"""
+
+
+def build_cell_scoped_prompt_v3(
+    *,
+    page_no: int,
+    form_version: str,
+    cell_ids_in_order: list,
+) -> str:
+    """Step 3B v3: 1セル(cell_id)につきcontext/detailの2画像だけを渡す場合の
+    プロンプトを組み立てる。フルページ画像・v2の5領域構造（written/tally別々の
+    region_id）は使わない。
+
+    Args:
+        page_no: 既知のPDFページ番号（1始まり）。
+        form_version: 既知の帳票版（"new"|"old"）。
+        cell_ids_in_order: 渡す画像の元になったcell_idのリスト（例:
+            ["intro", "voice"]、店舗コードがあれば"store_code"を含む）。
+            実際に渡す画像は各cell_idにつき{cell_id}__context/{cell_id}__detailの
+            2枚ずつになる。
+    """
+    cell_list_text = "、".join(f'"{cid}"' for cid in cell_ids_in_order)
+
+    return f"""あなたは手書きFAX帳票の、あらかじめ切り出されたセル単位の画像から、
+店舗コード・紹介/お声がけの数字欄・正の字を読み取ります。
+フルページ画像は渡されていません。渡された画像はセル(cell_id)ごとに
+context（周辺文脈を含む広めの切り出し）・detail（数字/正の字を判読するための
+密な切り出し）の2枚1組です。
+
+【今回送信するcell_id】
+{cell_list_text}
+
+出力は必ずsubmit_vision_evidenceツールの契約に厳密に従うこと。
+
+{_CELL_ISOLATION_RULES}
+{_CELL_REPRESENTATION_RULES}
 {_CONTRACT_RULES}
 {_PII_SCOPE_NOTES}
 {_STORE_CODE_INTEGRITY_NOTE}

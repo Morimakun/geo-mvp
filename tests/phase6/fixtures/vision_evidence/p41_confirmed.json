@@ -21,7 +21,8 @@
       "confidence": null,
       "notes": "このfixtureでは検証対象外の項目（プレースホルダー）",
       "components": []
-    }
+    },
+    "cell_representation": "numeric"
   },
   "voice": {
     "written_total": {
@@ -37,6 +38,7 @@
       "confidence": null,
       "notes": "このfixtureでは検証対象外の項目（プレースホルダー）",
       "components": []
-    }
+    },
+    "cell_representation": "blank"
   }
 }

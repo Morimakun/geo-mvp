@@ -18,6 +18,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from src.phase6.evidence_schema import (  # noqa: E402
+    CellRepresentation,
     Confidence,
     EvidenceStatus,
     EvidenceValidationError,
@@ -418,3 +419,194 @@ class TestNotObservedStatus:
     def test_not_observed_written_total_with_value_raises(self):
         with pytest.raises(EvidenceValidationError):
             WrittenTotalEvidence(value=5, status=EvidenceStatus.NOT_OBSERVED)
+
+
+# ============================================================
+# Step 3B v3: cell_representation（合成データのみ。実PDF・Excel・Vision APIは使わない）
+# ============================================================
+def _marks_present_tally(count: int) -> TallyEvidence:
+    return TallyEvidence(
+        observation_status=TallyObservationStatus.MARKS_PRESENT,
+        complete_five_groups=count // 5,
+        remainder_strokes=count % 5,
+    )
+
+
+def _unreadable_written() -> WrittenTotalEvidence:
+    return WrittenTotalEvidence(value=None, status=EvidenceStatus.UNREADABLE)
+
+
+def _unreadable_tally() -> TallyEvidence:
+    return TallyEvidence(observation_status=TallyObservationStatus.UNREADABLE)
+
+
+def _no_value_written() -> WrittenTotalEvidence:
+    return WrittenTotalEvidence(value=None, status=EvidenceStatus.NO_VALUE)
+
+
+class TestCellRepresentationNumeric:
+    def test_numeric_with_positive_value_is_accepted(self):
+        field = NumericFieldEvidence(
+            written_total=_observed(3),
+            tally=_no_marks_tally(),
+            cell_representation=CellRepresentation.NUMERIC,
+        )
+        assert field.cell_representation == CellRepresentation.NUMERIC
+
+    def test_numeric_zero_is_preserved_as_valid_value_not_treated_as_missing(self):
+        field = NumericFieldEvidence(
+            written_total=_observed(0),
+            tally=_no_marks_tally(),
+            cell_representation=CellRepresentation.NUMERIC,
+        )
+        assert field.written_total.value == 0
+        assert field.written_total.status == EvidenceStatus.OBSERVED
+        assert field.to_dict()["written_total"]["value"] == 0
+        assert field.to_dict()["cell_representation"] == "numeric"
+
+    def test_numeric_requires_written_total_observed(self):
+        with pytest.raises(EvidenceValidationError):
+            NumericFieldEvidence(
+                written_total=_no_value_written(),
+                tally=_no_marks_tally(),
+                cell_representation=CellRepresentation.NUMERIC,
+            )
+
+    def test_numeric_rejects_tally_marks_present(self):
+        with pytest.raises(EvidenceValidationError):
+            NumericFieldEvidence(
+                written_total=_observed(3),
+                tally=_marks_present_tally(3),
+                cell_representation=CellRepresentation.NUMERIC,
+            )
+
+
+class TestCellRepresentationTally:
+    def test_tally_with_marks_present_is_accepted(self):
+        field = NumericFieldEvidence(
+            written_total=_no_value_written(),
+            tally=_marks_present_tally(7),
+            cell_representation=CellRepresentation.TALLY,
+        )
+        assert field.cell_representation == CellRepresentation.TALLY
+        assert field.tally.tally_count == 7
+
+    def test_tally_requires_written_total_no_value(self):
+        with pytest.raises(EvidenceValidationError):
+            NumericFieldEvidence(
+                written_total=_observed(3),
+                tally=_marks_present_tally(3),
+                cell_representation=CellRepresentation.TALLY,
+            )
+
+    def test_tally_requires_marks_present_not_no_marks_observed(self):
+        with pytest.raises(EvidenceValidationError):
+            NumericFieldEvidence(
+                written_total=_no_value_written(),
+                tally=_no_marks_tally(),
+                cell_representation=CellRepresentation.TALLY,
+            )
+
+
+class TestCellRepresentationBlank:
+    def test_blank_is_accepted(self):
+        field = NumericFieldEvidence(
+            written_total=_no_value_written(),
+            tally=_no_marks_tally(),
+            cell_representation=CellRepresentation.BLANK,
+        )
+        assert field.cell_representation == CellRepresentation.BLANK
+        assert field.written_total.value is None
+        assert field.tally.tally_count is None
+
+    def test_blank_rejects_observed_written_total(self):
+        with pytest.raises(EvidenceValidationError):
+            NumericFieldEvidence(
+                written_total=_observed(0),
+                tally=_no_marks_tally(),
+                cell_representation=CellRepresentation.BLANK,
+            )
+
+
+class TestCellRepresentationUnreadable:
+    def test_unreadable_is_accepted(self):
+        field = NumericFieldEvidence(
+            written_total=_unreadable_written(),
+            tally=_unreadable_tally(),
+            cell_representation=CellRepresentation.UNREADABLE,
+        )
+        assert field.cell_representation == CellRepresentation.UNREADABLE
+
+    def test_unreadable_written_with_marks_present_tally_is_rejected(self):
+        """P32 v2で実際に発生した written=unreadable + tally=marks_present の組み合わせ。
+        5パターンのいずれにも一致しないため必ず拒否されること。"""
+        with pytest.raises(EvidenceValidationError):
+            NumericFieldEvidence(
+                written_total=_unreadable_written(),
+                tally=_marks_present_tally(3),
+                cell_representation=CellRepresentation.UNREADABLE,
+            )
+
+    def test_unreadable_requires_tally_also_unreadable_not_no_marks_observed(self):
+        with pytest.raises(EvidenceValidationError):
+            NumericFieldEvidence(
+                written_total=_unreadable_written(),
+                tally=_no_marks_tally(),
+                cell_representation=CellRepresentation.UNREADABLE,
+            )
+
+
+class TestCellRepresentationMixed:
+    def test_mixed_requires_both_written_and_tally_evidence_present(self):
+        field = NumericFieldEvidence(
+            written_total=_observed(5),
+            tally=_marks_present_tally(3),
+            cell_representation=CellRepresentation.MIXED,
+        )
+        assert field.cell_representation == CellRepresentation.MIXED
+        # mixedは後段で必ず要確認にできるよう、両方の実測値を保持していること。
+        assert field.written_total.value == 5
+        assert field.tally.tally_count == 3
+
+    def test_mixed_rejects_written_total_not_observed(self):
+        with pytest.raises(EvidenceValidationError):
+            NumericFieldEvidence(
+                written_total=_no_value_written(),
+                tally=_marks_present_tally(3),
+                cell_representation=CellRepresentation.MIXED,
+            )
+
+    def test_mixed_rejects_tally_not_marks_present(self):
+        with pytest.raises(EvidenceValidationError):
+            NumericFieldEvidence(
+                written_total=_observed(5),
+                tally=_no_marks_tally(),
+                cell_representation=CellRepresentation.MIXED,
+            )
+
+
+class TestCellRepresentationBackwardCompatibility:
+    def test_none_is_allowed_for_legacy_data_and_skips_validation(self):
+        # 旧JSON・旧処理からの移行データとの互換性のため、書かれている内容が
+        # 5パターンのどれにも一致しなくてもcell_representation=Noneなら検証をスキップする。
+        field = NumericFieldEvidence(
+            written_total=_unreadable_written(),
+            tally=_marks_present_tally(3),
+        )
+        assert field.cell_representation is None
+
+    def test_from_legacy_dict_leaves_cell_representation_none(self):
+        page = PageEvidence.from_legacy_dict(
+            {
+                "page_no": 1,
+                "selected_business_date": "2026-06-27",
+                "intro_total": 4,
+                "voice_callout_total": 0,
+            }
+        )
+        assert page.intro_evidence.cell_representation is None
+        assert page.voice_evidence.cell_representation is None
+
+    def test_to_dict_serializes_none_cell_representation_as_null(self):
+        field = NumericFieldEvidence(written_total=_observed(3), tally=_no_marks_tally())
+        assert field.to_dict()["cell_representation"] is None

@@ -35,6 +35,7 @@ __all__ = [
     "Confidence",
     "TallyObservationStatus",
     "StoreCodeFormatStatus",
+    "CellRepresentation",
     "WrittenTotalEvidence",
     "TallyComponent",
     "TallyEvidence",
@@ -88,6 +89,33 @@ class StoreCodeFormatStatus(str, Enum):
     VALID = "valid"
     INVALID = "invalid"
     UNKNOWN = "unknown"
+
+
+class CellRepresentation(str, Enum):
+    """1つの手書きセル（紹介/お声がけの合計欄）が、written_total・tallyの
+    どちらの証拠として表現されているかを表す分類（Step 3B v3）。
+
+    設計根拠: Step 3B v3実装指示（2026-07-25）。v2までは同一セルを
+    written_total用・tally用の別々の証拠として扱い、Visionへ同じ画像を
+    二重に送っていた。v3では1セル=1画像とし、Visionにこの分類を自己申告
+    させることで、written_total/tallyの状態の組み合わせが下記5パターンの
+    いずれかに整合していることを検証できるようにする
+    （整合しない組み合わせはEvidenceValidationErrorで拒否される。
+    NumericFieldEvidence.__post_init__参照）。
+
+    NUMERIC: 算用数字が書かれている（0を含む）。tallyは無地（no_marks_observed）。
+    TALLY: 正の字のみが書かれている。written_totalは空欄（no_value）。
+    BLANK: 算用数字も正の字も書かれていない（真の空欄）。
+    UNREADABLE: 何か書かれているが判読できない（written/tally双方が読み取り不能）。
+    MIXED: 算用数字と正の字の両方に実際の証拠がある異常系。後段の三者比較で
+        必ず要確認に回せるよう、written_total・tally双方の実測値を保持する。
+    """
+
+    NUMERIC = "numeric"
+    TALLY = "tally"
+    BLANK = "blank"
+    UNREADABLE = "unreadable"
+    MIXED = "mixed"
 
 
 # ============================================================
@@ -223,6 +251,89 @@ class TallyEvidence:
 
 
 # ============================================================
+# cell_representationの整合性検証（Step 3B v3）
+# ============================================================
+def _validate_cell_representation(
+    representation: CellRepresentation,
+    written_total: WrittenTotalEvidence,
+    tally: TallyEvidence,
+) -> None:
+    """cell_representationと、written_total/tallyの実際の状態が整合しているかを検証する。
+
+    5パターンのいずれにも一致しない組み合わせ（例:
+    written_total.status=unreadable かつ tally.observation_status=marks_present、
+    v2で実際に発生したP32のような読み取り不整合）は、どのelif節にも一致しないため
+    必ずEvidenceValidationErrorとなる。
+
+    画数情報（complete_five_groups/remainder_strokes）自体の必須性は、この関数では
+    重複チェックしない。TallyEvidence.__post_init__が既にobservation_status=
+    marks_presentの場合の画数必須を検証済みであり、ここではobservation_statusの
+    一致のみを確認すれば十分である。
+    """
+    if representation == CellRepresentation.NUMERIC:
+        if written_total.status != EvidenceStatus.OBSERVED or written_total.value is None:
+            raise EvidenceValidationError(
+                "cell_representation=numericの場合はwritten_total.status=observedかつ"
+                f"valueが必須です（0も正常値）: status={written_total.status.value}, "
+                f"value={written_total.value!r}"
+            )
+        if tally.observation_status != TallyObservationStatus.NO_MARKS_OBSERVED:
+            raise EvidenceValidationError(
+                "cell_representation=numericの場合はtally.observation_status="
+                f"no_marks_observedである必要があります: {tally.observation_status.value}"
+            )
+    elif representation == CellRepresentation.TALLY:
+        if written_total.status != EvidenceStatus.NO_VALUE or written_total.value is not None:
+            raise EvidenceValidationError(
+                "cell_representation=tallyの場合はwritten_total.status=no_value・"
+                f"value=Noneである必要があります: status={written_total.status.value}, "
+                f"value={written_total.value!r}"
+            )
+        if tally.observation_status != TallyObservationStatus.MARKS_PRESENT:
+            raise EvidenceValidationError(
+                "cell_representation=tallyの場合はtally.observation_status=marks_present"
+                f"（画数情報必須）である必要があります: {tally.observation_status.value}"
+            )
+    elif representation == CellRepresentation.BLANK:
+        if written_total.status != EvidenceStatus.NO_VALUE or written_total.value is not None:
+            raise EvidenceValidationError(
+                "cell_representation=blankの場合はwritten_total.status=no_value・"
+                f"value=Noneである必要があります: status={written_total.status.value}, "
+                f"value={written_total.value!r}"
+            )
+        if tally.observation_status != TallyObservationStatus.NO_MARKS_OBSERVED:
+            raise EvidenceValidationError(
+                "cell_representation=blankの場合はtally.observation_status="
+                f"no_marks_observedである必要があります: {tally.observation_status.value}"
+            )
+    elif representation == CellRepresentation.UNREADABLE:
+        if written_total.status != EvidenceStatus.UNREADABLE:
+            raise EvidenceValidationError(
+                "cell_representation=unreadableの場合はwritten_total.status=unreadable"
+                f"である必要があります: {written_total.status.value}"
+            )
+        if tally.observation_status != TallyObservationStatus.UNREADABLE:
+            raise EvidenceValidationError(
+                "cell_representation=unreadableの場合はtally.observation_status=unreadable"
+                "である必要があります（written=unreadable・tally=marks_presentのような"
+                f"組み合わせは拒否されます）: {tally.observation_status.value}"
+            )
+    elif representation == CellRepresentation.MIXED:
+        if written_total.status != EvidenceStatus.OBSERVED or written_total.value is None:
+            raise EvidenceValidationError(
+                "cell_representation=mixedの場合はwritten_total側にも実際の証拠"
+                f"（status=observed・value必須）が必要です: status={written_total.status.value}"
+            )
+        if tally.observation_status != TallyObservationStatus.MARKS_PRESENT:
+            raise EvidenceValidationError(
+                "cell_representation=mixedの場合はtally側にも実際の証拠"
+                f"（observation_status=marks_present）が必要です: {tally.observation_status.value}"
+            )
+    else:
+        raise EvidenceValidationError(f"未知のcell_representationです: {representation!r}")
+
+
+# ============================================================
 # 紹介/お声がけ共通の数値項目コンテナ（intro_evidence / voice_evidenceそれぞれで
 # 独立したインスタンスとして使用する）
 # ============================================================
@@ -231,10 +342,23 @@ class NumericFieldEvidence:
     written_total: WrittenTotalEvidence
     tally: TallyEvidence
 
+    # Step 3B v3で追加。旧JSON・旧処理からの移行データとの互換性のためNoneを許容する。
+    # 新しいVision parserの通常モード（parse_vision_evidence_response）では必須とし、
+    # Noneのまま通すのはallow_not_observed=True（旧JSON互換経路）の場合に限定する
+    # （vision_evidence_parser.py参照）。
+    cell_representation: Optional[CellRepresentation] = None
+
+    def __post_init__(self) -> None:
+        if self.cell_representation is not None:
+            _validate_cell_representation(self.cell_representation, self.written_total, self.tally)
+
     def to_dict(self) -> dict:
         return {
             "written_total": self.written_total.to_dict(),
             "tally": self.tally.to_dict(),
+            "cell_representation": (
+                self.cell_representation.value if self.cell_representation is not None else None
+            ),
         }
 
 

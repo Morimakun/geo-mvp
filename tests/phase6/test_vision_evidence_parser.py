@@ -91,6 +91,9 @@ class TestNormalCases:
             "notes": "",
             "components": [],
         }
+        # written_total(observed)とtally(marks_present)が両方揃うため、
+        # Step 3B v3のcell_representationとしてはmixed（両方に実際の証拠がある異常系）となる。
+        payload["intro"]["cell_representation"] = "mixed"
         page = _parse_example(payload)
         assert page.intro_evidence.tally.tally_count == 7
 
@@ -125,6 +128,15 @@ class TestNormalCases:
             "notes": "",
             "components": [],
         }
+        # cell_representation=unreadableはwritten_total側もunreadableであることを要求する
+        # （Step 3B v3。written=observed+tally=unreadableはどの分類にも一致しないため拒否される）。
+        payload["voice"]["written_total"] = {
+            "value": None,
+            "status": "unreadable",
+            "confidence": None,
+            "notes": "",
+        }
+        payload["voice"]["cell_representation"] = "unreadable"
         page = _parse_example(payload)
         assert page.voice_evidence.tally.observation_status == TallyObservationStatus.UNREADABLE
         assert page.voice_evidence.tally.tally_count is None
@@ -254,6 +266,8 @@ class TestAbnormalCases:
             "notes": "",
             "components": [],
         }
+        # written_total(observed)とtally(marks_present)が両方揃うためmixedとなる（上記と同様）。
+        payload["intro"]["cell_representation"] = "mixed"
         page = _parse_example(payload)
         assert page.intro_evidence.tally.tally_count == 7
 
@@ -421,3 +435,108 @@ class TestOldFormStoreCodeNotApplicable:
         page = _parse_example(payload, expected_form_version="old")
         assert page.store_code_evidence.status == EvidenceStatus.NOT_APPLICABLE
         assert page.store_code_evidence.raw_value is None
+
+
+# ============================================================
+# Step 3B v3: cell_representation の契約検証（合成payloadのみ）
+# ============================================================
+class TestCellRepresentationContract:
+    def test_normal_mode_requires_cell_representation(self):
+        payload = _example_payload()
+        del payload["intro"]["cell_representation"]
+        with pytest.raises(VisionEvidenceContractError):
+            _parse_example(payload)
+
+    def test_normal_mode_rejects_unknown_cell_representation_value(self):
+        payload = _example_payload()
+        payload["intro"]["cell_representation"] = "totally_unknown_representation"
+        with pytest.raises(VisionEvidenceContractError):
+            _parse_example(payload)
+
+    def test_cell_representation_inconsistent_with_written_and_tally_raises_validation_error(self):
+        # cell_representationの値自体は既知だが、written_total/tallyの状態と矛盾する
+        # （intro.written_total=observed(3)なのにcell_representation=blankを主張）。
+        # JSONの「形」としては正しいため、契約エラーではなくStep 2のEvidenceValidationErrorとなる。
+        payload = _example_payload()
+        payload["intro"]["cell_representation"] = "blank"
+        with pytest.raises(EvidenceValidationError):
+            _parse_example(payload)
+
+    def test_p32_style_unreadable_written_with_marks_present_tally_is_rejected(self):
+        # P32 v2で実際に発生した written=unreadable + tally=marks_present の組み合わせ。
+        # cell_representationをどれと主張しても5パターンのいずれにも一致しないため拒否される。
+        payload = _example_payload()
+        payload["intro"]["written_total"] = {
+            "value": None,
+            "status": "unreadable",
+            "confidence": "low",
+            "notes": "",
+        }
+        payload["intro"]["tally"] = {
+            "observation_status": "marks_present",
+            "complete_five_groups": 0,
+            "remainder_strokes": 3,
+            "confidence": "low",
+            "notes": "",
+            "components": [],
+        }
+        payload["intro"]["cell_representation"] = "unreadable"
+        with pytest.raises(EvidenceValidationError):
+            _parse_example(payload)
+
+    def test_not_applicable_field_forbids_cell_representation(self):
+        payload = _example_payload()
+        payload["form_version"] = "old"
+        payload["intro"]["written_total"] = {
+            "value": None,
+            "status": "not_applicable",
+            "confidence": None,
+            "notes": "旧帳票にはこの項目自体が存在しない",
+        }
+        payload["intro"]["tally"] = {
+            "observation_status": "not_applicable",
+            "complete_five_groups": None,
+            "remainder_strokes": None,
+            "confidence": None,
+            "notes": "",
+            "components": [],
+        }
+        # cell_representationを付けたまま送るのは契約違反（分類対象のセル自体が存在しないため）。
+        payload["intro"]["cell_representation"] = "numeric"
+        with pytest.raises(VisionEvidenceContractError):
+            _parse_example(payload, expected_form_version="old")
+
+    def test_not_applicable_field_without_cell_representation_is_accepted(self):
+        payload = _example_payload()
+        payload["form_version"] = "old"
+        payload["intro"]["written_total"] = {
+            "value": None,
+            "status": "not_applicable",
+            "confidence": None,
+            "notes": "旧帳票にはこの項目自体が存在しない",
+        }
+        payload["intro"]["tally"] = {
+            "observation_status": "not_applicable",
+            "complete_five_groups": None,
+            "remainder_strokes": None,
+            "confidence": None,
+            "notes": "",
+            "components": [],
+        }
+        del payload["intro"]["cell_representation"]
+        page = _parse_example(payload, expected_form_version="old")
+        assert page.intro_evidence.cell_representation is None
+
+    def test_legacy_mode_allows_omitted_cell_representation(self):
+        payload = _example_payload()
+        del payload["intro"]["cell_representation"]
+        del payload["voice"]["cell_representation"]
+        page = _parse_example(payload, allow_not_observed=True)
+        assert page.intro_evidence.cell_representation is None
+        assert page.voice_evidence.cell_representation is None
+
+    def test_legacy_mode_still_validates_cell_representation_when_present(self):
+        payload = _example_payload()
+        payload["intro"]["cell_representation"] = "totally_unknown_representation"
+        with pytest.raises(VisionEvidenceContractError):
+            _parse_example(payload, allow_not_observed=True)

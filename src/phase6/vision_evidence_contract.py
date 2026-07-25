@@ -59,7 +59,13 @@ __all__ = [
 
 
 # このJSON契約自体のバージョン。契約の形（必須キー・enum値の意味）を変更した場合に上げる。
-VISION_EVIDENCE_CONTRACT_VERSION = "1.0.0"
+#
+# 2.0.0（Step 3B v3, 2026-07-25）: 各数値項目（intro/voice）へ cell_representation
+#   （numeric/tally/blank/unreadable/mixed。src/phase6/evidence_schema.py参照）を追加。
+#   通常モード（allow_not_observed=False）では必須。written_total.status=
+#   not_applicableの場合は逆に指定不可（分類対象のセル自体が存在しないため）。
+#   旧JSON互換モード（allow_not_observed=True）ではNoneのまま省略可。
+VISION_EVIDENCE_CONTRACT_VERSION = "2.0.0"
 
 
 class VisionEvidenceContractError(Exception):
@@ -119,6 +125,10 @@ EXAMPLE_VISION_EVIDENCE_PAYLOAD: Mapping[str, Any] = {
             "notes": "",
             "components": [],
         },
+        # numeric/tally/blank/unreadable/mixedのいずれか（Step 3B v3で追加）。
+        # written_total/tallyの状態と矛盾する値は拒否される
+        # （src/phase6/evidence_schema.py の CellRepresentation 参照）。
+        "cell_representation": "numeric",
     },
     "voice": {
         "written_total": {
@@ -135,5 +145,6 @@ EXAMPLE_VISION_EVIDENCE_PAYLOAD: Mapping[str, Any] = {
             "notes": "",
             "components": [],
         },
+        "cell_representation": "numeric",
     },
 }

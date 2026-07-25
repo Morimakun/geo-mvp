@@ -42,6 +42,7 @@ from datetime import date
 from typing import Any, Mapping, Optional
 
 from src.phase6.evidence_schema import (
+    CellRepresentation,
     Confidence,
     EvidenceStatus,
     NumericFieldEvidence,
@@ -255,6 +256,47 @@ def _parse_store_code(
     )
 
 
+def _parse_cell_representation(
+    d: Mapping[str, Any],
+    *,
+    path: str,
+    allow_not_observed: bool,
+    written_total: WrittenTotalEvidence,
+) -> Optional[CellRepresentation]:
+    """Step 3B v3で追加。cell_representationの要否は、旧JSON互換モード
+    （allow_not_observed。not_observedの許可と同じフラグを流用する。両者とも
+    「これは旧JSON移行・旧処理からのデータである」ことを表す点で意味が同じため）
+    と written_total.status=not_applicable かどうかで決まる。
+
+    - allow_not_observed=True（旧JSON互換）: 省略可。指定されていれば検証する。
+    - written_total.status=not_applicable: この帳票版に項目自体が存在せず、
+      分類対象のセルが無いため、指定されていた場合はむしろ契約違反として拒否する。
+    - それ以外（通常モード）: 必須。
+
+    値としての整合性（written_total/tallyの実際の状態との整合）はここでは判定せず、
+    NumericFieldEvidence.__post_init__（Step 2）にそのまま委譲する
+    （不整合の場合はEvidenceValidationErrorが送出される）。
+    """
+    raw = d.get("cell_representation")
+
+    if allow_not_observed:
+        if raw is None:
+            return None
+        return _map_enum(CellRepresentation, raw, path=f"{path}.cell_representation")
+
+    if written_total.status == EvidenceStatus.NOT_APPLICABLE:
+        if raw is not None:
+            raise VisionEvidenceContractError(
+                f"{path}.cell_representation: written_total.status=not_applicableの場合は"
+                f"cell_representationを指定できません（分類対象のセル自体が存在しないため）: {raw!r}"
+            )
+        return None
+
+    if raw is None:
+        raise VisionEvidenceContractError(f"{path}.cell_representation: 必須キーが存在しません")
+    return _map_enum(CellRepresentation, raw, path=f"{path}.cell_representation")
+
+
 def _parse_numeric_field(
     d: Mapping[str, Any], *, path: str, allow_not_observed: bool
 ) -> NumericFieldEvidence:
@@ -268,7 +310,14 @@ def _parse_numeric_field(
         path=f"{path}.tally",
         allow_not_observed=allow_not_observed,
     )
-    return NumericFieldEvidence(written_total=written_total, tally=tally)
+    cell_representation = _parse_cell_representation(
+        d, path=path, allow_not_observed=allow_not_observed, written_total=written_total
+    )
+    # written_total/tallyとcell_representationの意味的な整合性はStep 2へ委譲する
+    # （不整合の組み合わせはEvidenceValidationErrorとして送出される）。
+    return NumericFieldEvidence(
+        written_total=written_total, tally=tally, cell_representation=cell_representation
+    )
 
 
 # ============================================================
