@@ -70,6 +70,11 @@ sample_ground_truth.csv
 /outputs/
 /tmp/
 
+# Phase 6 received data - NOT tracked in Git
+# - Phase 6の実PDF、Salesforce Excel、マスター等を配置するローカル専用領域
+# - 顧客データ、個人情報をGitへ追加しないため
+/data/phase6_received/
+
 # Sample data - NOT tracked in Git
 # サンプルデータ、合成帳票、テストPDF/CSVはGit管理外
 samples/**/*.pdf
