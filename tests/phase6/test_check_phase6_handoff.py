@@ -21,6 +21,8 @@ from scripts.check_phase6_handoff import (  # noqa: E402
     REQUIRED_README,
     REQUIRED_SHA256SUMS,
     TARGET_PDF_ENTRY,
+    _detect_single_wrapper_prefix,
+    _find_duplicate_or_casefold_collisions,
     check_handoff_zip,
     main,
 )
@@ -528,3 +530,250 @@ class TestNoSideEffects:
 
         after = set(tmp_path.iterdir())
         assert before == after
+
+
+# ============================================================
+# 単一ラッパーフォルダ構造（2026-07-27追加）
+#
+# ここでのテストはすべて一般仕様として実装する（実ZIPの内容へ後付けで
+# 合わせたものではない）。実ZIPの再検査は別途 --zip 引数で行う。
+# ============================================================
+def _wrapped_entries(
+    *,
+    wrapper: str,
+    pdf_bytes: bytes = _SYNTHETIC_PDF_BYTES,
+    manifest_scheme: str = "logical",
+) -> dict:
+    """単一ラッパー構造の合成ZIP中身を返す。
+
+    manifest_scheme:
+        "logical" -> SHA256SUMS.txtは論理ルート相対パス（ラッパー名を含まない）で記載する。
+        "wrapper" -> SHA256SUMS.txtはラッパー込みパス（実エントリ名と同じ形式）で記載する。
+    """
+    pdf_digest = _sha256_hex(pdf_bytes)
+    if manifest_scheme == "logical":
+        readme_manifest_path = REQUIRED_README
+        pdf_manifest_path = TARGET_PDF_ENTRY
+    elif manifest_scheme == "wrapper":
+        readme_manifest_path = f"{wrapper}/{REQUIRED_README}"
+        pdf_manifest_path = f"{wrapper}/{TARGET_PDF_ENTRY}"
+    else:
+        raise ValueError(f"unknown manifest_scheme: {manifest_scheme!r}")
+
+    sha256sums = f"{_readme_digest()}  {readme_manifest_path}\n{pdf_digest}  {pdf_manifest_path}\n"
+
+    return {
+        f"{wrapper}/{REQUIRED_README}": _DUMMY_README_TEXT,
+        f"{wrapper}/{REQUIRED_SHA256SUMS}": sha256sums,
+        f"{wrapper}/{TARGET_PDF_ENTRY}": pdf_bytes,
+    }
+
+
+class TestSingleWrapperStructureSucceeds:
+    def test_wrapper_named_geo_mvp_handoff_succeeds(self, tmp_path):
+        entries = _wrapped_entries(wrapper="geo_mvp_handoff")
+        zip_path = _build_zip(tmp_path, entries=entries)
+        results = check_handoff_zip(zip_path, expected_pdf_sha256=_sha256_hex(_SYNTHETIC_PDF_BYTES))
+        assert all(passed for _n, passed, _d in results)
+
+    def test_wrapper_with_arbitrary_name_succeeds(self, tmp_path):
+        # ラッパー名を固定値 geo_mvp_handoff に限定しないことの確認。
+        entries = _wrapped_entries(wrapper="some_other_folder_name_2026")
+        zip_path = _build_zip(tmp_path, entries=entries)
+        results = check_handoff_zip(zip_path, expected_pdf_sha256=_sha256_hex(_SYNTHETIC_PDF_BYTES))
+        assert all(passed for _n, passed, _d in results)
+
+    def test_wrapper_detection_is_reported_in_logical_root_structure_detail(self, tmp_path):
+        entries = _wrapped_entries(wrapper="my_wrapper")
+        zip_path = _build_zip(tmp_path, entries=entries)
+        results = check_handoff_zip(zip_path, expected_pdf_sha256=_sha256_hex(_SYNTHETIC_PDF_BYTES))
+        detail = _results_detail(results, "logical_root_structure")
+        assert "my_wrapper" in detail
+
+    def test_root_structure_is_reported_as_root_in_detail(self, tmp_path):
+        zip_path = _build_zip(tmp_path, entries=_valid_entries())
+        results = check_handoff_zip(zip_path, expected_pdf_sha256=_sha256_hex(_SYNTHETIC_PDF_BYTES))
+        detail = _results_detail(results, "logical_root_structure")
+        assert detail == "root"
+
+
+class TestManifestSchemeForWrapper:
+    def test_logical_relative_manifest_scheme_succeeds(self, tmp_path):
+        entries = _wrapped_entries(wrapper="wrapper_a", manifest_scheme="logical")
+        zip_path = _build_zip(tmp_path, entries=entries)
+        results = check_handoff_zip(zip_path, expected_pdf_sha256=_sha256_hex(_SYNTHETIC_PDF_BYTES))
+        d = _results_dict(results)
+        assert d["sha256sums_manifest_scheme_determined"] is True
+        assert all(passed for _n, passed, _d in results)
+
+    def test_wrapper_inclusive_manifest_scheme_succeeds(self, tmp_path):
+        # 実装方針として、ラッパー込みパス方式のSHA256SUMS.txtも許容する。
+        entries = _wrapped_entries(wrapper="wrapper_b", manifest_scheme="wrapper")
+        zip_path = _build_zip(tmp_path, entries=entries)
+        results = check_handoff_zip(zip_path, expected_pdf_sha256=_sha256_hex(_SYNTHETIC_PDF_BYTES))
+        d = _results_dict(results)
+        assert d["sha256sums_manifest_scheme_determined"] is True
+        assert all(passed for _n, passed, _d in results)
+
+    def test_mixed_manifest_scheme_fails(self, tmp_path):
+        # SHA256SUMS.txt内で、あるエントリは論理相対パス、別のエントリはラッパー込みパスで
+        # 記載されている（一部だけ方式が異なる）場合は、推測で採用せず失敗させる。
+        wrapper = "wrapper_c"
+        pdf_digest = _sha256_hex(_SYNTHETIC_PDF_BYTES)
+        sha256sums = (
+            f"{_readme_digest()}  {REQUIRED_README}\n"  # 論理相対パス
+            f"{pdf_digest}  {wrapper}/{TARGET_PDF_ENTRY}\n"  # ラッパー込みパス
+        )
+        entries = {
+            f"{wrapper}/{REQUIRED_README}": _DUMMY_README_TEXT,
+            f"{wrapper}/{REQUIRED_SHA256SUMS}": sha256sums,
+            f"{wrapper}/{TARGET_PDF_ENTRY}": _SYNTHETIC_PDF_BYTES,
+        }
+        zip_path = _build_zip(tmp_path, entries=entries)
+        results = check_handoff_zip(zip_path)
+        d = _results_dict(results)
+        assert d["sha256sums_manifest_scheme_determined"] is False
+        assert d["sha256sums_parseable"] is True  # 書式自体は解析できるが方式が曖昧
+
+
+class TestMultipleTopLevelOrMixedStructures:
+    def test_multiple_top_level_elements_are_treated_as_root_structure_and_fail(self, tmp_path):
+        entries = {
+            "folder_a/README.md": _DUMMY_README_TEXT,
+            "folder_a/SHA256SUMS.txt": "dummy\n",
+            "folder_a/data/phase6_received/SFA用紙.pdf": _SYNTHETIC_PDF_BYTES,
+            "folder_b/extra.txt": b"unrelated",
+        }
+        zip_path = _build_zip(tmp_path, entries=entries)
+        results = check_handoff_zip(zip_path)
+        d = _results_dict(results)
+        # 複数トップレベル要素のため単一ラッパーとして認識されず、ルート直下構造として
+        # 判定される（この合成ZIPには真のルート直下ファイルがないため不合格になる）。
+        assert _results_detail(results, "logical_root_structure") == "root"
+        assert d["readme_exists"] is False
+
+    def test_root_level_file_mixed_with_wrapped_files_fails(self, tmp_path):
+        entries = _wrapped_entries(wrapper="mixed_wrapper")
+        entries["README.md"] = _DUMMY_README_TEXT  # ラッパーに包まれていない、ルート直下のファイル
+        zip_path = _build_zip(tmp_path, entries=entries)
+        results = check_handoff_zip(zip_path)
+        d = _results_dict(results)
+        assert _results_detail(results, "logical_root_structure") == "root"
+        # ルート直下にSHA256SUMS.txtがないため不合格になる。
+        assert d["sha256sums_exists"] is False
+
+
+class TestDoubleWrapperIsNotAutoStripped:
+    def test_double_nested_wrapper_is_not_recursively_removed(self, tmp_path):
+        # README.md/SHA256SUMS.txtがラッパー直下ではなく、ラッパー配下のさらに1階層下
+        # （wrapper/inner/...）にある場合、単一ラッパーとして認識してはならない。
+        wrapper = "outer_wrapper"
+        entries = {
+            f"{wrapper}/inner/{REQUIRED_README}": _DUMMY_README_TEXT,
+            f"{wrapper}/inner/{REQUIRED_SHA256SUMS}": (
+                f"{_readme_digest()}  {REQUIRED_README}\n"
+                f"{_sha256_hex(_SYNTHETIC_PDF_BYTES)}  {TARGET_PDF_ENTRY}\n"
+            ),
+            f"{wrapper}/inner/{TARGET_PDF_ENTRY}": _SYNTHETIC_PDF_BYTES,
+        }
+        zip_path = _build_zip(tmp_path, entries=entries)
+        results = check_handoff_zip(zip_path)
+        d = _results_dict(results)
+        # 第1要素は"outer_wrapper"で全エントリ一致するが、その直下にREADME.md/
+        # SHA256SUMS.txtが存在しない（1階層下にある）ため、単一ラッパーとして
+        # 認識されない。二重に除去して"inner"を新たなラッパーとして再試行しない。
+        assert _results_detail(results, "logical_root_structure") == "root"
+        assert d["readme_exists"] is False
+
+
+class TestBasenameOnlyMatchIsNotAccepted:
+    def test_bare_basename_pdf_does_not_satisfy_wrapper_pdf_requirement(self, tmp_path):
+        # data/phase6_received/ 配下ではなく、ラッパー直下に裸のbasenameだけで
+        # 対象PDFを置いても、単一ラッパーのPDF要件を満たしたことにしない。
+        wrapper = "basename_test_wrapper"
+        entries = {
+            f"{wrapper}/{REQUIRED_README}": _DUMMY_README_TEXT,
+            f"{wrapper}/{REQUIRED_SHA256SUMS}": (
+                f"{_readme_digest()}  {REQUIRED_README}\n"
+                f"{_sha256_hex(_SYNTHETIC_PDF_BYTES)}  SFA用紙.pdf\n"
+            ),
+            f"{wrapper}/SFA用紙.pdf": _SYNTHETIC_PDF_BYTES,  # basenameのみ、正しい相対パスではない
+        }
+        zip_path = _build_zip(tmp_path, entries=entries)
+        results = check_handoff_zip(zip_path)
+        d = _results_dict(results)
+        assert _results_detail(results, "logical_root_structure") == "root"
+        assert d["readme_exists"] is False  # ルート直下にもREADME.mdがないため不合格
+
+
+class TestDangerousPathCheckRunsBeforePrefixStripping:
+    def test_dangerous_entry_inside_wrapper_is_rejected_before_wrapper_detection(self, tmp_path):
+        entries = _wrapped_entries(wrapper="danger_wrapper")
+        entries["../evil_outside_wrapper"] = b"malicious"
+        zip_path = _build_zip(tmp_path, entries=entries)
+        results = check_handoff_zip(zip_path)
+        d = _results_dict(results)
+        assert d["zip_no_dangerous_paths"] is False
+        # 危険なパスが見つかった時点で停止し、ラッパー検出以降の項目は一切実行されない。
+        assert "logical_root_structure" not in d
+        assert "readme_exists" not in d
+
+
+class TestNoSideEffectsForWrappedZip:
+    def test_wrapped_zip_check_does_not_extract_or_modify_anything(self, tmp_path):
+        entries = _wrapped_entries(wrapper="side_effect_wrapper")
+        zip_path = _build_zip(tmp_path, entries=entries)
+        before = set(tmp_path.iterdir())
+
+        check_handoff_zip(zip_path, expected_pdf_sha256=_sha256_hex(_SYNTHETIC_PDF_BYTES))
+
+        after = set(tmp_path.iterdir())
+        assert before == after
+
+
+# ============================================================
+# ヘルパー関数の直接テスト（結合テストでは到達不能な分岐の網羅用）
+#
+# _detect_single_wrapper_prefixは第1パス要素の完全一致（casefoldではない）で
+# ラッパーを認識するため、単一ラッパーとして認識された後の論理パス集合で
+# 重複・casefold衝突が生じるケースは、理論上は必ず生エントリ名の時点でも
+# 重複・casefold衝突として検出され、zip_no_dangerous_pathsで先に不合格となる
+# （同一の1つの文字列prefixを外した残りが衝突するなら、prefixを含めた全体文字列も
+# 衝突するため）。そのため、完全なZIP統合テストではこの分岐（内部関数
+# _find_duplicate_or_casefold_collisionsの衝突検出そのもの）を独立して
+# 再現できない。ここでは対象の内部関数を直接呼び出して検証する。
+# ============================================================
+class TestLogicalCollisionHelperDirect:
+    def test_duplicate_logical_paths_are_detected(self):
+        collisions = _find_duplicate_or_casefold_collisions(["data/a.txt", "data/a.txt"])
+        assert collisions
+        assert collisions[0][1] == "duplicate_logical_path"
+
+    def test_casefold_collision_between_different_logical_paths_is_detected(self):
+        collisions = _find_duplicate_or_casefold_collisions(["data/A.txt", "data/a.txt"])
+        assert collisions
+        assert collisions[0][1] == "case_insensitive_collision_after_prefix_strip"
+
+    def test_no_collision_for_distinct_paths(self):
+        collisions = _find_duplicate_or_casefold_collisions(["data/a.txt", "data/b.txt"])
+        assert collisions == []
+
+
+class TestWrapperDetectionHelperDirect:
+    def test_returns_none_for_empty_set(self):
+        assert _detect_single_wrapper_prefix(set()) is None
+
+    def test_returns_none_when_readme_missing_under_candidate(self):
+        raw_names = {
+            f"w/{REQUIRED_SHA256SUMS}",
+            f"w/{TARGET_PDF_ENTRY}",
+        }
+        assert _detect_single_wrapper_prefix(raw_names) is None
+
+    def test_returns_wrapper_name_when_all_conditions_met(self):
+        raw_names = {
+            f"w/{REQUIRED_README}",
+            f"w/{REQUIRED_SHA256SUMS}",
+            f"w/{TARGET_PDF_ENTRY}",
+        }
+        assert _detect_single_wrapper_prefix(raw_names) == "w"

@@ -12,11 +12,20 @@
 ## 1. 事実（このセッションまでに確定していること）
 
 - 作業ブランチは `step3b-vision-evidence-wip`。mainは一切変更していない。
-- `stash@{0}: experimental-out-of-scope-step4-5-comparison` が存在する
-  （Step 4/5の先行実装。ユーザー未承認のため意図的に退避したまま）。
+- 実家PCでは、`stash@{0}: experimental-out-of-scope-step4-5-comparison`
+  （Step 4/5の先行実装。ユーザー未承認のため意図的に退避したまま）という
+  **そのマシンのローカルstash**が存在していた。**Git stashはPCごとのローカル情報で
+  あり、`clone`/`fetch`/`pull`/`push`のいずれでも別マシンへ移動・複製されない。**
+  そのため、自宅PC（本手順書で新規cloneした環境）にこのstashが存在しなくても
+  異常ではない。2026-07-27時点で自宅PCの新規cloneの`git stash list`は空であることを
+  確認済みであり、これは想定通りの状態である（詳細は2節・3.2節を参照）。
 - 実家PCには実PDF・Salesforce Excel・引継ぎZIP（`geo_mvp_handoff.zip`）・
   `ANTHROPIC_API_KEY` のいずれも存在しない。今回のセッションでは実データ・実APIを
   一切使用していない。
+- 2026-07-27、自宅PCでの引継ぎZIP検証中に、`geo_mvp_handoff.zip`が単一ラッパー
+  フォルダ（`geo_mvp_handoff/`）構造で作成されていたことが判明し、
+  `scripts/check_phase6_handoff.py`をルート直下構造・単一ラッパーフォルダ構造の
+  両方に対応させた（詳細は3.3節末尾を参照）。
 - Step 3B v3の合成画像・モック基盤（コミット `cfa427c` 相当、以下のモジュール群）は
   実装・レビュー済み：
   - `src/phase6/evidence_schema.py`: `CellRepresentation`
@@ -47,7 +56,12 @@
 以下のいずれかに該当する場合は、作業を進めず、状況をユーザーへ報告して停止すること。
 
 1. `git fetch`/`pull`で競合が発生した場合。自動解決しない。
-2. `stash@{0}`の内容・件数が一致しない場合。pop/apply/dropしない。
+2. 自宅PC（または新規clone環境）に、想定していない別のstashが存在する場合。
+   その内容を勝手に確認・pop・apply・dropしない。ただし**stashが存在しないこと
+   自体は停止条件ではない**（`experimental-out-of-scope-step4-5-comparison`は
+   実家PCのローカルstashであり、clone・fetch・pull・pushでは移動しない。自宅PCの
+   新規clone環境で`git stash list`が空であることは正常であり、異常ではない。
+   詳細は1節・3.2節を参照）。
 3. `scripts/check_phase6_handoff.py`がexit 1を返した場合（不足・破損・ハッシュ不一致・
    危険なパスのいずれか）。原因を報告し、配置作業へ進まない。
 4. 実画像を確認する前にアンカー座標・セル座標・期待結果を決めない
@@ -60,7 +74,10 @@
 7. v2の`scripts/run_phase6_vision_evidence_pilot.py`をv3の実行結果として扱わない
    （v2は別実装であり、v3の検証には使えない）。
 8. `ANTHROPIC_API_KEY`の値を画面・ログ・コミットメッセージ・ドキュメントへ一切書かない。
-9. Step 4/5（`stash@{0}`の中身）を、明示的な承認なしに再開しない。
+9. Step 4/5（実家PCの`stash@{0}`に退避していた内容）を、明示的な承認なしに再開しない。
+   この禁止事項は、そのstashが自宅PC（新規clone環境）に存在するかどうかに関わらず
+   維持する（stashが無いこと自体を「Step 4/5が未着手である根拠」や「再開してよい
+   根拠」として扱わない）。
 10. `reconciliation.py`の既存`Any`エラーを、今回の作業のついでに修正しない
     （無関係な既知の不具合。別タスクとして扱う）。
 
@@ -90,10 +107,14 @@ git stash list
 
 - branchが`step3b-vision-evidence-wip`であること。
 - `git status --porcelain`が空（クリーン）であること。
-- `git stash list`に`experimental-out-of-scope-step4-5-comparison`が存在し、
-  件数・内容が変わっていないこと。
+- `git stash list`を確認する。**空であれば正常**（実家PCのローカルstashは
+  自宅PCへ複製されないため）。もし何らかのstashが存在した場合は、その内容を
+  勝手に確認・pop・apply・dropせず、一覧（件数・メッセージ）だけを報告する
+  （停止条件2）。stashの有無いずれであっても、Step 4/5を無承認で再開しない
+  という制約（停止条件9）は変わらない。
 
-いずれか異なる場合は停止条件2に従う。
+いずれか異なる場合（branch不一致・status不整合・想定外stashへの操作等）は
+停止条件1・2に従う。
 
 ### 3.3 引継ぎZIPのプリフライト（展開しない）
 
@@ -105,6 +126,27 @@ py -3 scripts/check_phase6_handoff.py --zip "<geo_mvp_handoff.zipの実際のパ
 - `ANTHROPIC_API_KEY`欄は「設定済み」「未設定」のいずれかのみ表示される
   （値は表示されない）。
 - exit 1の場合は停止条件3に従う。
+
+**ZIPのフォルダ構造について（2026-07-27追加）**: `check_phase6_handoff.py`は
+次のどちらか一方の構造だけを許容する。
+
+- A. ルート直下構造: `README.md`・`SHA256SUMS.txt`・`data/...`・`outputs/...`が
+  ZIPの論理ルート直下に存在する。
+- B. 単一ラッパーフォルダ構造: 全ての通常ファイルが完全に同一の第1パス要素
+  （ラッパー名）を持ち、その直下にREADME.md・SHA256SUMS.txtが存在し、
+  そのラッパーを1回だけ除去した論理パスに`data/phase6_received/SFA用紙.pdf`が
+  存在する場合。ラッパー名は固定値に限定せず、全通常ファイルが同一の
+  トップレベル要素を共有するかどうかで判定する（basename一致や複数階層の
+  自動除去は行わない）。
+
+`geo_mvp_handoff.zip`は構造Bで作成されており、実際には`geo_mvp_handoff/`という
+単一ラッパー配下に44件の通常ファイルが格納されている。危険なパス（絶対パス・
+`..`トラバーサル・重複エントリ・大文字小文字衝突）の検査は、ラッパー構造の判定
+より前に、ZIPの生エントリ名に対して直接行われる。また、`SHA256SUMS.txt`に
+記載されたパスが論理ルート相対形式かラッパー込み形式かは、記載内容全体から
+一意に判定できる場合のみ採用し、一部だけ形式が異なる等で判定できない場合は
+検査失敗として扱う。これらの安全ルールは、単一ラッパー対応の追加によって
+削除・弱体化していない。
 
 ### 3.4 SHA256SUMS.txt全体の確認（スクリプトの検証範囲についての注記）
 
