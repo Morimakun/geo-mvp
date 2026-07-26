@@ -108,12 +108,25 @@ py -3 scripts/check_phase6_handoff.py --zip "<geo_mvp_handoff.zipの実際のパ
 
 ### 3.4 SHA256SUMS.txt全体の確認（スクリプトの検証範囲についての注記）
 
-`check_phase6_handoff.py`が深く検証するのは`data/phase6_received/SFA用紙.pdf`のみ
-（今回のセッションでの実装範囲）。ZIPに含まれる他のファイル
-（`SFAエクスポートマスター*.xlsx`、`outputs/phase6_vision_evidence_pilot/`配下の
-v1/v2監査JSON・画像等）についても、`SHA256SUMS.txt`記載のハッシュ値と実ファイルの
-SHA-256が一致することを、配置前に別途（手動またはOS標準のハッシュコマンドで）
-確認すること。1件でも不一致があれば配置せず停止する。
+`check_phase6_handoff.py`は、`SHA256SUMS.txt`に記載された**全通常ファイル**を
+ZIP展開前にストリーム検証する（対象PDFだけではない。`SFAエクスポートマスター*.xlsx`、
+`outputs/phase6_vision_evidence_pilot/`配下のv1/v2監査JSON・画像等も含め、
+マニフェスト記載分は自動的に検証される）。
+
+検査内容（`--zip`実行1回で完結する。exit 0であれば、ZIP内対象ファイルを別途
+手動でハッシュ照合する必要はない）：
+
+- マニフェスト記載ファイルがZIP内に存在しない（欠落）を検出する。
+- ZIP内の通常ファイルのうち、マニフェストに記載がないもの（未記載）を検出する
+  （`SHA256SUMS.txt`自身は例外。自己ハッシュの記載は必須ではない）。
+- ハッシュ不一致・欠落・未記載・マニフェスト内の重複パス・casefold衝突（大文字小文字
+  違いだけの複数パス記載）が1件でもあれば、そのZIPは不合格（exit 1）として扱う。
+- `data/phase6_received/SFA用紙.pdf`のみ、ZIP実測値・`SHA256SUMS.txt`記載値・
+  スクリプトへ固定した期待値の**三者一致**を追加で検証する（他ファイルは
+  実測値とマニフェスト値の一致のみを検証する）。
+
+exit 1の場合は、原因（欠落・不一致・未記載・重複・危険なパス等）をコマンド出力の
+`NG:`行で確認し、展開・配置作業へ進まない（停止条件3）。
 
 ### 3.5 元PDFハッシュの最終確認
 
@@ -175,20 +188,40 @@ py -3 -m pytest test_reconciliation.py tests/ --continue-on-collection-errors
 新たなFAILEDが増えている場合（上記以外の箇所）は、実装に問題がある可能性がある
 ため、修正を進める前にユーザーへ報告する。
 
-### 3.10〜3.13 P59実画像検証（v3用runnerの作成が前提。3.14参照）
+### 3.10 page registrationの既知の制約（アンカー選定前に必読）
 
-1. P59の実画像を目視確認する。**この時点で初めて**、アンカーテンプレート
-   （`page_registration.AnchorTemplate`）の座標と、`CellRegionPair`/
-   `StoreCodeRegionPair`の実際の座標を決定する（停止条件4）。
+`src/phase6/page_registration.py`の位置合わせアルゴリズムには、実画像でアンカーを
+選ぶ前に理解しておくべき既知の制約がある。
+
+- 現在の登録アルゴリズムは、グレースケール画素の平均絶対誤差（MAE）による
+  総当たりの平行移動探索である。回転・拡大縮小・照明正規化は行わない。
+- 大きな単色四角形のような**特徴の少ないアンカー**では、探索範囲外にある真の位置
+  ではなく、探索範囲境界付近の位置でも、部分的な重なりだけで高いスコアを
+  出してしまう場合があることが合成テストで確認されている
+  （`tests/phase6/test_page_registration.py`の
+  `test_shift_just_beyond_search_range_can_still_score_high_known_limitation`参照。
+  既知の限界として意図的に固定してあり、閾値やアルゴリズムを調整して隠していない）。
+- そのため、実帳票のアンカーには、単色領域ではなく、**罫線の交点・固定印刷文字・
+  複数のエッジを含む識別性の高い印刷済みパターン**を選ぶこと（例: 表の罫線交差部、
+  「AU1K」等の固定印字部分の輪郭）。
+- 実画像を確認する前にアンカー座標・セル座標を決めないこと（停止条件4と同じ）。
+- この制約を覆い隠すための閾値調整・ページ別の例外処理は行わないこと
+  （実データの期待値に合わせたパラメータ調整はしない。停止条件6と同じ精神）。
+
+### 3.11〜3.14 P59実画像検証（v3用runnerの作成が前提。3.15参照）
+
+1. P59の実画像を目視確認する。**この時点で初めて**、3.10節の制約を踏まえて
+   アンカーテンプレート（`page_registration.AnchorTemplate`）の座標と、
+   `CellRegionPair`/`StoreCodeRegionPair`の実際の座標を決定する（停止条件4）。
 2. 対象は**P59のみ**とする。P32・P41・P66は、P59が正式に通るまで実行しない
    （停止条件5）。
-3. 期待値（3.1節記載のP59確定事項：intro written_total=0、
+3. 期待値（1節記載のP59確定事項：intro written_total=0、
    intro tally=no_marks_observed）と実行結果を比較する。
 4. 合わない場合は、同一バージョン内で座標調整・再実行を繰り返さず、原因
    （位置合わせの精度・領域座標・プロンプト・契約のいずれか）を切り分けて報告する
    （停止条件6）。
 
-### 3.14 v3用実行スクリプトについて（重要）
+### 3.15 v3用実行スクリプトについて（重要）
 
 **v3の実画像検証を実行するCLIスクリプトは、このセッション時点でまだ作成していない。**
 `src/phase6/vision_evidence_client_v3.py`の`run_vision_evidence_pilot_page_v3()`は
@@ -208,5 +241,5 @@ py -3 -m pytest test_reconciliation.py tests/ --continue-on-collection-errors
 
 - Step 4（三者比較）・Step 5（review routing）の再開（`stash@{0}`）。
 - `reconciliation.py`の`Any`エラー修正。
-- v3用CLI runnerの実装そのもの（3.14節の通り、P59実画像確認後の別作業）。
+- v3用CLI runnerの実装そのもの（3.15節の通り、P59実画像確認後の別作業）。
 - API呼び出し・実データでの回帰テストの実施そのもの（本書は手順の記載のみ）。

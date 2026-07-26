@@ -6,6 +6,8 @@
 
 from __future__ import annotations
 
+import io
+import random
 import sys
 from pathlib import Path
 
@@ -284,3 +286,170 @@ class TestStoreCodeRegionPair:
                 store_code_context_region=RegionDefinition("wrong_name", 5, 5, 100, 20),
                 store_code_detail_region=RegionDefinition("store_code__detail", 10, 8, 80, 14),
             )
+
+
+# ============================================================
+# 合成ストレステスト（実帳票・実座標・ページ番号・CSV値・正解値は一切使わない）
+#
+# ここでの各テストは、現行の単純な画素比較アルゴリズム（回転・拡大縮小・照明正規化
+# なしの総当たりテンプレートマッチ）が「保証する仕様」（探索範囲内の平行移動の
+# 検出、境界チェック等）と、「既知の限界」（大きな輝度変化・大きな欠損等では
+# matchedにならない）を区別して記録する。既知の限界側のテストで閾値やアルゴリズムを
+# 実データに合わせて調整することはしない。
+# ============================================================
+def _jpeg_round_trip(image: Image.Image, *, quality: int = 90) -> Image.Image:
+    buf = io.BytesIO()
+    image.convert("L").save(buf, format="JPEG", quality=quality)
+    buf.seek(0)
+    return Image.open(buf).convert("L").copy()
+
+
+def _add_seeded_noise(image: Image.Image, *, seed: int, amplitude: int) -> Image.Image:
+    rng = random.Random(seed)
+    noisy = image.copy()
+    pixels = noisy.load()
+    width, height = noisy.size
+    for y in range(height):
+        for x in range(width):
+            delta = rng.randint(-amplitude, amplitude)
+            pixels[x, y] = max(0, min(255, pixels[x, y] + delta))
+    return noisy
+
+
+class TestSearchRangeBoundary:
+    def test_shift_exactly_at_search_range_boundary_is_matched(self):
+        template = _reference_template()
+        shifted = _canvas_with_marker(x=MARKER_X + 15, y=MARKER_Y)  # 既定search_range=15の境界
+
+        result = register_page(template, shifted, search_range=15)
+
+        assert result.status == RegistrationStatus.MATCHED
+        assert result.x_offset == 15
+
+    def test_shift_far_beyond_search_range_with_zero_possible_overlap_is_not_matched(self):
+        # search_range=15かつマーカー幅20の場合、真の移動量が35以上あれば、
+        # 探索範囲内のどの候補ウィンドウとも重なりが一切生じない
+        # （保証される仕様：この場合は確実にmatchedにならない）。
+        template = _reference_template()
+        shifted = _canvas_with_marker(x=MARKER_X + 40, y=MARKER_Y)
+
+        result = register_page(template, shifted, search_range=15)
+
+        assert result.status == RegistrationStatus.FAILED
+        assert result.score == 0.0
+
+    def test_shift_just_beyond_search_range_can_still_score_high_known_limitation(self):
+        # 既知の限界: 現行アルゴリズムは単純な画素平均絶対誤差による総当たりマッチであり、
+        # 回転・拡大縮小・照明正規化を行わない。今回のテスト用マーカーのような
+        # 大きな単色パターンでは、真の移動量が探索範囲のわずか1px外側（ここでは16px、
+        # search_range=15）であっても、境界の候補ウィンドウ（オフセット15px）が
+        # マーカーの大部分（20列中19列相当）と重なるため、高いスコアで誤って
+        # matchedと判定されうる（かつ報告されるオフセットは真の値と1pxずれる）。
+        # このテストはこの限界を意図的に固定するものであり、閾値やアルゴリズムを
+        # 調整して「探索範囲外は必ずmatchedにしない」という仕様を無理に満たさせない。
+        template = _reference_template()
+        shifted = _canvas_with_marker(x=MARKER_X + 16, y=MARKER_Y)
+
+        result = register_page(template, shifted, search_range=15)
+
+        assert result.status == RegistrationStatus.MATCHED  # 既知の限界（保証仕様ではない）
+        assert result.x_offset == 15  # 真の移動量16とは1pxずれる
+
+
+class TestMildImageDegradation:
+    """既知の限界: 大きな輝度変化・大きな欠損はmatchedを保証しない（意図的に緩めない）。"""
+
+    def test_slight_brightness_change_still_matches(self):
+        template = _reference_template()
+        # 純黒(0)ではなく、わずかに明るいマーカー（軽度の輝度変化を模す）。
+        slightly_brighter = _canvas_with_marker(x=MARKER_X + 4, y=MARKER_Y, fill=10)
+
+        result = register_page(template, slightly_brighter)
+
+        assert result.status == RegistrationStatus.MATCHED
+        assert result.x_offset == 4
+
+    def test_fixed_seed_slight_noise_still_matches(self):
+        template = _reference_template()
+        shifted = _canvas_with_marker(x=MARKER_X + 5, y=MARKER_Y - 3)
+        noisy = _add_seeded_noise(shifted, seed=12345, amplitude=6)
+
+        result = register_page(template, noisy)
+
+        assert result.status == RegistrationStatus.MATCHED
+        assert result.x_offset == 5
+        assert result.y_offset == -3
+
+    def test_jpeg_recompression_equivalent_degradation_still_matches(self):
+        template = _reference_template()
+        shifted = _canvas_with_marker(x=MARKER_X + 2, y=MARKER_Y + 2)
+        recompressed = _jpeg_round_trip(shifted, quality=90)
+
+        result = register_page(template, recompressed)
+
+        assert result.status == RegistrationStatus.MATCHED
+        assert result.x_offset == 2
+        assert result.y_offset == 2
+
+    def test_small_anchor_notch_occlusion_degrades_to_low_confidence(self):
+        # アンカー一部欠損（軽度）: マーカー内の小さな角を白抜きにする。
+        template = _reference_template()
+        shifted_x, shifted_y = MARKER_X, MARKER_Y
+        img = _canvas_with_marker(x=shifted_x, y=shifted_y)
+        draw = ImageDraw.Draw(img)
+        draw.rectangle(
+            [shifted_x, shifted_y, shifted_x + 4, shifted_y + 9],  # 20x20のうち5x10=50画素を欠損
+            fill=255,
+        )
+
+        result = register_page(template, img)
+
+        assert result.status != RegistrationStatus.MATCHED
+        assert result.score < 0.92
+
+    def test_half_anchor_occlusion_fails(self):
+        # アンカー一部欠損（重度）: マーカーの半分を白抜きにする。
+        template = _reference_template()
+        img = _canvas_with_marker(x=MARKER_X, y=MARKER_Y)
+        draw = ImageDraw.Draw(img)
+        draw.rectangle(
+            [MARKER_X, MARKER_Y, MARKER_X + MARKER_SIZE - 1, MARKER_Y + MARKER_SIZE // 2 - 1],
+            fill=255,
+        )
+
+        result = register_page(template, img)
+
+        assert result.status == RegistrationStatus.FAILED
+
+
+class TestAmbiguousAndDegenerateInputs:
+    def test_multiple_identical_candidates_still_returns_deterministically(self):
+        # 探索範囲内に完全一致するマーカーが2箇所ある場合でも、例外を出さず
+        # 決定論的に（毎回同じ）候補を1つ選ぶことだけを確認する
+        # （どちらが「正しい」かはこのテストの対象外）。
+        template = _reference_template()
+        img = _blank_canvas()
+        draw = ImageDraw.Draw(img)
+        draw.rectangle(
+            [MARKER_X + 3, MARKER_Y, MARKER_X + 3 + MARKER_SIZE - 1, MARKER_Y + MARKER_SIZE - 1], fill=0
+        )
+        draw.rectangle(
+            [MARKER_X + 8, MARKER_Y, MARKER_X + 8 + MARKER_SIZE - 1, MARKER_Y + MARKER_SIZE - 1], fill=0
+        )
+
+        result_1 = register_page(template, img)
+        result_2 = register_page(template, img)
+
+        assert result_1.status == RegistrationStatus.MATCHED
+        assert result_1.x_offset in (3, 8)
+        assert result_1.x_offset == result_2.x_offset  # 決定論的（毎回同じ結果）
+        assert result_1.score == result_2.score
+
+    def test_target_image_smaller_than_anchor_fails_without_crashing(self):
+        template = _reference_template()  # 20x20のアンカー
+        tiny_target = Image.new("L", (15, 15), color=255)  # アンカーより小さい画像
+
+        result = register_page(template, tiny_target)
+
+        assert result.status == RegistrationStatus.FAILED
+        assert result.score == 0.0
