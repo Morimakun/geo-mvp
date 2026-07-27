@@ -33,6 +33,11 @@ from reconciliation_phase1 import create_phase1_engine
 # 環境変数読込
 load_dotenv()
 
+# 内部実データ（V2.2並列分類CSV等）の自動表示フラグ
+# フェイルクローズ：未設定・空文字・不正値はすべて「無効」として扱う。
+# 公開デモ環境では明示的に有効化しない限り、実データの読み込み処理自体を行わない。
+SHOW_INTERNAL_REAL_DATA_PANEL = os.environ.get("SHOW_INTERNAL_REAL_DATA_PANEL", "").strip().lower() in ("1", "true", "yes")
+
 # ===== ヘルパー関数：セキュリティ =====
 
 def sanitize_csv_cell(value):
@@ -2188,10 +2193,15 @@ def run_phase1_reconciliation():
 # ===== [4] 照合結果の確認（担当者向け） =====
 st.markdown("### [4] 照合結果の確認")
 
-# V2.2並列分類CSVを読み込む
+# V2.2並列分類CSV（内部実データ）のパス。存在チェック・読込は SHOW_INTERNAL_REAL_DATA_PANEL 有効時のみ行う。
 v22_csv_path = Path(__file__).parent / "data" / "test_outputs" / "phase5_ai_tally_v22_parallel_classification.csv"
 
-if v22_csv_path.exists():
+if not SHOW_INTERNAL_REAL_DATA_PANEL:
+    st.info(
+        "この画面ではまだ照合結果がありません。\n"
+        "上部の「PDF一括アップロード」または「CSVデモモード」からデータを投入してください。"
+    )
+elif v22_csv_path.exists():
     try:
         df_v22 = pd.read_csv(v22_csv_path)
 
