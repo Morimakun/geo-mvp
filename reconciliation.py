@@ -8,7 +8,7 @@ FAX帳票 × Salesforce CSV 照合ロジック
 import csv
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Tuple, Optional
 from dataclasses import dataclass
 import pandas as pd
 from datetime import datetime
