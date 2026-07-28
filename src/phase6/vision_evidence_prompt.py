@@ -43,6 +43,7 @@ from src.phase6.vision_evidence_contract import EXAMPLE_VISION_EVIDENCE_PAYLOAD
 
 __all__ = [
     "VISION_EVIDENCE_PROMPT_VERSION",
+    "VISION_EVIDENCE_PROMPT_VERSION_V2",
     "build_vision_evidence_prompt",
     "build_region_scoped_prompt",
     "build_cell_scoped_prompt_v3",
@@ -50,12 +51,18 @@ __all__ = [
 
 
 # このプロンプト文字列自体のバージョン。プロンプトの内容を変更した場合に上げる。
+# build_cell_scoped_prompt_v3（vision_evidence_client_v3.pyが使用）が対象。
 #
 # 3.0.0（Step 3B v3, 2026-07-25）: 同一セルをwritten用・tally用の別領域として
 #   二重送信する構造をやめ、1セル(cell_id)につきcontext/detailの2画像だけを送る
 #   構造へ変更（build_cell_scoped_prompt_v3）。cell_representation
 #   （numeric/tally/blank/unreadable/mixed）の自己申告を新たに指示する。
 VISION_EVIDENCE_PROMPT_VERSION = "3.0.0"
+
+# build_region_scoped_prompt（vision_evidence_client.py、v2が使用）が対象の
+# プロンプトバージョン。v2のプロンプトはcell_representationの自己申告を
+# 一切指示しないため、v3プロンプト（3.0.0）とは別バージョンとして固定する。
+VISION_EVIDENCE_PROMPT_VERSION_V2 = "2.0.0"
 
 
 _FORM_VERSION_CLASSIFICATION = """\

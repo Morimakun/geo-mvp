@@ -261,16 +261,22 @@ def _parse_cell_representation(
     *,
     path: str,
     allow_not_observed: bool,
+    allow_missing_cell_representation: bool,
     written_total: WrittenTotalEvidence,
 ) -> Optional[CellRepresentation]:
-    """Step 3B v3で追加。cell_representationの要否は、旧JSON互換モード
-    （allow_not_observed。not_observedの許可と同じフラグを流用する。両者とも
-    「これは旧JSON移行・旧処理からのデータである」ことを表す点で意味が同じため）
-    と written_total.status=not_applicable かどうかで決まる。
+    """Step 3B v3で追加。cell_representationの要否は、次の3条件のいずれかで決まる。
 
-    - allow_not_observed=True（旧JSON互換）: 省略可。指定されていれば検証する。
+    - allow_not_observed=True（旧JSON互換。not_observedの許容と同じフラグ。
+      「これは旧JSON移行・旧処理からのデータである」ことを表す）: 省略可。
+      指定されていれば検証する。
     - written_total.status=not_applicable: この帳票版に項目自体が存在せず、
       分類対象のセルが無いため、指定されていた場合はむしろ契約違反として拒否する。
+    - allow_missing_cell_representation=True（v2クライアント向け。
+      vision_evidence_client.py参照）: 省略可。指定されていれば検証する。
+      これはallow_not_observedとは意味が異なる。v2のpayloadはstatus/
+      observation_statusを通常どおり要求する「旧JSON」ではなく、単にv3で追加された
+      cell_representationフィールド自体を持たない現行のv2契約データである。
+      両者を混同しないよう、意図的に別引数として分離している。
     - それ以外（通常モード）: 必須。
 
     値としての整合性（written_total/tallyの実際の状態との整合）はここでは判定せず、
@@ -293,12 +299,18 @@ def _parse_cell_representation(
         return None
 
     if raw is None:
+        if allow_missing_cell_representation:
+            return None
         raise VisionEvidenceContractError(f"{path}.cell_representation: 必須キーが存在しません")
     return _map_enum(CellRepresentation, raw, path=f"{path}.cell_representation")
 
 
 def _parse_numeric_field(
-    d: Mapping[str, Any], *, path: str, allow_not_observed: bool
+    d: Mapping[str, Any],
+    *,
+    path: str,
+    allow_not_observed: bool,
+    allow_missing_cell_representation: bool,
 ) -> NumericFieldEvidence:
     written_total = _parse_written_total(
         _require_mapping(d, "written_total", path),
@@ -311,7 +323,11 @@ def _parse_numeric_field(
         allow_not_observed=allow_not_observed,
     )
     cell_representation = _parse_cell_representation(
-        d, path=path, allow_not_observed=allow_not_observed, written_total=written_total
+        d,
+        path=path,
+        allow_not_observed=allow_not_observed,
+        allow_missing_cell_representation=allow_missing_cell_representation,
+        written_total=written_total,
     )
     # written_total/tallyとcell_representationの意味的な整合性はStep 2へ委譲する
     # （不整合の組み合わせはEvidenceValidationErrorとして送出される）。
@@ -330,6 +346,7 @@ def parse_vision_evidence_response(
     expected_form_version: str,
     selected_business_date: date,
     allow_not_observed: bool = False,
+    allow_missing_cell_representation: bool = False,
 ) -> PageEvidence:
     """Vision抽出結果のJSON(dict)をPageEvidenceへ変換する。
 
@@ -349,6 +366,13 @@ def parse_vision_evidence_response(
             not_observedを許可する（旧JSON互換データ向け）。デフォルトのFalseでは、
             現行のVision契約の通常出力としてnot_observedが現れた場合に
             VisionEvidenceContractErrorとする。
+        allow_missing_cell_representation: Trueの場合のみ、intro/voiceの
+            cell_representationキー欠損を許容する（v2クライアント向け。
+            vision_evidence_client.py参照）。allow_not_observedとは意味が異なり、
+            互いに独立している。v2のpayloadはstatus/observation_statusを通常どおり
+            要求する現行データであり、単にv3で追加されたcell_representationを
+            持たないだけである。デフォルトのFalse（v3の通常モード）では、
+            cell_representation欠損はVisionEvidenceContractErrorとする。
 
     Returns:
         PageEvidence。page_no/form_versionはexpected_page_no/expected_form_versionの値。
@@ -392,11 +416,13 @@ def parse_vision_evidence_response(
         _require_mapping(payload, "intro", "intro"),
         path="intro",
         allow_not_observed=allow_not_observed,
+        allow_missing_cell_representation=allow_missing_cell_representation,
     )
     voice_evidence = _parse_numeric_field(
         _require_mapping(payload, "voice", "voice"),
         path="voice",
         allow_not_observed=allow_not_observed,
+        allow_missing_cell_representation=allow_missing_cell_representation,
     )
 
     return PageEvidence(
@@ -420,6 +446,7 @@ def parse_vision_evidence_response_with_audit(
     expected_form_version: str,
     selected_business_date: date,
     allow_not_observed: bool = False,
+    allow_missing_cell_representation: bool = False,
 ) -> VisionEvidenceAuditRecord:
     """parse_vision_evidence_responseと同じ変換を行い、生のpayloadおよび契約/プロンプトの
     バージョンも監査用に保持する。
@@ -434,6 +461,7 @@ def parse_vision_evidence_response_with_audit(
         expected_form_version=expected_form_version,
         selected_business_date=selected_business_date,
         allow_not_observed=allow_not_observed,
+        allow_missing_cell_representation=allow_missing_cell_representation,
     )
     return VisionEvidenceAuditRecord(
         page_evidence=page_evidence,

@@ -54,12 +54,12 @@ from PIL import Image, ImageDraw
 
 from src.phase6.evidence_schema import EvidenceValidationError
 from src.phase6.vision_evidence_contract import (
-    VISION_EVIDENCE_CONTRACT_VERSION,
+    VISION_EVIDENCE_CONTRACT_VERSION_V2 as VISION_EVIDENCE_CONTRACT_VERSION,
     VisionEvidenceContractError,
 )
 from src.phase6.vision_evidence_parser import parse_vision_evidence_response
 from src.phase6.vision_evidence_prompt import (
-    VISION_EVIDENCE_PROMPT_VERSION,
+    VISION_EVIDENCE_PROMPT_VERSION_V2 as VISION_EVIDENCE_PROMPT_VERSION,
     build_region_scoped_prompt,
 )
 
@@ -721,6 +721,9 @@ def run_vision_evidence_pilot_page(
                 expected_page_no=pdf_page_no,
                 expected_form_version=expected_form_version,
                 selected_business_date=selected_business_date,
+                # v2契約（VISION_EVIDENCE_CONTRACT_VERSION_V2）はcell_representationを
+                # 要求しない。allow_not_observedとは独立したフラグ（意味の混同防止）。
+                allow_missing_cell_representation=True,
             )
         except (VisionApiCallError, VisionEvidenceContractError, EvidenceValidationError) as exc:
             attempt_record["error_type"] = type(exc).__name__

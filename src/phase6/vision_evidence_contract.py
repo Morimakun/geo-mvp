@@ -52,6 +52,7 @@ if TYPE_CHECKING:
 
 __all__ = [
     "VISION_EVIDENCE_CONTRACT_VERSION",
+    "VISION_EVIDENCE_CONTRACT_VERSION_V2",
     "VisionEvidenceContractError",
     "VisionEvidenceAuditRecord",
     "EXAMPLE_VISION_EVIDENCE_PAYLOAD",
@@ -59,6 +60,8 @@ __all__ = [
 
 
 # このJSON契約自体のバージョン。契約の形（必須キー・enum値の意味）を変更した場合に上げる。
+# これはvision_evidence_client_v3.py（Step 3B v3、region_idではなくcell_id、
+# cell_representation必須）が対象とする契約のバージョンを表す。
 #
 # 2.0.0（Step 3B v3, 2026-07-25）: 各数値項目（intro/voice）へ cell_representation
 #   （numeric/tally/blank/unreadable/mixed。src/phase6/evidence_schema.py参照）を追加。
@@ -66,6 +69,15 @@ __all__ = [
 #   not_applicableの場合は逆に指定不可（分類対象のセル自体が存在しないため）。
 #   旧JSON互換モード（allow_not_observed=True）ではNoneのまま省略可。
 VISION_EVIDENCE_CONTRACT_VERSION = "2.0.0"
+
+# vision_evidence_client.py（Step 3B v2、region_id自己申告、cell_representationなし）
+# が対象とする契約のバージョン。v2のVisionプロンプトはcell_representationを一切
+# 要求しないため、v3契約（2.0.0）とは別に固定する。v2クライアントは
+# パーサーへallow_missing_cell_representation=Trueを渡すことでcell_representation
+# 欠損を許容するが、これはnot_observedの許容（allow_not_observed）とは意味が異なる
+# （v2のpayloadはstatus/observation_statusを通常どおり要求する。単にv3で追加された
+# cell_representationフィールドを持たないだけ）。
+VISION_EVIDENCE_CONTRACT_VERSION_V2 = "1.0.0"
 
 
 class VisionEvidenceContractError(Exception):
