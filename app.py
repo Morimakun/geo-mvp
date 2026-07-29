@@ -558,21 +558,35 @@ def dict_to_extraction_result(data: dict, filename: str) -> ExtractionResult:
     has_error = bool(data.get("error"))
 
     # Phase 6Aでは left_totals / right_totals の取得が未対応
-    # 将来的に実装される予定だが、現在は空配列のため needs_review=True にして誤判定を防ぐ
+    # reconcile()の一致・不一致判定では現在これらを使用しない（コメントアウト済み）ため、
+    # 空配列であること自体はneeds_reviewの判定根拠にしない。
     left_totals = []
     right_totals = []
 
-    # needs_review の判定基準
-    # （either left_totals OR right_totals が未取得なら needs_review=True）
-    needs_review = has_error or (not left_totals or not right_totals)
+    extracted_date = data.get("date")
+    extracted_store_code = data.get("store_code")
+
+    # needs_review の判定基準：
+    # - 抽出処理自体がエラーだった場合
+    # - date が欠落している場合（マッチングキーの一つであり、これがないと照合を試行できない）
+    # - store_code が欠落している場合（もう一つのマッチングキー。reconciliation.match_by_composite_key
+    #   はdate+store_codeの完全一致でのみCSV行を引くため、これが無いと必ず「見つかりません」になる）
+    #
+    # 以下は意図的にneeds_reviewの判定に含めない：
+    # - store（店舗名）・name（担当者氏名）・notesなど、自動判定に使わない表示・補助項目
+    # - daily_report_no（data_no）・tablet_no（tab_no）：reconcile()の差分比較では使うが、
+    #   帳票側が未読取(空)でもCSV側と比較して自然に差分（不一致）として表れる設計であり、
+    #   その比較自体をここで事前に妨げる必要はない。またこれらはextractor.validate_extraction_result
+    #   で既に型検証済みのため、ここで改めて「不正な値」を検出する必要もない。
+    needs_review = has_error or not extracted_date or not extracted_store_code
 
     return ExtractionResult(
         file_name=data.get("filename") or filename,
-        date=data.get("date"),
+        date=extracted_date,
         page_number=data.get("page_number", 0),  # ページ番号（複数ページ対応）
         daily_report_no=data.get("data_no") or "",
         tablet_no=data.get("tab_no") or "",
-        store_code=data.get("store_code") or "",
+        store_code=extracted_store_code or "",
         store_name=data.get("store") or "",
         staff_name=data.get("name") or "",
         left_totals=left_totals,

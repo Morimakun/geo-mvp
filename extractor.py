@@ -102,11 +102,12 @@ EXTRACTION_PROMPT = """以下は日報FAX帳票のPDF画像です。以下の項
 3. name（報告者の氏名）
 4. data_no（日報データNo、英数字）
 5. tab_no（タブレットNo、英数字または記号）
-6. count（件数、整数値）
-7. total（合計値、数値）
-8. notes（その他メモ・備考）
-9. left_total（左下の合計値、数値 - Phase 6Bで実装予定）
-10. right_total（右下の合計値、数値 - Phase 6Bで実装予定）
+6. store_code（店舗コード／取扱コード。帳票上に明記されている場合のみ抽出してください）
+7. count（件数、整数値）
+8. total（合計値、数値）
+9. notes（その他メモ・備考）
+10. left_total（左下の合計値、数値 - Phase 6Bで実装予定）
+11. right_total（右下の合計値、数値 - Phase 6Bで実装予定）
 
 【回答例】
 {
@@ -115,6 +116,7 @@ EXTRACTION_PROMPT = """以下は日報FAX帳票のPDF画像です。以下の項
   "name": "山田花子",
   "data_no": "001",
   "tab_no": "Tab-A",
+  "store_code": null,
   "count": 5,
   "total": 100.5,
   "notes": "天気：晴れ",
@@ -126,6 +128,9 @@ EXTRACTION_PROMPT = """以下は日報FAX帳票のPDF画像です。以下の項
 - 見つからない項目は null で返してください
 - count と total は数値で返してください
 - left_total と right_total は Phase 6B 実装予定なので、現在は null で大丈夫です
+- store_code（店舗コード／取扱コード）は、帳票上にその表記が明確に印字・記入されている場合のみ抽出してください。
+  記載がない場合、判読できない場合は、必ず null を返してください。
+  store（店舗名）や他の項目から店舗コードを推測・変換・生成することは絶対にしないでください。
 - 必ずJSON形式のみで回答してください（マークダウンコード記号不要）
 - 日付、店舗、氏名は できるだけ正確に読み取ってください"""
 
@@ -204,6 +209,7 @@ def extract_items_from_pdf(pdf_bytes: bytes, filename: str) -> Dict:
                 "name": None,
                 "data_no": None,
                 "tab_no": None,
+                "store_code": None,
                 "count": None,
                 "total": None,
                 "notes": None,
@@ -230,6 +236,7 @@ def extract_items_from_pdf(pdf_bytes: bytes, filename: str) -> Dict:
             "name": None,
             "data_no": None,
             "tab_no": None,
+            "store_code": None,
             "count": None,
             "total": None,
             "notes": None,
@@ -258,6 +265,7 @@ def validate_extraction_result(data: Dict) -> Dict:
             "name": None,
             "data_no": None,
             "tab_no": None,
+            "store_code": None,
             "count": None,
             "total": None,
             "notes": None,
@@ -269,7 +277,7 @@ def validate_extraction_result(data: Dict) -> Dict:
     validated = {}
 
     # 文字列フィールド
-    for field in ["date", "store", "name", "data_no", "tab_no", "notes"]:
+    for field in ["date", "store", "name", "data_no", "tab_no", "store_code", "notes"]:
         try:
             value = data.get(field)
             if value is not None:
