@@ -62,7 +62,7 @@ VISION_EVIDENCE_PROMPT_VERSION = "3.0.0"
 # build_region_scoped_prompt（vision_evidence_client.py、v2が使用）が対象の
 # プロンプトバージョン。v2のプロンプトはcell_representationの自己申告を
 # 一切指示しないため、v3プロンプト（3.0.0）とは別バージョンとして固定する。
-VISION_EVIDENCE_PROMPT_VERSION_V2 = "2.0.0"
+VISION_EVIDENCE_PROMPT_VERSION_V2 = "2.1.0"
 
 
 _FORM_VERSION_CLASSIFICATION = """\
@@ -196,6 +196,18 @@ _REGION_ISOLATION_RULES = """\
   marks_presentは、対象領域内に正の字の画線が実際に見えた場合のみ選ぶこと。
 """
 
+_DIGIT_READING_RULES = """\
+【紹介・お声がけの数字欄（written_total）の読み方】
+- 数字欄には算用数字が1文字だけ書かれていることが多い。
+  0は楕円形（丸い輪）、1は斜めの単線（縦棒）、2〜9は通常の数字の形。
+- 単独の楕円形・単独の斜め線は、正の字ではなく算用数字（0・1）として読むこと。
+  正の字は「縦線4本＋斜線1本」の組で、単独の楕円や単線は正の字とみなさない。
+- 数字の形が見えているのに status="unreadable" にしないこと。
+  読めるときは value に整数を入れて status="observed" とする。
+  本当に判読できないときのみ status="unreadable"、欄自体が空白のときは status="no_value"。
+- 0を空欄と混同しないこと。手書きの0が見えていればvalue=0。
+"""
+
 _OUTPUT_LENGTH_RULES = """\
 【出力形式・長さの制約】
 - 必ずsubmit_vision_evidenceツールの引数として結果を返すこと。
@@ -253,6 +265,7 @@ def build_region_scoped_prompt(
 
 {_REGION_ISOLATION_RULES}
 {_CONTRACT_RULES}
+{_DIGIT_READING_RULES}
 {_PII_SCOPE_NOTES}
 {_STORE_CODE_INTEGRITY_NOTE}
 {_OUTPUT_LENGTH_RULES}
