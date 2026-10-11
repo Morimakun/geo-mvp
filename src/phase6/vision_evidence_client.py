@@ -151,10 +151,11 @@ NEW_FORM_REGIONS = {
     "store_code_region": CropRegion("store_code_region", 15, 44, 265, 72),
     # 【案件】合計行（項番5）紹介列セル（P32実測。列境界を精密プローブで再確認済み）
     "intro_written_total_region": CropRegion("intro_written_total_region", 160, 182, 215, 213),
-    "intro_tally_region": CropRegion("intro_tally_region", 160, 182, 215, 213),
+    # 紹介の正の字欄: 合計行の直上（項番26〜28の行）。合計行と同じ座標だと正の字を読めないため分離（2026-10-11修正）
+    "intro_tally_region": CropRegion("intro_tally_region", 160, 114, 215, 182),
     # 【案件】合計行（項番5）声掛列セル（P32実測）
     "voice_written_total_region": CropRegion("voice_written_total_region", 215, 182, 243, 213),
-    "voice_tally_region": CropRegion("voice_tally_region", 215, 182, 243, 213),
+    "voice_tally_region": CropRegion("voice_tally_region", 215, 114, 243, 182),
 }
 
 OLD_FORM_REGIONS = {
@@ -173,16 +174,16 @@ PAGE_REGION_OVERRIDES = {
     41: {
         "store_code_region": CropRegion("store_code_region", 15, 70, 280, 102),
         "intro_written_total_region": CropRegion("intro_written_total_region", 160, 214, 215, 245),
-        "intro_tally_region": CropRegion("intro_tally_region", 160, 214, 215, 245),
+        "intro_tally_region": CropRegion("intro_tally_region", 160, 146, 215, 214),
         "voice_written_total_region": CropRegion("voice_written_total_region", 215, 214, 243, 245),
-        "voice_tally_region": CropRegion("voice_tally_region", 215, 214, 243, 245),
+        "voice_tally_region": CropRegion("voice_tally_region", 215, 146, 243, 214),
     },
     59: {
         "store_code_region": CropRegion("store_code_region", 15, 70, 280, 102),
         "intro_written_total_region": CropRegion("intro_written_total_region", 160, 218, 215, 249),
-        "intro_tally_region": CropRegion("intro_tally_region", 160, 218, 215, 249),
+        "intro_tally_region": CropRegion("intro_tally_region", 160, 150, 215, 218),
         "voice_written_total_region": CropRegion("voice_written_total_region", 215, 218, 243, 249),
-        "voice_tally_region": CropRegion("voice_tally_region", 215, 218, 243, 249),
+        "voice_tally_region": CropRegion("voice_tally_region", 215, 150, 243, 218),
     },
 }
 
