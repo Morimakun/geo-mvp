@@ -94,8 +94,18 @@ def test_no_store_code_is_auto_matched_even_with_high_confidence(valid_codes):
 # ---- written total: AUTO_MATCH条件 ----
 
 def test_auto_match_only_when_observed_high_and_equal_to_csv():
-    d = decide_written_total(item="intro", ai_value=2, ai_status="observed", confidence="high", csv_value=2)
+    d = decide_written_total(
+        item="intro", ai_value=2, ai_status="observed", confidence="high", csv_value=2, store_auto=True
+    )
     assert d.decision == AUTO_MATCH
+
+
+def test_written_total_never_auto_without_store_code_auto_match():
+    d = decide_written_total(
+        item="intro", ai_value=2, ai_status="observed", confidence="high", csv_value=2, store_auto=False
+    )
+    assert d.decision == NEEDS_REVIEW
+    assert "store_code_not_auto" in d.reasons
 
 
 @pytest.mark.parametrize(

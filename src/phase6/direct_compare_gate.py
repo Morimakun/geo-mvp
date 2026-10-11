@@ -94,10 +94,14 @@ def decide_written_total(
     confidence: Optional[str],
     csv_value: Optional[int],
     csv_row_count: int = 1,
+    store_auto: bool = False,
 ) -> ItemDecision:
     """記載合計（紹介総数 / お声がけ総数）の自動一致判定。
-    AUTO_MATCH は: observed・confidence=high・AI値とCSV値が一致・CSV候補行が1件。"""
+    AUTO_MATCH は: 店舗コードが自動一致（store_auto）・observed・confidence=high・
+    AI値とCSV値が一致・CSV候補行が1件。"""
     reasons = []
+    if not store_auto:
+        reasons.append("store_code_not_auto")
     if ai_status != "observed":
         reasons.append(f"ai_status_{ai_status}")
     if ai_status == "observed" and ai_value is None:

@@ -171,6 +171,28 @@ OLD_FORM_REGIONS = {
 # ページ個別の実測値（縦方向のスキャン registration ずれに対応するための上書き）。
 # X座標（列位置）は3ページで一致していたためNEW_FORM_REGIONSと共通のまま。
 PAGE_REGION_OVERRIDES = {
+    # 追加検証ページ（2026-10-11、新帳票・2026-06-27）。目視grid計測による座標。
+    5: {
+        "store_code_region": CropRegion("store_code_region", 15, 70, 280, 102),
+        "intro_written_total_region": CropRegion("intro_written_total_region", 196, 212, 221, 240),
+        "intro_tally_region": CropRegion("intro_tally_region", 196, 146, 221, 212),
+        "voice_written_total_region": CropRegion("voice_written_total_region", 221, 212, 246, 240),
+        "voice_tally_region": CropRegion("voice_tally_region", 221, 146, 246, 212),
+    },
+    9: {
+        "store_code_region": CropRegion("store_code_region", 15, 70, 280, 102),
+        "intro_written_total_region": CropRegion("intro_written_total_region", 194, 218, 219, 246),
+        "intro_tally_region": CropRegion("intro_tally_region", 194, 150, 219, 218),
+        "voice_written_total_region": CropRegion("voice_written_total_region", 219, 218, 244, 246),
+        "voice_tally_region": CropRegion("voice_tally_region", 219, 150, 244, 218),
+    },
+    16: {
+        "store_code_region": CropRegion("store_code_region", 15, 70, 280, 102),
+        "intro_written_total_region": CropRegion("intro_written_total_region", 194, 212, 219, 244),
+        "intro_tally_region": CropRegion("intro_tally_region", 194, 144, 219, 212),
+        "voice_written_total_region": CropRegion("voice_written_total_region", 219, 212, 244, 244),
+        "voice_tally_region": CropRegion("voice_tally_region", 219, 144, 244, 212),
+    },
     41: {
         "store_code_region": CropRegion("store_code_region", 15, 70, 280, 102),
         "intro_written_total_region": CropRegion("intro_written_total_region", 160, 214, 215, 245),
